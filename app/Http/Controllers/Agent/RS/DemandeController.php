@@ -110,10 +110,11 @@ class DemandeController extends Controller
                 return redirect()->back()->with('error', 'Vous n\'avez pas accès à cette demande.');
             }
 
-            $demande->load(['stagiaire.user', 'structure']);
+            $demande->load(['stagiaire.user', 'structure', 'membres.user']);
 
             return Inertia::render('Agent/RS/Demandes/Show', [
-                'demande' => $demande
+                'demande' => $demande,
+                'membres' => $demande->nature === 'Groupe' ? $demande->membres : []
             ]);
 
         } catch (\Exception $e) {

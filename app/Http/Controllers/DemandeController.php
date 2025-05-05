@@ -161,7 +161,7 @@ class DemandeController extends Controller
             session()->flash('code_suivi', $codeSuivi);
             
             // Redirection avec données explicites, inclure l'ID de la demande pour l'API d'emails
-            return redirect()->back()->with([
+            return redirect()->route('mes.demandes')->with([
                 'success' => true,
                 'message' => 'Demande soumise avec succès',
                 'code_suivi' => $codeSuivi,

@@ -55,7 +55,7 @@ const hasStructure = (demande) => {
 
 // Fonction pour gérer la sélection de toutes les demandes avec structure
 const selectAllWithStructure = () => {
-    const demandesWithStructure = props.demandes.data.filter(hasStructure);
+    const demandesWithStructure = (props.demandes && props.demandes.data ? props.demandes.data : []).filter(hasStructure);
     if (selectedDemandes.value.length === demandesWithStructure.length) {
         selectedDemandes.value = [];
     } else {
@@ -65,7 +65,7 @@ const selectAllWithStructure = () => {
 
 // Fonction pour vérifier si toutes les demandes avec structure sont sélectionnées
 const allWithStructureSelected = computed(() => {
-    const demandesWithStructure = props.demandes.data.filter(hasStructure);
+    const demandesWithStructure = (props.demandes && props.demandes.data ? props.demandes.data : []).filter(hasStructure);
     return demandesWithStructure.length > 0 && 
            demandesWithStructure.every(d => selectedDemandes.value.includes(d.id));
 });
@@ -122,7 +122,7 @@ const closeAffectationModal = () => {
 const submitDirectGroupAffectation = () => {
     if (selectedDemandes.value.length === 0) return;
 
-    const demandesWithStructures = props.demandes.data
+    const demandesWithStructures = (props.demandes && props.demandes.data ? props.demandes.data : [])
         .filter(d => selectedDemandes.value.includes(d.id))
         .filter(d => d.structure);
 
@@ -195,7 +195,7 @@ const hasSelectedDemandes = computed(() => selectedDemandes.value.length > 0);
 // Computed property pour vérifier si les demandes sélectionnées peuvent être affectées
 const canAffectSelectedDemandes = computed(() => {
     return selectedDemandes.value.length > 0 && 
-           props.demandes.data
+           (props.demandes && props.demandes.data ? props.demandes.data : [])
                .filter(d => selectedDemandes.value.includes(d.id))
                .every(d => d.statut === 'En attente');
 });
@@ -293,7 +293,7 @@ const canAffectSelectedDemandes = computed(() => {
                                     </tr>
                                 </thead>
                                 <tbody class="bg-white divide-y divide-gray-200">
-                                    <tr v-for="demande in demandes.data" :key="demande.id" 
+                                    <tr v-for="demande in (demandes && demandes.data ? demandes.data : [])" :key="demande.id" 
                                         :class="{'bg-gray-50': selectedDemandes.includes(demande.id)}">
                                         <td class="px-6 py-4 whitespace-nowrap">
                                             <input
@@ -349,7 +349,7 @@ const canAffectSelectedDemandes = computed(() => {
                                         </td>
                                     </tr>
                                     <!-- Message si aucune demande -->
-                                    <tr v-if="demandes.data.length === 0">
+                                    <tr v-if="demandes && demandes.data && demandes.data.length === 0">
                                         <td colspan="5" class="px-6 py-4 text-center text-gray-500">
                                             Aucune demande trouvée
                                         </td>
@@ -359,7 +359,7 @@ const canAffectSelectedDemandes = computed(() => {
                         </div>
 
                         <!-- Pagination -->
-                        <div v-if="demandes.links && demandes.links.length > 3" class="mt-4 flex justify-between items-center">
+                        <div v-if="demandes && demandes.links && demandes.links.length > 3" class="mt-4 flex justify-between items-center">
                             <div class="text-sm text-gray-700">
                                 Affichage de {{ demandes.from }} à {{ demandes.to }} sur {{ demandes.total }} résultats
                             </div>
@@ -452,4 +452,6 @@ const canAffectSelectedDemandes = computed(() => {
     
     <!-- Ajout du composant Toast -->
     <AdminToast ref="toast" />
+
+<!-- <pre>{{ demandes }}</pre> -->
 </template> 

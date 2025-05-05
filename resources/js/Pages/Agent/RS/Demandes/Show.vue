@@ -105,6 +105,16 @@
                     <span class="font-medium">{{ demande.stagiaire?.niveau_etude }}</span>
                   </div>
                 </div>
+                <div v-if="demande.nature === 'Groupe' && membres && membres.length > 0" class="mt-8">
+                  <h3 class="text-lg font-semibold text-blue-700 mb-2">Autres membres du groupe</h3>
+                  <ul class="space-y-4">
+                    <li v-for="membre in membres" :key="membre.id" class="p-4 bg-white rounded shadow flex flex-col md:flex-row md:items-center md:gap-8">
+                      <div class="font-bold text-gray-800">{{ membre.user?.nom }} {{ membre.user?.prenom }}</div>
+                      <div class="text-sm text-gray-500">Email : {{ membre.user?.email }}</div>
+                      <div class="text-sm text-gray-500">Téléphone : {{ membre.user?.telephone }}</div>
+                    </li>
+                  </ul>
+                </div>
               </div>
             </div>
             
@@ -151,6 +161,15 @@
                   Rejeter la demande
                 </button>
               </div>
+            </div>
+            <div v-if="demande.statut === 'Acceptée'" class="mt-6 bg-gray-50 p-6 rounded-lg shadow-sm">
+              <h2 class="text-xl font-semibold mb-4 text-gray-800 border-b pb-2">Actions</h2>
+              <button class="px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700 transition-colors flex items-center gap-2">
+                <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4" />
+                </svg>
+                Affecter maître
+              </button>
             </div>
           </div>
         </div>
@@ -232,6 +251,7 @@ import Modal from '@/Components/Modal.vue';
 
 const props = defineProps({
   demande: Object,
+  membres: Array,
 });
 
 const showRejectModal = ref(false);

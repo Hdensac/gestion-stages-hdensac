@@ -98,7 +98,7 @@ const quickActions = [
     {
         title: 'Télécharger le rapport mensuel',
         route: 'admin.rapport-mensuel',
-        icon: 'file-download',
+        icon: 'download', // icône changée de 'file-download' à 'download'
         color: 'indigo',
         description: 'Exporter le rapport mensuel des activités',
         download: true,
@@ -113,6 +113,8 @@ const activityIconMap = {
     'agent': { icon: 'briefcase', color: 'amber', gradient: 'from-amber-400 to-amber-600' },
     'user': { icon: 'users', color: 'violet', gradient: 'from-violet-400 to-violet-600' },
     'rapport': { icon: 'file-alt', color: 'indigo', gradient: 'from-indigo-400 to-indigo-600' },
+    'demande-stage': { icon: 'file-signature', color: 'teal', gradient: 'from-teal-400 to-teal-600' }, // Ajout pour dernière demande de stage
+    'demande': { icon: 'file-signature', color: 'teal', gradient: 'from-teal-400 to-teal-600' },
     'default': { icon: 'circle-info', color: 'gray', gradient: 'from-gray-400 to-gray-600' }
 };
 
@@ -287,7 +289,7 @@ function refreshDashboard() {
                                                         class="text-xs font-medium"
                                                         :class="stat.trendUp ? 'text-emerald-500' : 'text-red-500'"
                                                     >
-                                                        {{ stat.trend }}%
+                                                       <!--  {{ stat.trend }}% -->
                                                     </span>
                                                 </div>
                                             </div>

@@ -181,6 +181,7 @@ Route::get('/dashboard', function () {
         Route::get('/structures/{structure}', [App\Http\Controllers\Agent\StructureController::class, 'show'])->name('structures.show');
         Route::get('/stagiaires', [App\Http\Controllers\Agent\StagiaireController::class, 'index'])->name('stagiaires.index');
         Route::get('/stagiaires/{stagiaire}', [App\Http\Controllers\Agent\StagiaireController::class, 'show'])->name('stagiaires.show');
+        Route::post('/demandes/{demande}/affecter', [App\Http\Controllers\Agent\DemandeController::class, 'affecter'])->name('demandes.affecter');
 
         // Routes pour les agents RS
         Route::prefix('rs')->name('rs.')->middleware(['auth'])->group(function () {
