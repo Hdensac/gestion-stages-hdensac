@@ -193,4 +193,4 @@ class DemandeController extends Controller
             return back()->with('error', 'Une erreur est survenue lors de l\'affectation de la structure.');
         }
     }
-}
+} 

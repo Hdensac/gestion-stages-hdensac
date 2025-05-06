@@ -190,6 +190,8 @@ Route::get('/dashboard', function () {
             Route::get('/demandes/{demande}', [App\Http\Controllers\Agent\RS\DemandeController::class, 'show'])->name('demandes.show');
             Route::post('/demandes/{demande}/approve', [App\Http\Controllers\Agent\RS\DemandeController::class, 'approve'])->name('demandes.approve');
             Route::post('/demandes/{demande}/reject', [App\Http\Controllers\Agent\RS\DemandeController::class, 'reject'])->name('demandes.reject');
+            // CRUD agents sans rôle
+            Route::resource('agents', App\Http\Controllers\Agent\RS\AgentController::class);
         });
     });
     
