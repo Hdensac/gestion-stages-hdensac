@@ -40,6 +40,7 @@
                   <th class="px-6 py-3 text-left text-xs font-bold text-gray-500 uppercase tracking-wider">Téléphone</th>
                   <th class="px-6 py-3 text-left text-xs font-bold text-gray-500 uppercase tracking-wider">Matricule</th>
                   <th class="px-6 py-3 text-left text-xs font-bold text-gray-500 uppercase tracking-wider">Fonction</th>
+                  <th class="px-6 py-3 text-left text-xs font-bold text-gray-500 uppercase tracking-wider">Responsable de</th>
                   <th class="px-6 py-3 text-center text-xs font-bold text-gray-500 uppercase tracking-wider">Actions</th>
                 </tr>
               </thead>
@@ -51,15 +52,16 @@
                   <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">{{ agent.user?.telephone ?? '-' }}</td>
                   <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">{{ agent.matricule }}</td>
                   <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">{{ agent.fonction }}</td>
+                  <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">{{ agent.structure_responsable ?? '-' }}</td>
                   <td class="px-6 py-4 whitespace-nowrap text-center">
                     <div class="flex justify-center gap-2">
                       <Link :href="route('agent.rs.agents.edit', agent.id)" class="text-blue-600 hover:text-blue-900 font-medium flex items-center gap-1" title="Modifier">
                         <svg xmlns="http://www.w3.org/2000/svg" class="w-5 h-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M17 3a2.85 2.85 0 1 1 4 4L7.5 20.5 2 22l1.5-5.5Z"/></svg>
-                        
+
                       </Link>
                       <button @click="deleteAgent(agent.id)" class="text-red-600 hover:text-red-800 font-medium flex items-center gap-1" title="Supprimer">
                         <svg xmlns="http://www.w3.org/2000/svg" class="w-5 h-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 6h18"/><path d="M19 6v14c0 1-1 2-2 2H7c-1 0-2-1-2-2V6"/><path d="M8 6V4c0-1 1-2 2-2h4c1 0 2 1 2 2v2"/></svg>
-                        
+
                       </button>
                     </div>
                   </td>
@@ -81,4 +83,4 @@ function deleteAgent(id) {
     router.delete(route('agent.rs.agents.destroy', id));
   }
 }
-</script> 
+</script>

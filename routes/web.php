@@ -192,6 +192,9 @@ Route::get('/dashboard', function () {
             Route::post('/demandes/{demande}/reject', [App\Http\Controllers\Agent\RS\DemandeController::class, 'reject'])->name('demandes.reject');
             // CRUD agents sans rôle
             Route::resource('agents', App\Http\Controllers\Agent\RS\AgentController::class);
+            Route::resource('organigramme', App\Http\Controllers\Agent\RS\StructureOrganigrammeController::class)
+                ->parameters(['organigramme' => 'structure']);
+            Route::post('organigramme/{structure}/assign-agent', [App\Http\Controllers\Agent\RS\StructureOrganigrammeController::class, 'assignAgent'])->name('organigramme.assign-agent');
         });
     });
     

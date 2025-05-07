@@ -52,6 +52,18 @@
               <label class="block text-sm font-medium text-gray-700 mb-1">Mot de passe</label>
               <input v-model="form.password" type="password" class="w-full border rounded-lg p-2 focus:ring-2 focus:ring-blue-500 focus:border-blue-500" required />
             </div>
+            <div>
+              <label class="block text-sm font-medium text-gray-700 mb-1">Responsable de la structure</label>
+              <select v-model="form.structure_responsable_id" class="w-full border rounded-lg p-2 focus:ring-2 focus:ring-blue-500 focus:border-blue-500">
+                <option :value="null">Aucune structure</option>
+                <option v-for="structure in structures" :key="structure.id" :value="structure.id">
+                  {{ structure.libelle }} {{ structure.sigle ? `(${structure.sigle})` : '' }}
+                </option>
+              </select>
+              <p class="text-xs text-gray-500 mt-1">
+                Sélectionnez la structure dont cet agent sera responsable. Un agent ne peut être responsable que d'une seule structure à la fois.
+              </p>
+            </div>
           </div>
           <div class="flex justify-end gap-2 mt-6">
             <Link :href="route('agent.rs.agents.index')" class="btn">Annuler</Link>
@@ -65,6 +77,11 @@
 <script setup>
 import { Link, useForm } from '@inertiajs/vue3';
 import RSLayout from '@/Layouts/RSLayout.vue';
+
+const props = defineProps({
+  structures: Array
+});
+
 const form = useForm({
   nom: '',
   prenom: '',
@@ -76,8 +93,9 @@ const form = useForm({
   matricule: '',
   fonction: '',
   date_embauche: '',
+  structure_responsable_id: null,
 });
 function submit() {
   form.post(route('agent.rs.agents.store'));
 }
-</script> 
+</script>

@@ -48,6 +48,18 @@
               <label class="block text-sm font-medium text-gray-700 mb-1">Date d'embauche</label>
               <input v-model="form.date_embauche" type="date" class="w-full border rounded-lg p-2 focus:ring-2 focus:ring-blue-500 focus:border-blue-500" />
             </div>
+            <div>
+              <label class="block text-sm font-medium text-gray-700 mb-1">Responsable de la structure</label>
+              <select v-model="form.structure_responsable_id" class="w-full border rounded-lg p-2 focus:ring-2 focus:ring-blue-500 focus:border-blue-500">
+                <option :value="null">Aucune structure</option>
+                <option v-for="structure in structures" :key="structure.id" :value="structure.id">
+                  {{ structure.libelle }} {{ structure.sigle ? `(${structure.sigle})` : '' }}
+                </option>
+              </select>
+              <p class="text-xs text-gray-500 mt-1">
+                Sélectionnez la structure dont cet agent sera responsable. Un agent ne peut être responsable que d'une seule structure à la fois.
+              </p>
+            </div>
           </div>
           <div class="flex justify-end gap-2 mt-6">
             <Link :href="route('agent.rs.agents.index')" class="btn">Annuler</Link>
@@ -61,7 +73,11 @@
 <script setup>
 import { Link, useForm } from '@inertiajs/vue3';
 import RSLayout from '@/Layouts/RSLayout.vue';
-const props = defineProps({ agent: Object });
+const props = defineProps({
+  agent: Object,
+  structures: Array
+});
+
 const form = useForm({
   nom: props.agent.user?.nom || '',
   prenom: props.agent.user?.prenom || '',
@@ -72,8 +88,9 @@ const form = useForm({
   matricule: props.agent.matricule || '',
   fonction: props.agent.fonction || '',
   date_embauche: props.agent.date_embauche || '',
+  structure_responsable_id: props.agent.structure_responsable_id || null,
 });
 function submit() {
   form.put(route('agent.rs.agents.update', props.agent.id));
 }
-</script> 
+</script>

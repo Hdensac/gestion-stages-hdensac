@@ -18,6 +18,7 @@ return new class extends Migration
             $table->string('fonction')->nullable();
             $table->date('date_embauche')->nullable();
             $table->foreignId('universite_responsable_id')->nullable()->constrained('universites')->onDelete('set null'); // Ajout de la clé étrangère
+            $table->enum('role_agent', ['DPAF', 'MS', 'RS'])->nullable();
             $table->timestamps();
 
             $table->unique('user_id');
