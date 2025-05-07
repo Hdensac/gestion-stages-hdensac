@@ -22,7 +22,7 @@ return new class extends Migration
             $table->timestamp('email_verified_at')->nullable();
             $table->string('avatar')->nullable(); // Ajout de la colonne avatar
             $table->string('password'); // Le mot de passe est requis par défaut dans Laravel
-            $table->integer('telephone')->nullable();
+            $table->string('telephone', 20)->nullable(); // Changement de integer à string et définition de la longueur
             $table->date('date_d_inscription')->nullable();
             $table->enum('role', ['stagiaire', 'Agent', 'université', 'admin'])->default('stagiaire');
             $table->rememberToken();

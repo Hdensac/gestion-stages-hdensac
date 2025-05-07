@@ -9,6 +9,7 @@ use App\Models\Agent;
 use App\Models\Stagiaire;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Str;
+use Illuminate\Validation\Rules;
 
 class UserController extends Controller
 {
@@ -53,6 +54,7 @@ class UserController extends Controller
             'email' => 'required|email|max:255|unique:users,email',
             'role' => 'required|string|in:admin,agent,stagiaire',
             'password' => 'required|string|min:8|confirmed',
+            'telephone' => 'nullable|string|max:20|regex:/^[0-9\+\-\.\s\(\)]+$/', // Ajout de la validation pour le téléphone
         ]);
 
         $user = User::create([
@@ -60,6 +62,7 @@ class UserController extends Controller
             'email' => $validated['email'],
             'role' => $validated['role'],
             'password' => bcrypt($validated['password']),
+            'telephone' => $validated['telephone'], // Ajout du téléphone à la création de l'utilisateur
         ]);
 
         // Si le rôle est "agent", créez une entrée de base dans la table `agents`
@@ -71,7 +74,7 @@ class UserController extends Controller
                 'role_agent' => 'DPAF', // Valeur par défaut, à modifier dans le formulaire des agents
                 'date_embauche' => now(),
             ]);
-        } 
+        }
         // Si le rôle est "stagiaire", créez une entrée dans la table `stagiaires`
         elseif ($validated['role'] === 'stagiaire') {
             Stagiaire::create([
@@ -92,6 +95,7 @@ class UserController extends Controller
             'email' => 'required|email|max:255|unique:users,email,' . $user->id,
             'role' => 'required|string|in:admin,agent,stagiaire',
             'password' => 'nullable|string|min:8|confirmed',
+            'telephone' => 'nullable|string|max:20|regex:/^[0-9\+\-\.\s\(\)]+$/', // Ajout de la validation pour le téléphone
         ]);
 
         // Mise à jour des informations de base de l'utilisateur
@@ -100,6 +104,7 @@ class UserController extends Controller
             'email' => $validated['email'],
             'role' => $validated['role'],
             'password' => $validated['password'] ? bcrypt($validated['password']) : $user->password,
+            'telephone' => $validated['telephone'], // Ajout de la mise à jour du téléphone
         ]);
 
         // Si le nouveau rôle est "agent" et l'utilisateur n'était pas un agent avant
