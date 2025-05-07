@@ -19,7 +19,8 @@ class Stagiaire extends Model
     protected $fillable = [
         'user_id',
         'niveau_etude',
-        'universite',
+        'universite_id',
+        'universite',   //A supprimer après
         'filiere',
     ];
 
