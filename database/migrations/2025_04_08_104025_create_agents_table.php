@@ -21,6 +21,11 @@ return new class extends Migration
             $table->enum('role_agent', ['DPAF', 'MS', 'RS'])->nullable();
             $table->timestamps();
 
+            $table->foreignId('structure_id') // Ajout de la colonne structure_id
+                ->nullable()
+                ->constrained('structures')
+                ->onDelete('set null');
+
             $table->unique('user_id');
         });
     }

@@ -71,7 +71,7 @@ const submit = () => {
                             <TextInput
                                 id="name"
                                 type="text"
-                                class="pl-10 block w-full rounded-md border-gray-300 shadow-sm focus:border-[#00513A] focus:ring focus:ring-[#00513A] focus:ring-opacity-20"
+                                class="pl-10 block w-full rounded-md border-gray-300 shadow-sm focus:border-[#2962B4] focus:ring focus:ring-[#2962B4] focus:ring-opacity-20"
                                 v-model="form.name"
                                 required
                                 autofocus
@@ -94,7 +94,7 @@ const submit = () => {
                             <TextInput
                                 id="prenom"
                                 type="text"
-                                class="pl-10 block w-full rounded-md border-gray-300 shadow-sm focus:border-[#00513A] focus:ring focus:ring-[#00513A] focus:ring-opacity-20"
+                                class="pl-10 block w-full rounded-md border-gray-300 shadow-sm focus:border-[#2962B4] focus:ring focus:ring-[#2962B4] focus:ring-opacity-20"
                                 v-model="form.prenom"
                                 required
                                 autocomplete="given-name"
@@ -117,7 +117,7 @@ const submit = () => {
                                 <TextInput
                                     id="date_de_naissance"
                                     type="date"
-                                    class="pl-10 block w-full rounded-md border-gray-300 shadow-sm focus:border-[#00513A] focus:ring focus:ring-[#00513A] focus:ring-opacity-20"
+                                    class="pl-10 block w-full rounded-md border-gray-300 shadow-sm focus:border-[#2962B4] focus:ring focus:ring-[#2962B4] focus:ring-opacity-20"
                                     v-model="form.date_de_naissance"
                                     required
                                 />
@@ -135,7 +135,7 @@ const submit = () => {
                                 </div>
                                 <select
                                     id="sexe"
-                                    class="pl-10 block w-full rounded-md border-gray-300 shadow-sm focus:border-[#00513A] focus:ring focus:ring-[#00513A] focus:ring-opacity-20"
+                                    class="pl-10 block w-full rounded-md border-gray-300 shadow-sm focus:border-[#2962B4] focus:ring focus:ring-[#2962B4] focus:ring-opacity-20"
                                     v-model="form.sexe"
                                     required
                                 >
@@ -160,7 +160,7 @@ const submit = () => {
                             <TextInput
                                 id="email"
                                 type="email"
-                                class="pl-10 block w-full rounded-md border-gray-300 shadow-sm focus:border-[#00513A] focus:ring focus:ring-[#00513A] focus:ring-opacity-20"
+                                class="pl-10 block w-full rounded-md border-gray-300 shadow-sm focus:border-[#2962B4] focus:ring focus:ring-[#2962B4] focus:ring-opacity-20"
                                 v-model="form.email"
                                 required
                                 autocomplete="username"
@@ -182,7 +182,7 @@ const submit = () => {
                             <TextInput
                                 id="telephone"
                                 type="tel"
-                                class="pl-10 block w-full rounded-md border-gray-300 shadow-sm focus:border-[#00513A] focus:ring focus:ring-[#00513A] focus:ring-opacity-20"
+                                class="pl-10 block w-full rounded-md border-gray-300 shadow-sm focus:border-[#2962B4] focus:ring focus:ring-[#2962B4] focus:ring-opacity-20"
                                 v-model="form.telephone"
                                 required
                                 autocomplete="tel"
@@ -204,7 +204,7 @@ const submit = () => {
                             <TextInput
                                 id="password"
                                 :type="passwordVisible ? 'text' : 'password'"
-                                class="pl-10 pr-10 block w-full rounded-md border-gray-300 shadow-sm focus:border-[#00513A] focus:ring focus:ring-[#00513A] focus:ring-opacity-20"
+                                class="pl-10 pr-10 block w-full rounded-md border-gray-300 shadow-sm focus:border-[#2962B4] focus:ring focus:ring-[#2962B4] focus:ring-opacity-20"
                                 v-model="form.password"
                                 required
                                 autocomplete="new-password"
@@ -238,7 +238,7 @@ const submit = () => {
                             <TextInput
                                 id="password_confirmation"
                                 :type="confirmPasswordVisible ? 'text' : 'password'"
-                                class="pl-10 pr-10 block w-full rounded-md border-gray-300 shadow-sm focus:border-[#00513A] focus:ring focus:ring-[#00513A] focus:ring-opacity-20"
+                                class="pl-10 pr-10 block w-full rounded-md border-gray-300 shadow-sm focus:border-[#2962B4] focus:ring focus:ring-[#2962B4] focus:ring-opacity-20"
                                 v-model="form.password_confirmation"
                                 required
                                 autocomplete="new-password"
@@ -261,14 +261,14 @@ const submit = () => {
 
                     <!-- Politique de confidentialité -->
                     <div class="mb-6 text-sm text-gray-600">
-                        <p>En créant un compte, vous acceptez notre <a href="#" class="text-[#00513A] hover:text-[#003E2C] hover:underline">politique de confidentialité</a> et nos <a href="#" class="text-[#00513A] hover:text-[#003E2C] hover:underline">conditions d'utilisation</a>.</p>
+                        <p>En créant un compte, vous acceptez notre <a href="#" class="text-[#2962B4] hover:text-[#1E4B8F] hover:underline">politique de confidentialité</a> et nos <a href="#" class="text-[#2962B4] hover:text-[#1E4B8F] hover:underline">conditions d'utilisation</a>.</p>
                     </div>
 
                     <!-- Bouton d'inscription -->
                     <div>
                         <button
                             type="submit"
-                            class="w-full flex justify-center items-center py-3 px-4 border border-transparent rounded-md shadow-sm text-white bg-[#00513A] hover:bg-[#003E2C] focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-[#00513A] transition-all duration-300 transform hover:scale-[1.02]"
+                            class="w-full flex justify-center items-center py-3 px-4 border border-transparent rounded-md shadow-sm text-white bg-[#2962B4] hover:bg-[#1E4B8F] focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-[#2962B4] transition-all duration-300 transform hover:scale-[1.02]"
                             :class="{ 'opacity-75 cursor-not-allowed': form.processing || isLoading }"
                             :disabled="form.processing || isLoading"
                         >
@@ -286,7 +286,7 @@ const submit = () => {
             <div class="mt-6 text-center">
                 <p class="text-sm text-gray-600">
                     Vous avez déjà un compte ? 
-                    <Link :href="route('login')" class="font-medium text-[#00513A] hover:text-[#003E2C] hover:underline transition duration-200">
+                    <Link :href="route('login')" class="font-medium text-[#2962B4] hover:text-[#1E4B8F] hover:underline transition duration-200">
                         Se connecter
                     </Link>
                 </p>
@@ -319,4 +319,4 @@ const submit = () => {
 .animate-spin {
   animation: spin 1s linear infinite;
 }
-</style >
+</style>

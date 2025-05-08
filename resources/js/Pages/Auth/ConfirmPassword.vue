@@ -45,7 +45,7 @@ const submit = () => {
             <div class="bg-white rounded-xl shadow-xl p-6 transition-all duration-300 hover:shadow-2xl">
                 <!-- Icône de sécurité -->
                 <div class="flex justify-center mb-4">
-                    <div class="p-3 rounded-full bg-[#054A31]/10 text-[#054A31]">
+                    <div class="p-3 rounded-full bg-[#2962B4]/10 text-[#2962B4]">
                         <svg xmlns="http://www.w3.org/2000/svg" class="h-8 w-8" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z" />
                         </svg>
@@ -79,7 +79,7 @@ const submit = () => {
                             <TextInput
                                 id="password"
                                 :type="passwordVisible ? 'text' : 'password'"
-                                class="pl-10 pr-10 block w-full rounded-md border-gray-300 shadow-sm focus:border-[#00513A] focus:ring focus:ring-[#00513A] focus:ring-opacity-20"
+                                class="pl-10 pr-10 block w-full rounded-md border-gray-300 shadow-sm focus:border-[#2962B4] focus:ring focus:ring-[#2962B4] focus:ring-opacity-20"
                                 v-model="form.password"
                                 required
                                 autofocus
@@ -105,7 +105,7 @@ const submit = () => {
                     <div class="mt-6 flex flex-col space-y-3">
                         <button
                             type="submit"
-                            class="w-full flex justify-center items-center py-3 px-4 border border-transparent rounded-md shadow-sm text-white bg-[#054A31] hover:bg-[#043824] focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-[#054A31] transition-all duration-300 transform hover:scale-[1.02]"
+                            class="w-full flex justify-center items-center py-3 px-4 border border-transparent rounded-md shadow-sm text-white bg-[#2962B4] hover:bg-[#1E4B8F] focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-[#2962B4] transition-all duration-300 transform hover:scale-[1.02]"
                             :class="{ 'opacity-75 cursor-not-allowed': form.processing || isLoading }"
                             :disabled="form.processing || isLoading"
                         >
@@ -123,7 +123,7 @@ const submit = () => {
             <div class="mt-6 text-center">
                 <p class="text-sm text-gray-600">
                     Besoin d'aide ? 
-                    <a href="#" class="font-medium text-[#054A31] hover:text-[#043824] hover:underline transition duration-200">
+                    <a href="#" class="font-medium text-[#2962B4] hover:text-[#1E4B8F] hover:underline transition duration-200">
                         Contactez le support
                     </a>
                 </p>

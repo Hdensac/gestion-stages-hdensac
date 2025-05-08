@@ -86,7 +86,7 @@ const submit = () => {
                         <TextInput
                             id="email"
                             type="email"
-                            class="pl-10 block w-full rounded-md border-gray-300 shadow-sm focus:border-[#00513A] focus:ring focus:ring-[#00513A] focus:ring-opacity-20"
+                            class="pl-10 block w-full rounded-md border-gray-300 shadow-sm focus:border-[#2962B4] focus:ring focus:ring-[#2962B4] focus:ring-opacity-20"
                             v-model="form.email"
                             required
                             autofocus
@@ -110,7 +110,7 @@ const submit = () => {
                         <TextInput
                             id="password"
                             :type="passwordVisible ? 'text' : 'password'"
-                            class="pl-10 pr-10 block w-full rounded-md border-gray-300 shadow-sm focus:border-[#00513A] focus:ring focus:ring-[#00513A] focus:ring-opacity-20"
+                            class="pl-10 pr-10 block w-full rounded-md border-gray-300 shadow-sm focus:border-[#2962B4] focus:ring focus:ring-[#2962B4] focus:ring-opacity-20"
                             v-model="form.password"
                             required
                             autocomplete="current-password"
@@ -134,14 +134,14 @@ const submit = () => {
                 <!-- Se souvenir de moi -->
                 <div class="flex items-center justify-between mb-6">
                     <label class="flex items-center text-sm">
-                        <Checkbox name="remember" v-model:checked="form.remember" class="rounded border-gray-300 text-[#00513A] shadow-sm focus:border-[#00513A] focus:ring focus:ring-[#00513A] focus:ring-opacity-20" />
+                        <Checkbox name="remember" v-model:checked="form.remember" class="rounded border-gray-300 text-[#2962B4] shadow-sm focus:border-[#2962B4] focus:ring focus:ring-[#2962B4] focus:ring-opacity-20" />
                         <span class="ml-2 text-gray-600 hover:text-gray-800">Se souvenir de moi</span>
                     </label>
                     
                     <Link
                         v-if="canResetPassword"
                         :href="route('password.request')"
-                        class="text-sm text-[#00513A] hover:text-[#003E2C] hover:underline transition duration-200"
+                        class="text-sm text-[#2962B4] hover:text-[#1E4B8F] hover:underline transition duration-200"
                     >
                         Mot de passe oublié ?
                     </Link>
@@ -151,7 +151,7 @@ const submit = () => {
                 <div>
                     <button
                         type="submit"
-                        class="w-full flex justify-center items-center py-3 px-4 border border-transparent rounded-md shadow-sm text-white bg-[#00513A] hover:bg-[#003E2C] focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-[#00513A] transition-all duration-300 transform hover:scale-[1.02]"
+                        class="w-full flex justify-center items-center py-3 px-4 border border-transparent rounded-md shadow-sm text-white bg-[#2962B4] hover:bg-[#1E4B8F] focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-[#2962B4] transition-all duration-300 transform hover:scale-[1.02]"
                         :class="{ 'opacity-75 cursor-not-allowed': form.processing || isLoading }"
                         :disabled="form.processing || isLoading"
                     >
@@ -169,7 +169,7 @@ const submit = () => {
         <div class="mt-6 text-center">
             <p class="text-sm text-gray-600">
                 Vous n'avez pas encore de compte ? 
-                <Link :href="route('register')" class="font-medium text-[#00513A] hover:text-[#003E2C] hover:underline transition duration-200">
+                <Link :href="route('register')" class="font-medium text-[#2962B4] hover:text-[#1E4B8F] hover:underline transition duration-200">
                     S'inscrire maintenant
                 </Link>
             </p>

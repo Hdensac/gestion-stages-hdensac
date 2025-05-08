@@ -9,3 +9,4 @@ User::create([
     'password' => bcrypt('password123'), // Remplacez par un mot de passe sécurisé
     'role' => 'admin', // Assurez-vous que le champ "role" existe dans votre table "users"
 ]);
+

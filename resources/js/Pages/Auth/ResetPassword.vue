@@ -79,7 +79,7 @@ const submit = () => {
                             <TextInput
                                 id="email"
                                 type="email"
-                                class="pl-10 block w-full rounded-md border-gray-300 bg-gray-50 shadow-sm focus:border-[#054A31] focus:ring focus:ring-[#054A31] focus:ring-opacity-20"
+                                class="pl-10 block w-full rounded-md border-gray-300 bg-gray-50 shadow-sm focus:border-[#2962B4] focus:ring focus:ring-[#2962B4] focus:ring-opacity-20"
                                 v-model="form.email"
                                 required
                                 readonly
@@ -102,7 +102,7 @@ const submit = () => {
                             <TextInput
                                 id="password"
                                 :type="passwordVisible ? 'text' : 'password'"
-                                class="pl-10 pr-10 block w-full rounded-md border-gray-300 shadow-sm focus:border-[#054A31] focus:ring focus:ring-[#054A31] focus:ring-opacity-20"
+                                class="pl-10 pr-10 block w-full rounded-md border-gray-300 shadow-sm focus:border-[#2962B4] focus:ring focus:ring-[#2962B4] focus:ring-opacity-20"
                                 v-model="form.password"
                                 required
                                 autocomplete="new-password"
@@ -137,7 +137,7 @@ const submit = () => {
                             <TextInput
                                 id="password_confirmation"
                                 :type="confirmPasswordVisible ? 'text' : 'password'"
-                                class="pl-10 pr-10 block w-full rounded-md border-gray-300 shadow-sm focus:border-[#054A31] focus:ring focus:ring-[#054A31] focus:ring-opacity-20"
+                                class="pl-10 pr-10 block w-full rounded-md border-gray-300 shadow-sm focus:border-[#2962B4] focus:ring focus:ring-[#2962B4] focus:ring-opacity-20"
                                 v-model="form.password_confirmation"
                                 required
                                 autocomplete="new-password"
@@ -162,7 +162,7 @@ const submit = () => {
                     <div>
                         <button
                             type="submit"
-                            class="w-full flex justify-center items-center py-3 px-4 border border-transparent rounded-md shadow-sm text-white bg-[#054A31] hover:bg-[#043824] focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-[#054A31] transition-all duration-300 transform hover:scale-105"
+                            class="w-full flex justify-center items-center py-3 px-4 border border-transparent rounded-md shadow-sm text-white bg-[#2962B4] hover:bg-[#1E4B8F] focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-[#2962B4] transition-all duration-300 transform hover:scale-105"
                             :class="{ 'opacity-75 cursor-not-allowed': form.processing || isLoading }"
                             :disabled="form.processing || isLoading"
                         >
@@ -178,7 +178,7 @@ const submit = () => {
 
             <!-- Lien de retour -->
             <div class="mt-6 text-center">
-                <a href="/login" class="font-medium text-[#054A31] hover:text-[#043824] hover:underline transition duration-200 flex items-center justify-center">
+                <a href="/login" class="font-medium text-[#2962B4] hover:text-[#1E4B8F] hover:underline transition duration-200 flex items-center justify-center">
                     <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 mr-1" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18" />
                     </svg>
