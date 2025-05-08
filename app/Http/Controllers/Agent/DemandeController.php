@@ -23,7 +23,6 @@ class DemandeController extends Controller
             if ($request->filled('search')) {
                 $search = trim($request->search);
                 $query->where(function($q) use ($search) {
-                    // Recherche dans la table users (stagiaire)
                     $q->whereHas('stagiaire.user', function($query) use ($search) {
                         $terms = explode(' ', $search);
                         $query->where(function($q) use ($terms) {
@@ -36,7 +35,6 @@ class DemandeController extends Controller
                             }
                         });
                     })
-                    // Recherche dans la table structures
                     ->orWhereHas('structure', function($query) use ($search) {
                         $query->where('libelle', 'like', "%{$search}%");
                     });
@@ -53,8 +51,7 @@ class DemandeController extends Controller
                 $query->where('structure_id', $request->structure_id);
             }
 
-            $demandes = $query->paginate(10)
-                ->withQueryString();
+            $demandes = $query->paginate(10)->withQueryString();
 
             // Récupérer toutes les structures pour le filtre
             $structures = Structure::select('id', 'libelle', 'sigle')
@@ -93,7 +90,7 @@ class DemandeController extends Controller
 
     public function show(DemandeStage $demande)
     {
-        $demande->load(['stagiaire.user', 'structure']);
+        $demande->load(['stagiaire.user', 'structure', 'membres.user']);
         $structures = Structure::select('id', 'libelle', 'sigle')
             ->orderBy('libelle')
             ->get()
@@ -106,7 +103,8 @@ class DemandeController extends Controller
 
         return Inertia::render('Agent/Demandes/Show', [
             'demande' => $demande,
-            'structures' => $structures
+            'structures' => $structures,
+            'membres' => $demande->nature === 'Groupe' ? $demande->membres : []
         ]);
     }
 

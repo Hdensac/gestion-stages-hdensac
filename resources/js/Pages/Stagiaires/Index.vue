@@ -1,64 +1,55 @@
 <template>
   <Admin>
-    <div class="py-12">
-      <div class="mx-auto max-w-7xl sm:px-6 lg:px-8 space-y-6">
-        <!-- En-tête avec titre uniquement (bouton d'ajout supprimé) -->
-        <div class="flex justify-between items-center">
-          <h1 class="text-3xl font-bold text-gray-800">Gestion des Stagiaires</h1>
-          <!-- Bouton d'ajout supprimé -->
+    <div class="py-12 bg-gray-50 min-h-screen">
+      <div class="mx-auto max-w-5xl px-4 sm:px-6 lg:px-8 space-y-8">
+        <!-- Header modernisé -->
+        <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 mb-6">
+          <div class="flex items-center gap-3">
+            <svg class="w-8 h-8 text-indigo-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>
+            <h1 class="text-2xl sm:text-3xl font-extrabold text-gray-800">Gestion des stagiaires</h1>
+            <span class="ml-2 bg-indigo-100 text-indigo-700 text-xs font-semibold px-3 py-1 rounded-full">{{ stagiaires.length }} stagiaires</span>
+          </div>
         </div>
-
-        <!-- Liste des stagiaires avec état vide -->
-        <div class="bg-white rounded-lg shadow-md overflow-hidden">
-          <div class="p-6 border-b border-gray-200">
-            <h2 class="text-xl font-semibold text-gray-800">Liste des stagiaires</h2>
+        <!-- Carte liste stagiaires -->
+        <div class="bg-white shadow-lg rounded-2xl overflow-hidden border border-indigo-100">
+          <div class="px-6 py-4 border-b border-gray-100 flex items-center gap-2">
+            <svg class="w-6 h-6 text-indigo-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>
+            <h2 class="text-lg font-semibold text-indigo-800">Liste des stagiaires</h2>
           </div>
-
           <div v-if="stagiaires.length === 0" class="p-12 text-center">
-            <svg xmlns="http://www.w3.org/2000/svg" width="48" height="48" viewBox="0 0 24 24" fill="none"
-              stroke="currentColor" stroke-width="1" stroke-linecap="round" stroke-linejoin="round"
-              class="mx-auto mb-4 text-gray-400">
-              <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2" />
-              <circle cx="9" cy="7" r="4" />
-              <path d="M23 21v-2a4 4 0 0 0-3-3.87" />
-              <path d="M16 3.13a4 4 0 0 1 0 7.75" />
+            <svg xmlns="http://www.w3.org/2000/svg" width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1" stroke-linecap="round" stroke-linejoin="round" class="mx-auto mb-4 text-gray-300">
+              <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/>
+              <circle cx="9" cy="7" r="4"/>
+              <path d="M23 21v-2a4 4 0 0 0-3-3.87"/>
+              <path d="M16 3.13a4 4 0 0 1 0 7.75"/>
             </svg>
-            <p class="text-gray-500 text-lg">Aucun stagiaire n'a été ajouté</p>
-            <!-- Bouton d'ajout supprimé -->
+            <p class="text-gray-400 text-lg">Aucun stagiaire n'a été ajouté</p>
           </div>
-
           <div v-else class="overflow-x-auto">
-            <table class="w-full">
-              <thead>
-                <tr class="bg-gray-50 text-left">
-                  <th class="px-6 py-3 border-b border-gray-200 font-medium text-gray-700">Nom</th>
-                  <th class="px-6 py-3 border-b border-gray-200 font-medium text-gray-700">Prénom</th>
-                  <th class="px-6 py-3 border-b border-gray-200 font-medium text-gray-700">Email</th>
-                  <th class="px-6 py-3 border-b border-gray-200 font-medium text-gray-700">Niveau</th>
-                  <th class="px-6 py-3 border-b border-gray-200 font-medium text-gray-700">Université</th>
-                  <th class="px-6 py-3 border-b border-gray-200 font-medium text-gray-700">Filière</th>
-                  <th class="px-6 py-3 border-b border-gray-200 font-medium text-gray-700 text-center">Actions</th>
+            <table class="min-w-full divide-y divide-gray-200">
+              <thead class="bg-gray-50">
+                <tr>
+                  <th class="px-6 py-3 text-left text-xs font-bold text-gray-500 uppercase tracking-wider">Nom</th>
+                  <th class="px-6 py-3 text-left text-xs font-bold text-gray-500 uppercase tracking-wider">Prénom</th>
+                  <th class="px-6 py-3 text-left text-xs font-bold text-gray-500 uppercase tracking-wider">Email</th>
+                  <th class="px-6 py-3 text-left text-xs font-bold text-gray-500 uppercase tracking-wider">Niveau</th>
+                  <th class="px-6 py-3 text-left text-xs font-bold text-gray-500 uppercase tracking-wider">Université</th>
+                  <th class="px-6 py-3 text-left text-xs font-bold text-gray-500 uppercase tracking-wider">Filière</th>
+                  <th class="px-6 py-3 text-center text-xs font-bold text-gray-500 uppercase tracking-wider">Actions</th>
                 </tr>
               </thead>
-              <tbody>
-                <tr v-for="stagiaire in stagiaires" :key="stagiaire.id_stagiaire"
-                  class="hover:bg-gray-50 transition-colors">
-                  <td class="px-6 py-4 border-b border-gray-200">{{ stagiaire.user?.nom ?? '-' }}</td>
-                  <td class="px-6 py-4 border-b border-gray-200">{{ stagiaire.user?.prenom ?? '-' }}</td>
-                  <td class="px-6 py-4 border-b border-gray-200">{{ stagiaire.user?.email ?? '-' }}</td>
-                  <td class="px-6 py-4 border-b border-gray-200">{{ stagiaire.niveau_etude }}</td>
-                  <td class="px-6 py-4 border-b border-gray-200">{{ stagiaire.universite }}</td>
-                  <td class="px-6 py-4 border-b border-gray-200">{{ stagiaire.filiere }}</td>
-                  <td class="px-6 py-4 border-b border-gray-200">
-                    <div class="flex justify-center space-x-3">
-                      <!-- Remplacer les boutons d'édition et de suppression par un bouton "Voir" -->
-                      <button @click="viewStagiaire(stagiaire)"
-                        class="text-blue-600 hover:text-blue-800 font-medium flex items-center gap-1">
-                        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none"
-                          stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                          <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z" />
-                          <circle cx="12" cy="12" r="3" />
-                        </svg>
+              <tbody class="bg-white divide-y divide-gray-100">
+                <tr v-for="stagiaire in stagiaires" :key="stagiaire.id_stagiaire" class="hover:bg-indigo-50 transition">
+                  <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">{{ stagiaire.user?.nom ?? '-' }}</td>
+                  <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">{{ stagiaire.user?.prenom ?? '-' }}</td>
+                  <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-600">{{ stagiaire.user?.email ?? '-' }}</td>
+                  <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">{{ stagiaire.niveau_etude }}</td>
+                  <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">{{ stagiaire.universite }}</td>
+                  <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">{{ stagiaire.filiere }}</td>
+                  <td class="px-6 py-4 whitespace-nowrap text-center">
+                    <div class="flex justify-center gap-2">
+                      <button @click="viewStagiaire(stagiaire)" class="text-indigo-600 hover:text-indigo-900 font-medium flex items-center gap-1" title="Voir">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="w-5 h-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>
                         Voir
                       </button>
                     </div>

@@ -16,14 +16,19 @@ class Structure extends Model
         'libelle',
         'responsable_id',
         'description',
+        'parent_id',
+        'type_structure',
+        'niveau',
+        'ordre',
+        'active',
     ];
 
     /**
-     * Relation avec le responsable (uniquement les utilisateurs ayant le rôle 'Agent').
+     * Relation avec le responsable (agent).
      */
     public function responsable(): BelongsTo
     {
-        return $this->belongsTo(User::class, 'responsable_id')->where('role', 'Agent');
+        return $this->belongsTo(Agent::class, 'responsable_id');
     }
 
     /**
@@ -48,6 +53,22 @@ class Structure extends Model
     public function stagiaires(): HasMany
     {
         return $this->hasMany(Stagiaire::class);
+    }
+
+    /**
+     * Structure parente (relation hiérarchique).
+     */
+    public function parent(): BelongsTo
+    {
+        return $this->belongsTo(Structure::class, 'parent_id');
+    }
+
+    /**
+     * Sous-structures (enfants dans l'organigramme).
+     */
+    public function children(): HasMany
+    {
+        return $this->hasMany(Structure::class, 'parent_id');
     }
 
     // Définir d'autres relations Eloquent ici ultérieurement

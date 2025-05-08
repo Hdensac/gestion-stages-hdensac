@@ -1,7 +1,7 @@
 <script setup>
 import { Head, router, Link } from '@inertiajs/vue3';
 import Stagiaire from '@/Layouts/Stagiaire.vue';
-import { ref, onMounted } from 'vue';
+import { ref, onMounted, computed } from 'vue';
 
 const props = defineProps({
   demandes: Object,
@@ -9,7 +9,7 @@ const props = defineProps({
   toast: Object,
 });
 
-// Système de toast
+// Système de toast amélioré
 const toasts = ref([]);
 let toastCounter = 0;
 
@@ -49,6 +49,7 @@ onMounted(() => {
 
 // Référence pour le code de suivi à rechercher
 const codeRecherche = ref('');
+const isSearchExpanded = ref(false);
 
 // Fonction pour rechercher une demande par code de suivi
 const rechercherParCode = () => {
@@ -72,27 +73,26 @@ const formatDate = (dateString) => {
 const getStatusColor = (statut) => {
   switch (statut) {
     case 'En attente':
-      return 'text-yellow-600 bg-yellow-100';
+      return 'bg-amber-100 text-amber-800 border-amber-300';
+    case 'En cours':
+      return 'bg-blue-100 text-blue-800 border-blue-300';
     case 'Acceptée':
-      return 'text-green-600 bg-green-100';
+      return 'bg-emerald-100 text-emerald-800 border-emerald-300';
     case 'Refusée':
-      return 'text-red-600 bg-red-100';
+      return 'bg-rose-100 text-rose-800 border-rose-300';
     default:
-      return 'text-gray-600 bg-gray-100';
+      return 'bg-slate-100 text-slate-800 border-slate-300';
   }
 };
 
 // Fonction pour annuler une demande
 const annulerDemande = (id) => {
-  // On n'utilise plus la confirmation native du navigateur
-  // Au lieu de cela, on ajoute un toast de confirmation avec des boutons
   addToast({
     type: 'warning',
     message: 'Êtes-vous sûr de vouloir annuler cette demande ?',
-    duration: 10000, // Durée plus longue pour permettre à l'utilisateur de lire et réagir
-    actions: true, // Indique que ce toast a des actions
+    duration: 10000,
+    actions: true,
     onConfirm: () => {
-      // Si l'utilisateur confirme, on procède à l'annulation
       router.delete(route('mes.demandes.annuler', id), {
         preserveScroll: true,
         onSuccess: () => {
@@ -112,16 +112,112 @@ const annulerDemande = (id) => {
 
 // Fonction pour voir les détails d'une demande
 const voirDetails = (demandeId) => {
-  // Rediriger vers la page de détails avec l'ID de la demande
   router.visit(route('mes.demandes.show', demandeId));
 };
+
+// Animation pour les cartes
+const animateCSS = (element, animation, prefix = 'animate__') =>
+  new Promise((resolve) => {
+    const animationName = `${prefix}${animation}`;
+    const node = document.querySelector(element);
+    
+    node.classList.add(`${prefix}animated`, animationName);
+
+    function handleAnimationEnd(event) {
+      event.stopPropagation();
+      node.classList.remove(`${prefix}animated`, animationName);
+      resolve('Animation ended');
+    }
+
+    node.addEventListener('animationend', handleAnimationEnd, {once: true});
+  });
+
+// Vérifier si des demandes sont disponibles
+const hasDemandes = computed(() => {
+  return props.demandes && props.demandes.data && props.demandes.data.length > 0;
+});
+
+// Filtres pour les demandes
+const statusFilter = ref('all');
+const filteredDemandes = computed(() => {
+  if (statusFilter.value === 'all') {
+    return props.demandes?.data || [];
+  }
+  return (props.demandes?.data || []).filter(demande => demande.statut === statusFilter.value);
+});
+
+// Mode affichage (table ou carte)
+const viewMode = ref('table'); // 'table' ou 'card'
 </script>
 
 <template>
   <Head title="Mes Demandes de Stage" />
   <Stagiaire>
     <template #header>
-      <h2 class="text-2xl font-semibold text-gray-800">Mes Demandes de Stage</h2>
+      <div class="flex justify-between items-center">
+        <h2 class="text-2xl font-semibold text-slate-800">Mes Demandes de Stage</h2>
+        <div class="flex items-center gap-3">
+          <!-- Toggle view mode -->
+          <div class="bg-white rounded-lg shadow-sm border border-slate-200 p-1 inline-flex">
+            <button 
+              @click="viewMode = 'table'" 
+              class="p-2 rounded-md transition-colors"
+              :class="viewMode === 'table' ? 'bg-indigo-100 text-indigo-700' : 'text-slate-600 hover:bg-slate-100'"
+              title="Vue tableau"
+            >
+              <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 10h18M3 14h18m-9-4v8m-7 0h14a2 2 0 002-2V8a2 2 0 00-2-2H5a2 2 0 00-2 2v8a2 2 0 002 2z" />
+              </svg>
+            </button>
+            <button 
+              @click="viewMode = 'card'" 
+              class="p-2 rounded-md transition-colors"
+              :class="viewMode === 'card' ? 'bg-indigo-100 text-indigo-700' : 'text-slate-600 hover:bg-slate-100'"
+              title="Vue cartes"
+            >
+              <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2H6a2 2 0 01-2-2V6zM14 6a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2V6zM4 16a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2H6a2 2 0 01-2-2v-2zM14 16a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2v-2z" />
+              </svg>
+            </button>
+          </div>
+          
+          <!-- Recherche -->
+          <div class="relative">
+            <div 
+              class="bg-white rounded-lg shadow-sm border border-slate-200 flex items-center overflow-hidden"
+              :class="{ 'w-64': isSearchExpanded, 'w-10': !isSearchExpanded }"
+            >
+              <input 
+                v-show="isSearchExpanded"
+                type="text" 
+                v-model="codeRecherche"
+                placeholder="Code de suivi..." 
+                class="w-full py-2 px-3 border-none focus:ring-0 text-sm text-slate-800"
+                @keyup.enter="rechercherParCode"
+              />
+              <button 
+                @click="isSearchExpanded = !isSearchExpanded; $nextTick(() => isSearchExpanded && $refs.searchInput?.focus())"
+                class="p-2 text-slate-500 hover:text-slate-800 focus:outline-none"
+              >
+                <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
+                </svg>
+              </button>
+            </div>
+          </div>
+          
+          <!-- Nouveau stage -->
+          <button 
+            @click="router.visit(route('dashboard'))" 
+            class="inline-flex items-center px-4 py-2 bg-indigo-600 border border-transparent rounded-md font-semibold text-xs text-white uppercase tracking-widest hover:bg-indigo-700 active:bg-indigo-800 focus:outline-none focus:border-indigo-800 focus:ring ring-indigo-300 disabled:opacity-25 transition ease-in-out duration-150 shadow-sm"
+          >
+            <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6v6m0 0v6m0-6h6m-6 0H6" />
+            </svg>
+            Nouvelle demande
+          </button>
+        </div>
+      </div>
     </template>
 
     <!-- Toast notifications -->
@@ -131,12 +227,12 @@ const voirDetails = (demandeId) => {
           v-for="toast in toasts" 
           :key="toast.id" 
           :class="{
-            'bg-green-50 border-green-500 text-green-800': toast.type === 'success',
-            'bg-red-50 border-red-500 text-red-800': toast.type === 'error',
-            'bg-blue-50 border-blue-500 text-blue-800': toast.type === 'info',
-            'bg-yellow-50 border-yellow-500 text-yellow-800': toast.type === 'warning'
+            'bg-emerald-50 border-emerald-500 text-emerald-800': toast.type === 'success',
+            'bg-rose-50 border-rose-500 text-rose-800': toast.type === 'error',
+            'bg-sky-50 border-sky-500 text-sky-800': toast.type === 'info',
+            'bg-amber-50 border-amber-500 text-amber-800': toast.type === 'warning'
           }"
-          class="p-4 border-l-4 shadow-lg rounded flex flex-col"
+          class="p-4 border-l-4 shadow-lg rounded-md flex flex-col backdrop-blur-md bg-opacity-95"
         >
           <div class="flex justify-between items-center">
             <div class="flex items-center">
@@ -172,7 +268,7 @@ const voirDetails = (demandeId) => {
               </svg>
               <span class="font-medium">{{ toast.message }}</span>
             </div>
-            <button @click="removeToast(toast.id)" class="text-gray-500 hover:text-gray-800 focus:outline-none">
+            <button @click="removeToast(toast.id)" class="text-slate-500 hover:text-slate-800 focus:outline-none">
               <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
               </svg>
@@ -183,13 +279,13 @@ const voirDetails = (demandeId) => {
           <div v-if="toast.type === 'warning'" class="mt-3 flex justify-end gap-2">
             <button
               @click="removeToast(toast.id)"
-              class="px-3 py-1 bg-gray-200 text-gray-800 rounded hover:bg-gray-300 transition-colors"
+              class="px-3 py-1 bg-white border border-slate-300 text-slate-700 rounded-md hover:bg-slate-50 transition-colors shadow-sm"
             >
               Annuler
             </button>
             <button
               @click="() => { toast.onConfirm(); removeToast(toast.id); }"
-              class="px-3 py-1 bg-red-500 text-white rounded hover:bg-red-600 transition-colors"
+              class="px-3 py-1 bg-rose-500 text-white rounded-md hover:bg-rose-600 transition-colors shadow-sm"
             >
               Confirmer
             </button>
@@ -198,135 +294,233 @@ const voirDetails = (demandeId) => {
       </TransitionGroup>
     </div>
 
-    <div class="py-12">
+    <div class="py-6">
       <div class="mx-auto max-w-full px-4 sm:px-6 lg:px-8">
-        <div class="overflow-hidden bg-white shadow-sm sm:rounded-lg">
-          <div class="p-8">
-            <h1 class="mb-8 text-3xl font-bold">Historique de mes demandes</h1>
-            
-            <!-- Formulaire de recherche par code de suivi -->
-            <!-- <div class="mb-8 bg-gray-50 p-6 rounded-lg border border-gray-200">
-              <h2 class="text-xl font-semibold text-gray-800 mb-4">Rechercher une demande par code de suivi</h2>
-              <div class="flex flex-wrap gap-4">
-                <div class="flex-grow">
-                  <input 
-                    type="text" 
-                    v-model="codeRecherche"
-                    placeholder="Entrez le code de suivi (ex: AB12CD34)" 
-                    class="w-full p-3 border border-gray-300 rounded-md focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500"
-                  />
-                  <p v-if="errors && errors.code_suivi" class="mt-2 text-sm text-red-600">{{ errors.code_suivi }}</p>
+        <div class="overflow-hidden bg-white shadow-sm sm:rounded-lg border border-slate-200">
+          <div class="p-6">
+            <div class="flex items-center justify-between mb-6">
+              <h1 class="text-2xl font-bold text-slate-800">Historique de mes demandes</h1>
+              
+              <!-- Filtres de statut -->
+              <div class="flex items-center gap-2">
+                <span class="text-sm text-slate-500">Filtrer par:</span>
+                <div class="inline-flex rounded-md shadow-sm">
+                  <button 
+                    @click="statusFilter = 'all'" 
+                    class="py-1.5 px-3 text-xs font-medium rounded-l-md transition-colors border"
+                    :class="statusFilter === 'all' ? 'bg-indigo-100 text-indigo-700 border-indigo-300' : 'bg-white text-slate-700 border-slate-300 hover:bg-slate-50'"
+                  >
+                    Tous
+                  </button>
+                  <button 
+                    @click="statusFilter = 'En attente'" 
+                    class="py-1.5 px-3 text-xs font-medium transition-colors border-t border-b border-r"
+                    :class="statusFilter === 'En attente' ? 'bg-amber-100 text-amber-700 border-amber-300' : 'bg-white text-slate-700 border-slate-300 hover:bg-slate-50'"
+                  >
+                    En attente
+                  </button>
+                  <button 
+                    @click="statusFilter = 'En cours'" 
+                    class="py-1.5 px-3 text-xs font-medium transition-colors border-t border-b border-r"
+                    :class="statusFilter === 'En cours' ? 'bg-blue-100 text-blue-700 border-blue-300' : 'bg-white text-slate-700 border-slate-300 hover:bg-slate-50'"
+                  >
+                    En cours
+                  </button>
+                  <button 
+                    @click="statusFilter = 'Acceptée'" 
+                    class="py-1.5 px-3 text-xs font-medium transition-colors border-t border-b border-r"
+                    :class="statusFilter === 'Acceptée' ? 'bg-emerald-100 text-emerald-700 border-emerald-300' : 'bg-white text-slate-700 border-slate-300 hover:bg-slate-50'"
+                  >
+                    Acceptée
+                  </button>
+                  <button 
+                    @click="statusFilter = 'Refusée'" 
+                    class="py-1.5 px-3 text-xs font-medium rounded-r-md transition-colors border-t border-b border-r"
+                    :class="statusFilter === 'Refusée' ? 'bg-rose-100 text-rose-700 border-rose-300' : 'bg-white text-slate-700 border-slate-300 hover:bg-slate-50'"
+                  >
+                    Refusée
+                  </button>
                 </div>
-                <button 
-                  @click="rechercherParCode" 
-                  class="px-6 py-3 bg-indigo-600 text-white rounded-md hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2 transition-colors duration-200 flex items-center gap-2"
-                >
-                  <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
-                  </svg>
-                  Rechercher
-                </button>
-              </div>
-              <p class="mt-3 text-sm text-gray-600">Vous pouvez retrouver une demande spécifique en saisissant son code de suivi unique.</p>
-            </div> -->
-            
-            <div v-if="demandes && demandes.data.length > 0">
-              <div class="overflow-x-auto">
-                <table class="min-w-full bg-white border border-gray-200">
-                  <thead class="bg-gray-100">
-                    <tr>
-                      <th class="p-4 text-sm font-medium tracking-wider text-left text-gray-500 uppercase border-b">Code de suivi</th>
-                      <th class="p-4 text-sm font-medium tracking-wider text-left text-gray-500 uppercase border-b">Structure</th>
-                      <th class="p-4 text-sm font-medium tracking-wider text-left text-gray-500 uppercase border-b">Type</th>
-                      <th class="p-4 text-sm font-medium tracking-wider text-left text-gray-500 uppercase border-b">Nature</th>
-                      <th class="p-4 text-sm font-medium tracking-wider text-left text-gray-500 uppercase border-b">Période</th>
-                      <th class="p-4 text-sm font-medium tracking-wider text-left text-gray-500 uppercase border-b">Statut</th>
-                      <th class="p-4 text-sm font-medium tracking-wider text-left text-gray-500 uppercase border-b">Date de soumission</th>
-                      <th class="p-4 text-sm font-medium tracking-wider text-left text-gray-500 uppercase border-b">Actions</th>
-                    </tr>
-                  </thead>
-                  <tbody class="divide-y divide-gray-200">
-                    <tr v-for="demande in demandes.data" :key="demande.id" class="hover:bg-gray-50">
-                      <td class="p-4 text-base font-medium text-indigo-600">{{ demande.code_suivi }}</td>
-                      <td class="p-4 text-base text-gray-900">{{ demande.structure?.libelle || '-' }}</td>
-                      <td class="p-4 text-base text-gray-900">{{ demande.type }}</td>
-                      <td class="p-4 text-base text-gray-900">{{ demande.nature }}</td>
-                      <td class="p-4 text-base text-gray-900">
-                        {{ formatDate(demande.date_debut) }} - {{ formatDate(demande.date_fin) }}
-                      </td>
-                      <td class="p-4 text-base">
-                        <span class="px-3 py-1.5 text-sm font-semibold rounded-full" :class="getStatusColor(demande.statut)">
-                          {{ demande.statut }}
-                        </span>
-                      </td>
-                      <td class="p-4 text-base text-gray-900">{{ formatDate(demande.date_soumission) }}</td>
-                      <td class="p-4">
-                        <div class="flex space-x-3">
-                          <button
-                            class="p-3 bg-indigo-600 text-white rounded-md shadow hover:bg-indigo-700 transition duration-300 flex items-center justify-center"
-                            @click="voirDetails(demande.id)"
-                            title="Voir les détails"
-                          >
-                            <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
-                              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z" />
-                            </svg>
-                          </button>
-                          <button 
-                            v-if="demande.statut === 'En attente'"
-                            class="p-3 bg-white border border-red-600 text-red-600 rounded-md shadow hover:bg-red-50 transition duration-300 flex items-center justify-center"
-                            @click="annulerDemande(demande.id)"
-                            title="Annuler la demande"
-                          >
-                            <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
-                            </svg>
-                          </button>
-                        </div>
-                      </td>
-                    </tr>
-                  </tbody>
-                </table>
               </div>
             </div>
             
-            <div v-else class="p-8 text-center bg-gray-50 rounded-lg">
-              <p class="text-xl text-gray-600">Vous n'avez pas encore soumis de demande de stage.</p>
+            <!-- Vue tableau -->
+            <div v-if="viewMode === 'table' && hasDemandes" class="overflow-x-auto">
+              <table class="min-w-full bg-white border-collapse">
+                <thead>
+                  <tr class="border-b border-slate-200 bg-slate-50">
+                    <th class="p-3 text-xs font-semibold tracking-wider text-left text-slate-600 uppercase">Code de suivi</th>
+                    <th class="p-3 text-xs font-semibold tracking-wider text-left text-slate-600 uppercase">Structure</th>
+                    <th class="p-3 text-xs font-semibold tracking-wider text-left text-slate-600 uppercase">Nature</th>
+                    <th class="p-3 text-xs font-semibold tracking-wider text-left text-slate-600 uppercase">Période</th>
+                    <th class="p-3 text-xs font-semibold tracking-wider text-left text-slate-600 uppercase">Statut</th>
+                    <th class="p-3 text-xs font-semibold tracking-wider text-left text-slate-600 uppercase">Soumis le</th>
+                    <th class="p-3 text-xs font-semibold tracking-wider text-left text-slate-600 uppercase">Actions</th>
+                  </tr>
+                </thead>
+                <tbody class="divide-y divide-slate-100">
+                  <tr v-for="demande in filteredDemandes" :key="demande.id" class="hover:bg-slate-50 transition-colors">
+                    <td class="p-3 text-sm font-medium text-indigo-600">{{ demande.code_suivi }}</td>
+                    <td class="p-3 text-sm text-slate-700">{{ demande.structure?.libelle || '-' }}</td>
+                    <td class="p-3 text-sm text-slate-700">{{ demande.nature }}</td>
+                    <td class="p-3 text-sm text-slate-700">
+                      {{ formatDate(demande.date_debut) }} - {{ formatDate(demande.date_fin) }}
+                    </td>
+                    <td class="p-3 text-sm">
+                      <span 
+                        class="px-2.5 py-1 text-xs font-medium rounded-full border" 
+                        :class="getStatusColor(demande.statut)"
+                      >
+                        {{ demande.statut }}
+                      </span>
+                    </td>
+                    <td class="p-3 text-sm text-slate-700">{{ formatDate(demande.date_soumission) }}</td>
+                    <td class="p-3">
+                      <div class="flex space-x-2">
+                        <button
+                          class="p-2 bg-indigo-600 text-white rounded-md hover:bg-indigo-700 transition-colors"
+                          @click="voirDetails(demande.id)"
+                          title="Voir les détails"
+                        >
+                          <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z" />
+                          </svg>
+                        </button>
+                        <button 
+                          v-if="demande.statut === 'En attente'"
+                          class="p-2 bg-white border border-rose-500 text-rose-500 rounded-md hover:bg-rose-50 transition-colors"
+                          @click="annulerDemande(demande.id)"
+                          title="Annuler la demande"
+                        >
+                          <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
+                          </svg>
+                        </button>
+                      </div>
+                    </td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+            
+            <!-- Vue cartes -->
+            <div v-if="viewMode === 'card' && hasDemandes" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+              <div 
+                v-for="demande in filteredDemandes" 
+                :key="demande.id"
+                class="bg-white rounded-lg border border-slate-200 shadow-sm hover:shadow-md transition-shadow overflow-hidden"
+              >
+                <div class="border-b border-slate-100 p-4">
+                  <div class="flex justify-between items-start">
+                    <div>
+                      <h3 class="font-semibold text-indigo-600">{{ demande.code_suivi }}</h3>
+                      <p class="text-slate-700 font-medium mt-1">{{ demande.structure?.libelle || '-' }}</p>
+                    </div>
+                    <span 
+                      class="px-2.5 py-1 text-xs font-medium rounded-full border" 
+                      :class="getStatusColor(demande.statut)"
+                    >
+                      {{ demande.statut }}
+                    </span>
+                  </div>
+                </div>
+                <div class="p-4 space-y-3">
+                  <div class="flex items-start gap-2">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-slate-500 flex-shrink-0 mt-0.5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2" />
+                    </svg>
+                    <div>
+                      <span class="text-xs font-medium text-slate-500">Nature</span>
+                      <p class="text-sm text-slate-700">{{ demande.nature }}</p>
+                    </div>
+                  </div>
+                  <div class="flex items-start gap-2">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-slate-500 flex-shrink-0 mt-0.5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
+                    </svg>
+                    <div>
+                      <span class="text-xs font-medium text-slate-500">Période</span>
+                      <p class="text-sm text-slate-700">{{ formatDate(demande.date_debut) }} - {{ formatDate(demande.date_fin) }}</p>
+                    </div>
+                  </div>
+                  <div class="flex items-start gap-2">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-slate-500 flex-shrink-0 mt-0.5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
+                    </svg>
+                    <div>
+                      <span class="text-xs font-medium text-slate-500">Soumis le</span>
+                      <p class="text-sm text-slate-700">{{ formatDate(demande.date_soumission) }}</p>
+                    </div>
+                  </div>
+                </div>
+                <div class="border-t border-slate-100 p-4 flex justify-end gap-2">
+                  <button
+                    class="px-3 py-1.5 bg-indigo-600 text-white text-sm rounded-md hover:bg-indigo-700 transition-colors"
+                    @click="voirDetails(demande.id)"
+                  >
+                    Voir détails
+                  </button>
+                  <button 
+                    v-if="demande.statut === 'En attente'"
+                    class="px-3 py-1.5 bg-white border border-rose-500 text-rose-500 text-sm rounded-md hover:bg-rose-50 transition-colors"
+                    @click="annulerDemande(demande.id)"
+                  >
+                    Annuler
+                  </button>
+                </div>
+              </div>
+            </div>
+            
+            <!-- Aucune demande -->
+            <div v-if="!hasDemandes" class="py-12 text-center bg-slate-50 rounded-lg border border-slate-200">
+              <div class="inline-flex justify-center items-center p-4 bg-slate-100 rounded-full mb-4">
+                <svg xmlns="http://www.w3.org/2000/svg" class="h-10 w-10 text-slate-500" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
+                </svg>
+              </div>
+              <h3 class="text-xl font-semibold text-slate-700 mb-2">Aucune demande de stage</h3>
+              <p class="text-slate-500 mb-6">Vous n'avez pas encore soumis de demande de stage.</p>
               <button 
                 @click="router.visit(route('dashboard'))" 
-                class="px-5 py-3 mt-6 text-lg text-white bg-blue-600 rounded-lg hover:bg-blue-700"
+                class="px-5 py-2 text-sm font-medium text-white bg-indigo-600 rounded-md hover:bg-indigo-700 transition-colors shadow-sm"
               >
+                <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 inline-block mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6v6m0 0v6m0-6h6m-6 0H6" />
+                </svg>
                 Soumettre une demande
               </button>
             </div>
             
             <!-- Pagination -->
-            <div v-if="demandes && demandes.links && demandes.links.length > 3" class="mt-6 px-4 py-3 flex items-center justify-between border-t border-gray-200 bg-white sm:px-6">
+            <div v-if="demandes && demandes.links && demandes.links.length > 3" class="mt-8 px-4 py-3 flex items-center justify-between border-t border-slate-200 bg-white sm:px-6">
               <!-- Version desktop de la pagination -->
               <div class="hidden sm:flex-1 sm:flex sm:items-center sm:justify-between">
                 <div>
-                  <p class="text-sm text-gray-700">
+                  <p class="text-sm text-slate-700">
                     Affichage de <span class="font-medium">{{ demandes.from }}</span> à 
                     <span class="font-medium">{{ demandes.to }}</span> sur 
                     <span class="font-medium">{{ demandes.total }}</span> demandes
                   </p>
                 </div>
                 <div>
-                  <nav class="relative z-0 inline-flex rounded-md shadow-sm -space-x-px" aria-label="Pagination">
+                  <nav class="relative z-0 inline-flex shadow-sm -space-x-px rounded-md overflow-hidden" aria-label="Pagination">
                     <template v-for="(link, index) in demandes.links" :key="index">
-                      <div v-if="!link.url" 
-                        class="relative inline-flex items-center px-4 py-2 border border-gray-300 bg-gray-100 text-sm font-medium text-gray-500 cursor-not-allowed"
-                        v-text="link.label"
+                      <div 
+                        v-if="!link.url" 
+                        class="relative inline-flex items-center px-3 py-2 border border-slate-300 bg-slate-50 text-sm font-medium text-slate-400 cursor-not-allowed"
+                        v-html="link.label"
                       />
-                      <Link v-else
+                      <Link 
+                        v-else
                         :href="link.url" 
-                        class="relative inline-flex items-center px-4 py-2 border text-sm font-medium"
+                        class="relative inline-flex items-center px-3 py-2 border text-sm font-medium"
                         :class="[
                           link.active 
                             ? 'z-10 bg-indigo-50 border-indigo-500 text-indigo-600'
-                            : 'bg-white border-gray-300 text-gray-500 hover:bg-gray-50'
+                            : 'bg-white border-slate-300 text-slate-500 hover:bg-slate-50'
                         ]"
-                        v-text="link.label"
+                        v-html="link.label"
                       />
                     </template>
                   </nav>
@@ -338,25 +532,37 @@ const voirDetails = (demandeId) => {
                 <template v-if="demandes.prev_page_url">
                 <Link 
                   :href="demandes.prev_page_url" 
-                    class="relative inline-flex items-center px-4 py-2 text-sm font-medium rounded-md text-gray-700 bg-white hover:bg-gray-50"
+                  class="relative inline-flex items-center px-4 py-2 text-sm font-medium rounded-md text-slate-700 bg-white border border-slate-300 hover:bg-slate-50"
                 >
+                  <svg class="h-4 w-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"></path>
+                  </svg>
                   Précédent
                 </Link>
                 </template>
-                <div v-else class="relative inline-flex items-center px-4 py-2 text-sm font-medium rounded-md text-gray-400 bg-gray-100 cursor-not-allowed">
+                <div v-else class="relative inline-flex items-center px-4 py-2 text-sm font-medium rounded-md text-slate-400 bg-slate-50 border border-slate-300 cursor-not-allowed">
+                  <svg class="h-4 w-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"></path>
+                  </svg>
                   Précédent
                 </div>
                 
                 <template v-if="demandes.next_page_url">
                 <Link 
                   :href="demandes.next_page_url" 
-                    class="ml-3 relative inline-flex items-center px-4 py-2 text-sm font-medium rounded-md text-gray-700 bg-white hover:bg-gray-50"
+                  class="ml-3 relative inline-flex items-center px-4 py-2 text-sm font-medium rounded-md text-slate-700 bg-white border border-slate-300 hover:bg-slate-50"
                 >
                   Suivant
+                  <svg class="h-4 w-4 ml-2" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"></path>
+                  </svg>
                 </Link>
                 </template>
-                <div v-else class="ml-3 relative inline-flex items-center px-4 py-2 text-sm font-medium rounded-md text-gray-400 bg-gray-100 cursor-not-allowed">
+                <div v-else class="ml-3 relative inline-flex items-center px-4 py-2 text-sm font-medium rounded-md text-slate-400 bg-slate-50 border border-slate-300 cursor-not-allowed">
                   Suivant
+                  <svg class="h-4 w-4 ml-2" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"></path>
+                  </svg>
                 </div>
               </div>
             </div>
@@ -368,45 +574,67 @@ const voirDetails = (demandeId) => {
 </template>
 
 <style scoped>
-/* Styles supplémentaires pour améliorer la lisibilité */
-table {
-  width: 100%;
-  border-collapse: separate;
-  border-spacing: 0;
-  box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
-}
-
-th {
-  font-weight: 600;
-  letter-spacing: 0.05em;
-}
-
-td, th {
-  white-space: nowrap;
-}
-
-@media (max-width: 768px) {
-  .overflow-x-auto {
-    padding-bottom: 16px;
-  }
-  
-  td, th {
-    padding: 12px 8px;
-    font-size: 14px;
-  }
-}
-
-/* Animations pour les toasts */
+/* Animation pour les toasts */
 .toast-enter-active,
 .toast-leave-active {
-  transition: all 0.5s ease;
+  transition: all 0.4s cubic-bezier(0.16, 1, 0.3, 1);
 }
+
 .toast-enter-from {
-  opacity: 0;
   transform: translateX(30px);
+  opacity: 0;
 }
+
 .toast-leave-to {
-  opacity: 0;
   transform: translateX(30px);
+  opacity: 0;
+}
+
+/* Effet de hover sur les cartes */
+.card {
+  transition: all 0.3s ease;
+}
+
+.card:hover {
+  transform: translateY(-2px);
+}
+
+/* Animations pour les changements de statut */
+@keyframes pulse {
+  0% {
+    transform: scale(1);
+  }
+  50% {
+    transform: scale(1.05);
+  }
+  100% {
+    transform: scale(1);
+  }
+}
+
+.pulse {
+  animation: pulse 0.6s ease-in-out;
+}
+
+/* Masquer les contours au focus pour le navigateur par défaut mais les garder accessibles */
+:focus:not(:focus-visible) {
+  outline: none;
+}
+
+:focus-visible {
+  outline: 2px solid rgb(99, 102, 241);
+  outline-offset: 2px;
+}
+
+/* Media queries pour la réactivité */
+@media (max-width: 768px) {
+  .overflow-x-auto {
+    margin: 0 -1rem;
+    width: calc(100% + 2rem);
+  }
+  
+  table {
+    width: 100%;
+  }
 }
 </style>

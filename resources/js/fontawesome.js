@@ -11,7 +11,9 @@ import {
     faChartBar,
     faComments,
     faCog,
-    faExclamationCircle
+    faExclamationCircle,
+    faDownload, // Ajout de l'icône download
+    faFileSignature // ajout de l'icône file-signature
 } from '@fortawesome/free-solid-svg-icons';
 
 // Add icons to the library
@@ -25,7 +27,9 @@ library.add(
     faChartBar,
     faComments,
     faCog,
-    faExclamationCircle
+    faExclamationCircle,
+    faDownload, // Ajout de l'icône download à la librairie
+    faFileSignature // ajout à la librairie
 );
 
-export { FontAwesomeIcon }; 
+export { FontAwesomeIcon };

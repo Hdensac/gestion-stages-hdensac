@@ -20,6 +20,12 @@
                             <NavLink :href="route('agent.rs.demandes')" :active="route().current('agent.rs.demandes')">
                                 Demandes
                             </NavLink>
+                            <NavLink :href="route('agent.rs.agents.index')" :active="route().current('agent.rs.agents.index')">
+                                Agents
+                            </NavLink>
+                            <NavLink :href="route('agent.rs.organigramme.index')" :active="route().current('agent.rs.organigramme.index')">
+                                Organigramme
+                            </NavLink>
                         </div>
                     </div>
 
@@ -85,6 +91,12 @@
                     </ResponsiveNavLink>
                     <ResponsiveNavLink :href="route('agent.rs.demandes')" :active="route().current('agent.rs.demandes')">
                         Demandes
+                    </ResponsiveNavLink>
+                    <ResponsiveNavLink :href="route('agent.rs.agents.index')" :active="route().current('agent.rs.agents.index')">
+                        Agents
+                    </ResponsiveNavLink>
+                    <ResponsiveNavLink :href="route('agent.rs.organigramme.index')" :active="route().current('agent.rs.organigramme.index')">
+                        Organigramme
                     </ResponsiveNavLink>
                 </div>
 

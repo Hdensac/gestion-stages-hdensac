@@ -18,11 +18,12 @@ class AgentController extends Controller
             return redirect()->route('dashboard')->with('error', 'Accès non autorisé.');
         }
 
+        // Retourne un tableau simple d'agents (pas de pagination)
         $agents = Agent::with('user')->get();
 
         return Inertia::render('Agents/Index', [
             'agents' => $agents,
-            'roles' => [
+'roles' => [
                 'DPAF' => Agent::ROLE_DPAF,
                 'MS'   => Agent::ROLE_MS,
                 'RS'   => Agent::ROLE_RS,

@@ -7,7 +7,8 @@ import AdminToast from '@/Components/AdminToast.vue';
 
 const props = defineProps({
     demande: Object,
-    structures: Array
+    structures: Array,
+    membres: Array
 });
 
 const toast = ref(null);
@@ -179,6 +180,16 @@ const submit = (action) => {
                                         <span class="text-sm text-gray-500">Niveau d'étude</span>
                                         <span class="font-medium">{{ demande.stagiaire?.niveau_etude }}</span>
                                     </div>
+                                </div>
+                                <div v-if="demande.nature === 'Groupe' && membres && membres.length > 0" class="mt-8">
+                                    <h3 class="text-lg font-semibold text-blue-700 mb-2">Autres membres du groupe</h3>
+                                    <ul class="space-y-4">
+                                        <li v-for="membre in membres" :key="membre.id" class="p-4 bg-white rounded shadow flex flex-col md:flex-row md:items-center md:gap-8">
+                                            <div class="font-bold text-gray-800">{{ membre.user?.nom }} {{ membre.user?.prenom }}</div>
+                                            <div class="text-sm text-gray-500">Email : {{ membre.user?.email }}</div>
+                                            <div class="text-sm text-gray-500">Téléphone : {{ membre.user?.telephone }}</div>
+                                        </li>
+                                    </ul>
                                 </div>
                             </div>
                         </div>

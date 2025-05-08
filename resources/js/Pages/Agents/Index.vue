@@ -8,7 +8,7 @@ import axios from 'axios';
 
 
 const props = defineProps({
-  agents: Array,
+  agents: Array, // Tableau simple d'agents
 });
 
 const page = usePage();
@@ -267,114 +267,79 @@ function destroy(id) {
 </script>
 
 <template>
-  <Head title="Gestion des Agents" />
+  <Head title="Gestion des agents" />
   <Admin>
-    <div class="py-12">
-      <div class="mx-auto max-w-7xl sm:px-6 lg:px-8 space-y-6">
-        <!-- En-tête avec titre et bouton d'ajout -->
-        <div class="flex justify-between items-center">
-          <h1 class="text-3xl font-bold text-gray-800">Gestion des Agents</h1>
+    <div class="py-12 bg-gray-50 min-h-screen">
+      <div class="mx-auto w-full max-w-7xl px-4 sm:px-6 lg:px-8 space-y-8">
+        <!-- Header modernisé -->
+        <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 mb-6">
+          <div class="flex items-center gap-3">
+            <svg class="w-8 h-8 text-indigo-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>
+            <h1 class="text-2xl sm:text-3xl font-extrabold text-gray-800">Gestion des agents</h1>
+            <span class="ml-2 bg-indigo-100 text-indigo-700 text-xs font-semibold px-3 py-1 rounded-full">{{ agents.length }} agents</span>
+          </div>
           <button @click="openModal()"
-            class="px-5 py-2 bg-blue-600 text-white rounded shadow hover:bg-blue-700 transition duration-200 flex items-center gap-2">
-            <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none"
-              stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-              <path d="M12 5v14M5 12h14" />
-            </svg>
-            <span class="font-medium">Ajouter un agent</span>
+            class="inline-flex items-center gap-2 px-6 py-3 bg-gradient-to-r from-indigo-500 to-blue-500 text-white rounded-xl shadow hover:from-indigo-600 hover:to-blue-600 focus:outline-none focus:ring-2 focus:ring-indigo-400 focus:ring-offset-2 font-semibold text-lg transition-all duration-200">
+            <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4" /></svg>
+            Ajouter un agent
           </button>
         </div>
-
-        <!-- Flash message amélioré -->
-    <div v-if="flash.success"class="p-4 bg-green-100 border-l-4 border-green-500 text-green-700 rounded shadow-sm flex items-center">
-          <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none"
-            stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="mr-3">
-            <path d="M22 11.08V12a10 10 0 1 1-5.93-9.14" />
-            <polyline points="22 4 12 14.01 9 11.01" />
-          </svg>
-  <span>{{ flash.success }}</span>
-        </div>
-
-
-        <div v-if="$page.props.flash && $page.props.flash.error" class="p-4 bg-red-100 border-l-4 border-red-500 text-red-700 rounded shadow-sm">
-          {{ $page.props.flash.error }}
-        </div>
-
-        <!-- Liste des agents avec état vide -->
-        <div class="bg-white rounded-lg shadow-md overflow-hidden">
-          <div class="p-6 border-b border-gray-200">
-            <h2 class="text-xl font-semibold text-gray-800">Liste des agents</h2>
+        <!-- Carte liste agents -->
+        <div class="bg-white shadow-lg rounded-2xl border border-indigo-100 overflow-x-visible">
+          <div class="px-6 py-4 border-b border-gray-100 flex items-center gap-2">
+            <svg class="w-6 h-6 text-indigo-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>
+            <h2 class="text-lg font-semibold text-indigo-800">Liste des agents</h2>
           </div>
-
-          <div v-if="props.agents && props.agents.length === 0" class="p-12 text-center">
-            <svg xmlns="http://www.w3.org/2000/svg" width="48" height="48" viewBox="0 0 24 24" fill="none"
-              stroke="currentColor" stroke-width="1" stroke-linecap="round" stroke-linejoin="round"
-              class="mx-auto mb-4 text-gray-400">
-              <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2" />
-              <circle cx="9" cy="7" r="4" />
-              <path d="M23 21v-2a4 4 0 0 0-3-3.87" />
-              <path d="M16 3.13a4 4 0 0 1 0 7.75" />
+          <div v-if="agents.length === 0" class="p-12 text-center">
+            <svg xmlns="http://www.w3.org/2000/svg" width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1" stroke-linecap="round" stroke-linejoin="round" class="mx-auto mb-4 text-gray-300">
+              <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/>
+              <circle cx="9" cy="7" r="4"/>
+              <path d="M23 21v-2a4 4 0 0 0-3-3.87"/>
+              <path d="M16 3.13a4 4 0 0 1 0 7.75"/>
             </svg>
-            <p class="text-gray-500 text-lg">Aucun agent n'a été ajouté</p>
-            <button @click="openModal()"
-              class="mt-4 px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700 transition duration-200">
-              Ajouter votre premier agent
-            </button>
+            <p class="text-gray-400 text-lg">Aucun agent n'a été ajouté</p>
+            <button @click="openModal()" class="mt-4 px-5 py-2 bg-indigo-600 text-white rounded-xl shadow hover:bg-indigo-700 transition font-semibold">Ajouter votre premier agent</button>
           </div>
-
           <div v-else class="overflow-x-auto">
-            <table class="w-full">
-              <thead>
-                <tr class="bg-gray-50 text-left">
-                  <th class="px-6 py-3 border-b border-gray-200 font-medium text-gray-700">Nom</th>
-                  <th class="px-6 py-3 border-b border-gray-200 font-medium text-gray-700">Prénom</th>
-                  <th class="px-6 py-3 border-b border-gray-200 font-medium text-gray-700">Email</th>
-                  <th class="px-6 py-3 border-b border-gray-200 font-medium text-gray-700">Téléphone</th>
-                  <th class="px-6 py-3 border-b border-gray-200 font-medium text-gray-700">Matricule</th>
-                  <th class="px-6 py-3 border-b border-gray-200 font-medium text-gray-700">Fonction</th>
-                  <th class="px-6 py-3 border-b border-gray-200 font-medium text-gray-700">Rôle</th>
-                  <th class="px-6 py-3 border-b border-gray-200 font-medium text-gray-700 text-center">Actions</th>
+            <table class="w-full min-w-full divide-y divide-gray-200 table-fixed">
+              <thead class="bg-gray-50">
+                <tr>
+                  <th class="px-6 py-3 text-left text-xs font-bold text-gray-500 uppercase tracking-wider">Nom</th>
+                  <th class="px-6 py-3 text-left text-xs font-bold text-gray-500 uppercase tracking-wider">Prénom</th>
+                  <th class="px-6 py-3 text-left text-xs font-bold text-gray-500 uppercase tracking-wider">Email</th>
+                  <th class="px-6 py-3 text-left text-xs font-bold text-gray-500 uppercase tracking-wider">Téléphone</th>
+                  <th class="px-6 py-3 text-left text-xs font-bold text-gray-500 uppercase tracking-wider">Matricule</th>
+                  <th class="px-6 py-3 text-left text-xs font-bold text-gray-500 uppercase tracking-wider">Fonction</th>
+                  <th class="px-6 py-3 text-left text-xs font-bold text-gray-500 uppercase tracking-wider">Rôle</th>
+                  <th class="px-6 py-3 text-center text-xs font-bold text-gray-500 uppercase tracking-wider">Actions</th>
                 </tr>
               </thead>
-              <tbody>
-                <tr v-for="agent in props.agents" :key="agent.id" class="hover:bg-gray-50 transition-colors">
-                  <td class="px-6 py-4 border-b border-gray-200">{{ agent.user?.nom ?? '-' }}</td>
-                  <td class="px-6 py-4 border-b border-gray-200">{{ agent.user?.prenom ?? '-' }}</td>
-                  <td class="px-6 py-4 border-b border-gray-200">{{ agent.user?.email ?? '-' }}</td>
-                  <td class="px-6 py-4 border-b border-gray-200">{{ agent.user?.telephone ?? '-' }}</td>
-                  <td class="px-6 py-4 border-b border-gray-200">{{ agent.matricule }}</td>
-                  <td class="px-6 py-4 border-b border-gray-200">{{ agent.fonction }}</td>
-                  <td class="px-6 py-4 border-b border-gray-200">{{ agent.role_agent }}</td>
-                  <td class="px-6 py-4 border-b border-gray-200">
-                    <div class="flex justify-center space-x-3">
-  <!-- Bouton Modifier -->
-  <button 
-    @click="openModal(agent)"
-    class="text-blue-600 hover:text-blue-800 flex items-center"
-    title="Modifier"
-  >
-    <svg xmlns="http://www.w3.org/2000/svg" class="w-5 h-5" viewBox="0 0 24 24" fill="none"
-      stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-      <path d="M17 3a2.85 2.85 0 1 1 4 4L7.5 20.5 2 22l1.5-5.5Z"/>
-    </svg>
-  </button>
-
-  <!-- Bouton Supprimer -->
-  <button @click="openDeleteModal(agent)" title="Supprimer"
-    class="text-red-600 hover:text-red-800 transition-colors ml-2">
-    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5"
-      stroke="currentColor" class="w-5 h-5">
-      <path stroke-linecap="round" stroke-linejoin="round"
-        d="M14.74 9l-.346 9m-4.788 0L9.26 9m9.968-3.21c.342.052.682.107 1.022.166m-1.022-.165L18.16 19.673a2.25 2.25 0 01-2.244 2.077H8.084a2.25 2.25 0 01-2.244-2.077L4.772 5.79m14.456 0a48.108 48.108 0 00-3.478-.397m-12 .562c.34-.059.68-.114 1.022-.165m0 0a48.11 48.11 0 013.478-.397m7.5 0v-.916c0-1.18-.91-2.164-2.09-2.201a51.964 51.964 0 00-3.32 0c-1.18.037-2.09 1.022-2.09 2.201v.916m7.5 0a48.667 48.667 0 00-7.5 0" />
-    </svg>
-  </button>
-</div>
+              <tbody class="bg-white divide-y divide-gray-100">
+                <tr v-for="agent in agents" :key="agent.id" class="hover:bg-indigo-50 transition">
+                  <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">{{ agent.user?.nom ?? '-' }}</td>
+                  <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">{{ agent.user?.prenom ?? '-' }}</td>
+                  <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-600">{{ agent.user?.email ?? '-' }}</td>
+                  <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">{{ agent.user?.telephone ?? '-' }}</td>
+                  <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">{{ agent.matricule }}</td>
+                  <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">{{ agent.fonction }}</td>
+                  <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">{{ agent.role_agent }}</td>
+                  <td class="px-6 py-4 whitespace-nowrap text-center">
+                    <div class="flex justify-center gap-2">
+                      <button @click="openModal(agent)" class="text-indigo-600 hover:text-indigo-900 font-medium flex items-center gap-1" title="Modifier">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="w-5 h-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M17 3a2.85 2.85 0 1 1 4 4L7.5 20.5 2 22l1.5-5.5Z"/></svg>
+                        
+                      </button>
+                      <button @click="openDeleteModal(agent)" class="text-red-600 hover:text-red-800 font-medium flex items-center gap-1" title="Supprimer">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="w-5 h-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 6h18"/><path d="M19 6v14c0 1-1 2-2 2H7c-1 0-2-1-2-2V6"/><path d="M8 6V4c0-1 1-2 2-2h4c1 0 2 1 2 2v2"/></svg>
+                        
+                      </button>
+                    </div>
                   </td>
                 </tr>
               </tbody>
             </table>
           </div>
         </div>
-
         <!-- Modale multi-étapes améliorée -->
         <div v-if="showModal" class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
           <div class="bg-white rounded-lg shadow-xl max-w-2xl w-full mx-4">

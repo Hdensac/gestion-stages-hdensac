@@ -692,9 +692,13 @@ watch(() => form.type, (newType) => {
     <!-- Formulaire de demande de stage -->
     <div class="py-6">
       <div class="mx-auto max-w-7xl sm:px-6 lg:px-8">
-        <div class="overflow-hidden bg-white shadow-sm sm:rounded-lg p-6">
-          <h1 class="text-2xl font-bold mb-4">Bienvenue, {{ auth.user.nom }}</h1>
-          <button @click="showModal = true" class="btn-primary">
+        <div class="overflow-hidden bg-gradient-to-br from-indigo-50 via-white to-blue-50 shadow-lg sm:rounded-2xl p-8 border border-indigo-100">
+          <h1 class="text-3xl font-extrabold mb-6 text-indigo-800 flex items-center gap-2">
+            <svg class="w-8 h-8 text-indigo-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 01-8 0M12 3v4m0 0a4 4 0 01-4 4H4m8-4a4 4 0 014 4h4m-8 0v4m0 0a4 4 0 004 4h4m-8-4a 4 4 0 01-4 4H4" /></svg>
+            Bienvenue, {{ auth.user.nom }}
+          </h1>
+          <button @click="showModal = true" class="inline-flex items-center gap-2 px-6 py-3 bg-gradient-to-r from-indigo-500 to-blue-500 text-white rounded-xl shadow hover:from-indigo-600 hover:to-blue-600 focus:outline-none focus:ring-2 focus:ring-indigo-400 focus:ring-offset-2 font-semibold text-lg transition-all duration-200">
+            <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4" /></svg>
             Soumettre une demande
           </button>
         </div>
@@ -705,17 +709,20 @@ watch(() => form.type, (newType) => {
     <div v-if="showModal" class="modal-overlay">
       <div class="modal-container">
         <div class="modal-content">
-          <div class="modal-header">
-            <h2 class="modal-title">Soumettre une demande de stage</h2>
-            <button @click="showModal = false" class="close-btn">&times;</button>
+          <div class="modal-header bg-gradient-to-r from-indigo-100 to-blue-100 border-b border-indigo-200">
+            <h2 class="modal-title text-2xl font-bold text-indigo-800 flex items-center gap-2">
+              <svg class="w-6 h-6 text-indigo-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 01-8 0M12 3v4m0 0a4 4 0 01-4 4H4m8-4a4 4 0 014 4h4m-8 0v4m0 0a4 4 0 004 4h4m-8-4a 4 4 0 01-4 4H4" /></svg>
+              Soumettre une demande de stage
+            </h2>
+            <button @click="showModal = false" class="close-btn hover:bg-indigo-100 transition-colors">&times;</button>
           </div>
 
-          <div class="step-indicator">
+          <div class="step-indicator mb-8">
             <div v-for="n in 4" :key="n" :class="{
               'step-active': n <= step,
               'step-inactive': n > step
             }">
-              <div class="step-number">{{ n }}</div>
+              <div class="step-number text-lg">{{ n }}</div>
               <div class="step-label">
                 <span v-if="n === 1">Informations</span>
                 <span v-if="n === 2">Détails</span>

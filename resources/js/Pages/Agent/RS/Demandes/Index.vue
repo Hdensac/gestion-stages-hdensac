@@ -3,131 +3,103 @@
 
   <RSLayout>
     <template #header>
-      <div class="flex justify-between items-center">
-        <h2 class="font-semibold text-xl text-gray-800 leading-tight">
-          Demandes de Stage - {{ structure.libelle }}
-        </h2>
-        <div class="text-sm text-gray-500">
-          Structure : {{ structure.sigle }}
+      <div class="flex items-center gap-4 mb-2">
+        <div class="bg-blue-100 text-blue-700 rounded-full w-12 h-12 flex items-center justify-center text-2xl font-bold shadow">
+          <svg class="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 01-8 0M12 3v4m0 0a4 4 0 01-4 4H4m8-4a4 4 0 014 4h4m-8 0v4m0 0a4 4 0 004 4h4m-8-4a4 4 0 01-4 4H4" />
+          </svg>
+        </div>
+        <div>
+          <h1 class="text-2xl md:text-3xl font-extrabold text-blue-800 leading-tight">Demandes de Stage - {{ structure.libelle }}</h1>
+          <div class="text-sm text-gray-500 mt-1">Structure : {{ structure.sigle }}</div>
         </div>
       </div>
     </template>
 
-    <div class="py-12">
+    <div class="py-10 bg-gray-100 min-h-screen">
       <div class="max-w-7xl mx-auto sm:px-6 lg:px-8">
         <!-- Messages flash -->
-        <div v-if="$page.props.flash.success" 
-          class="bg-green-100 border-l-4 border-green-500 text-green-700 p-4 mb-6" 
-          role="alert">
+        <div v-if="$page.props.flash.success" class="bg-green-100 border-l-4 border-green-500 text-green-700 p-4 mb-6 rounded shadow" role="alert">
           <p class="font-medium">Succès!</p>
           <p>{{ $page.props.flash.success }}</p>
         </div>
-
-        <div v-if="$page.props.flash.error" 
-          class="bg-red-100 border-l-4 border-red-500 text-red-700 p-4 mb-6" 
-          role="alert">
+        <div v-if="$page.props.flash.error" class="bg-red-100 border-l-4 border-red-500 text-red-700 p-4 mb-6 rounded shadow" role="alert">
           <p class="font-medium">Erreur!</p>
           <p>{{ $page.props.flash.error }}</p>
         </div>
 
         <!-- Filtres -->
-        <div class="bg-white overflow-hidden shadow-sm sm:rounded-lg mb-6">
-          <div class="p-6">
-            <div class="grid grid-cols-1 md:grid-cols-4 gap-4">
-              <!-- Filtre par statut -->
+        <div class="bg-white shadow-lg rounded-xl mb-8 p-6">
+          <div class="grid grid-cols-1 md:grid-cols-4 gap-6">
+            <!-- Filtre par statut -->
+            <div>
+              <label class="block text-sm font-semibold text-gray-700 mb-1">Statut</label>
               <div class="relative">
-                <label class="block text-sm font-medium text-gray-700 mb-1">
-                  Statut
-                </label>
-                <div class="relative">
-                  <select 
-                    v-model="filters.status"
-                    class="w-full rounded-md border-gray-300 shadow-sm focus:border-blue-300 focus:ring focus:ring-blue-200 focus:ring-opacity-50 pl-3 pr-10 py-2"
-                  >
-                    <option value="">Tous les statuts</option>
-                    <option value="En attente">En attente</option>
-                    <option value="Approuvée">Approuvée</option>
-                    <option value="Refusée">Refusée</option>
-                  </select>
-                  <div class="pointer-events-none absolute inset-y-0 right-0 flex items-center px-2 text-gray-700">
-                    <svg class="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7" />
-                    </svg>
-                  </div>
-                </div>
-              </div>
-
-              <!-- Recherche par nom -->
-              <div class="relative">
-                <label class="block text-sm font-medium text-gray-700 mb-1">
-                  Rechercher
-                </label>
-                <div class="relative">
-                  <input 
-                    v-model="filters.search"
-                    type="text"
-                    placeholder="Nom, prénom ou email..."
-                    class="w-full rounded-md border-gray-300 shadow-sm focus:border-blue-300 focus:ring focus:ring-blue-200 focus:ring-opacity-50 pl-10 pr-4 py-2"
-                  >
-                  <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-                    <svg class="h-5 w-5 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
-                    </svg>
-                  </div>
-                  <div v-if="isLoading" class="absolute inset-y-0 right-0 pr-3 flex items-center">
-                    <svg class="animate-spin h-5 w-5 text-blue-500" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
-                      <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
-                      <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
-                    </svg>
-                  </div>
-                </div>
-              </div>
-
-              <!-- Filtre par date -->
-              <div class="relative">
-                <label class="block text-sm font-medium text-gray-700 mb-1">
-                  Période
-                </label>
-                <div class="relative">
-                  <select 
-                    v-model="filters.period"
-                    class="w-full rounded-md border-gray-300 shadow-sm focus:border-blue-300 focus:ring focus:ring-blue-200 focus:ring-opacity-50 pl-3 pr-10 py-2"
-                  >
-                    <option value="">Toutes les périodes</option>
-                    <option value="today">Aujourd'hui</option>
-                    <option value="week">Cette semaine</option>
-                    <option value="month">Ce mois</option>
-                    <option value="year">Cette année</option>
-                  </select>
-                  <div class="pointer-events-none absolute inset-y-0 right-0 flex items-center px-2 text-gray-700">
-                    <svg class="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7" />
-                    </svg>
-                  </div>
-                </div>
-              </div>
-
-              <!-- Bouton de réinitialisation -->
-              <div class="flex items-end">
-                <button 
-                  @click="resetFilters"
-                  class="w-full px-4 py-2 bg-gray-100 text-gray-700 rounded-md hover:bg-gray-200 transition-colors flex items-center justify-center"
-                  title="Réinitialiser tous les filtres"
-                >
-                  <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" />
+                <select v-model="filters.status" class="w-full rounded-lg border-gray-300 shadow focus:border-blue-400 focus:ring focus:ring-blue-200 focus:ring-opacity-50 pl-3 pr-10 py-2">
+                  <option value="">Tous les statuts</option>
+                  <option value="En attente">En attente</option>
+                  <option value="Approuvée">Approuvée</option>
+                  <option value="Refusée">Refusée</option>
+                </select>
+                <div class="pointer-events-none absolute inset-y-0 right-0 flex items-center px-2 text-gray-700">
+                  <svg class="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7" />
                   </svg>
-                  Réinitialiser
-                </button>
+                </div>
               </div>
+            </div>
+            <!-- Recherche par nom -->
+            <div>
+              <label class="block text-sm font-semibold text-gray-700 mb-1">Rechercher</label>
+              <div class="relative">
+                <input v-model="filters.search" type="text" placeholder="Nom, prénom ou email..." class="w-full rounded-lg border-gray-300 shadow focus:border-blue-400 focus:ring focus:ring-blue-200 focus:ring-opacity-50 pl-10 pr-4 py-2" />
+                <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                  <svg class="h-5 w-5 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
+                  </svg>
+                </div>
+                <div v-if="isLoading" class="absolute inset-y-0 right-0 pr-3 flex items-center">
+                  <svg class="animate-spin h-5 w-5 text-blue-500" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                    <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+                    <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                  </svg>
+                </div>
+              </div>
+            </div>
+            <!-- Filtre par date -->
+            <div>
+              <label class="block text-sm font-semibold text-gray-700 mb-1">Période</label>
+              <div class="relative">
+                <select v-model="filters.period" class="w-full rounded-lg border-gray-300 shadow focus:border-blue-400 focus:ring focus:ring-blue-200 focus:ring-opacity-50 pl-3 pr-10 py-2">
+                  <option value="">Toutes les périodes</option>
+                  <option value="today">Aujourd'hui</option>
+                  <option value="week">Cette semaine</option>
+                  <option value="month">Ce mois</option>
+                  <option value="year">Cette année</option>
+                </select>
+                <div class="pointer-events-none absolute inset-y-0 right-0 flex items-center px-2 text-gray-700">
+                  <svg class="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7" />
+                  </svg>
+                </div>
+              </div>
+            </div>
+            <!-- Bouton de réinitialisation -->
+            <div class="flex items-end">
+              <button @click="resetFilters" class="w-full px-4 py-2 bg-gray-100 text-gray-700 rounded-lg shadow hover:bg-gray-200 transition-colors flex items-center justify-center font-semibold" title="Réinitialiser tous les filtres">
+                <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" />
+                </svg>
+                Réinitialiser
+              </button>
             </div>
           </div>
         </div>
 
         <!-- Liste des demandes -->
-        <div class="bg-white overflow-hidden shadow-sm sm:rounded-lg">
+        <div class="bg-white shadow-lg rounded-xl">
           <div class="p-6">
-            <div v-if="demandes.data.length === 0" class="text-center py-12">
+            <div v-if="props.demandes.data.length === 0" class="text-center py-12">
               <svg xmlns="http://www.w3.org/2000/svg" class="mx-auto h-16 w-16 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
               </svg>
@@ -136,34 +108,33 @@
                 {{ filters.status || filters.search || filters.period ? 'Aucune demande ne correspond à vos critères de recherche.' : 'Aucune demande de stage n\'a été soumise pour votre structure.' }}
               </p>
             </div>
-
             <div v-else>
               <div class="overflow-x-auto">
                 <table class="min-w-full divide-y divide-gray-200">
                   <thead class="bg-gray-50">
                     <tr>
-                      <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Stagiaire</th>
-                      <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Date de soumission</th>
-                      <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Statut</th>
-                      <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Actions</th>
+                      <th class="px-6 py-3 text-left text-xs font-bold text-gray-500 uppercase tracking-wider">Stagiaire</th>
+                      <th class="px-6 py-3 text-left text-xs font-bold text-gray-500 uppercase tracking-wider">Date de soumission</th>
+                      <th class="px-6 py-3 text-left text-xs font-bold text-gray-500 uppercase tracking-wider">Statut</th>
+                      <th class="px-6 py-3 text-left text-xs font-bold text-gray-500 uppercase tracking-wider">Actions</th>
                     </tr>
                   </thead>
                   <tbody class="bg-white divide-y divide-gray-200">
-                    <tr v-for="demande in demandes.data" :key="demande.id" class="hover:bg-gray-50 transition-colors duration-150">
+                    <tr v-for="demande in props.demandes.data" :key="demande.id" class="hover:bg-gray-50 transition">
                       <td class="px-6 py-4 whitespace-nowrap">
                         <div class="flex items-center">
                           <div class="flex-shrink-0 h-10 w-10">
-                            <div class="h-10 w-10 rounded-full bg-gray-200 flex items-center justify-center">
-                              <span class="text-gray-500 font-medium">
+                            <div class="h-10 w-10 rounded-full bg-gray-200 flex items-center justify-center shadow">
+                              <span class="text-gray-500 font-bold text-lg">
                                 {{ demande.stagiaire.user.nom.charAt(0) }}{{ demande.stagiaire.user.prenom.charAt(0) }}
                               </span>
                             </div>
                           </div>
                           <div class="ml-4">
-                            <div class="text-sm font-medium text-gray-900">
+                            <div class="text-sm font-semibold text-gray-900">
                               {{ demande.stagiaire.user.nom }} {{ demande.stagiaire.user.prenom }}
                             </div>
-                            <div class="text-sm text-gray-500">
+                            <div class="text-xs text-gray-500">
                               {{ demande.stagiaire.user.email }}
                             </div>
                           </div>
@@ -178,15 +149,14 @@
                         </div>
                       </td>
                       <td class="px-6 py-4 whitespace-nowrap">
-                        <span :class="getStatusClass(demande.statut)" 
-                          class="px-3 py-1 inline-flex text-xs leading-5 font-semibold rounded-full">
+                        <span :class="getStatusClass(demande.statut) + ' px-3 py-1 rounded-full text-xs font-bold'">
                           {{ demande.statut }}
                         </span>
                       </td>
                       <td class="px-6 py-4 whitespace-nowrap text-sm font-medium">
                         <Link 
                           :href="route('agent.rs.demandes.show', demande.id)"
-                          class="text-blue-600 hover:text-blue-900 flex items-center transition-colors duration-150"
+                          class="text-blue-600 hover:text-blue-900 font-semibold transition"
                         >
                           <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
@@ -199,10 +169,9 @@
                   </tbody>
                 </table>
               </div>
-
               <!-- Pagination -->
-              <div class="mt-6">
-                <Pagination :links="demandes.links" @change="handlePageChange" />
+              <div class="mt-8 flex justify-center">
+                <Pagination :links="props.demandes.links" @change="handlePageChange" />
               </div>
             </div>
           </div>
@@ -213,7 +182,7 @@
 </template>
 
 <script setup>
-import { ref, watch, onMounted } from 'vue';
+import { ref, watch, onMounted, computed } from 'vue';
 import { Head, Link, router, usePage } from '@inertiajs/vue3';
 import RSLayout from '@/Layouts/RSLayout.vue';
 import Pagination from '@/Components/Pagination.vue';
@@ -286,6 +255,15 @@ function handlePageChange(page) {
   updateFilters(filters.value);
 }
 
+// Limiter l'affichage à 10 demandes par page côté front (sécurité côté back recommandée)
+const demandesPage = computed(() => {
+  if (!props.demandes.data) return [];
+  const page = parseInt(filters.value.page) || 1;
+  const perPage = 10;
+  const start = (page - 1) * perPage;
+  return props.demandes.data.slice(start, start + perPage);
+});
+
 // Initialiser les filtres depuis l'URL au chargement
 onMounted(() => {
   const urlParams = new URLSearchParams(window.location.search);
@@ -321,4 +299,4 @@ function getStatusClass(status) {
   };
   return classes[status] || 'bg-gray-100 text-gray-800';
 }
-</script> 
+</script>
