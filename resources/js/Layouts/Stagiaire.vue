@@ -36,10 +36,10 @@ const user = usePage().props.auth?.user;
                                 class="hidden space-x-8 sm:-my-px sm:ms-10 sm:flex"
                             >
                                 <NavLink
-                                    :href="route('dashboard')"
-                                    :active="route().current('dashboard')"
+                                    :href="route('stagiaire.dashboard')"
+                                    :active="route().current('stagiaire.dashboard')"
                                 >
-                                    Dashboard
+                                    Tableau de bord
                                 </NavLink>
                                 <NavLink
                                     :href="route('mes.demandes')"
@@ -161,10 +161,10 @@ const user = usePage().props.auth?.user;
                 >
                     <div class="space-y-1 pb-3 pt-2">
                         <ResponsiveNavLink
-                            :href="route('dashboard')"
-                            :active="route().current('dashboard')"
+                            :href="route('stagiaire.dashboard')"
+                            :active="route().current('stagiaire.dashboard')"
                         >
-                            Dashboard
+                            Tableau de bord
                         </ResponsiveNavLink>
                         <ResponsiveNavLink
                             :href="route('mes.demandes')"
