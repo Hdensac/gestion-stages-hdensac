@@ -1,12 +1,10 @@
 <script setup>
 import { ref } from 'vue';
-import { usePage } from '@inertiajs/vue3';
-import ApplicationLogo from '@/Components/ApplicationLogo.vue';
+import { Link, usePage } from '@inertiajs/vue3';
 import Dropdown from '@/Components/Dropdown.vue';
 import DropdownLink from '@/Components/DropdownLink.vue';
 import NavLink from '@/Components/NavLink.vue';
 import ResponsiveNavLink from '@/Components/ResponsiveNavLink.vue';
-import { Link } from '@inertiajs/vue3';
 
 const showingNavigationDropdown = ref(false);
 const user = usePage().props.auth?.user;
@@ -14,9 +12,9 @@ const user = usePage().props.auth?.user;
 
 <template>
     <div>
-        <div class="min-h-screen bg-gray-100">
+        <div class="min-h-screen bg-gray-50 dark:bg-white dark:text-black/70">
             <nav
-                class="border-b border-gray-100 bg-white"
+                class="border-b border-indigo-200 bg-white shadow-md"
             >
                 <!-- Primary Navigation Menu -->
                 <div class="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
@@ -25,8 +23,10 @@ const user = usePage().props.auth?.user;
                             <!-- Logo -->
                             <div class="flex shrink-0 items-center">
                                 <Link :href="route('dashboard')">
-                                    <ApplicationLogo
-                                        class="block h-9 w-auto fill-current text-gray-800"
+                                    <img
+                                        src="/images/logoministere.png"
+                                        alt="Logo du Ministère"
+                                        class="h-12 w-auto transition-transform duration-300 hover:scale-105"
                                     />
                                 </Link>
                             </div>
@@ -213,13 +213,18 @@ const user = usePage().props.auth?.user;
 
             <!-- Page Heading -->
             <header
-                class="bg-white shadow"
+                class="bg-gradient-to-r from-indigo-50 to-blue-50 shadow-sm border-b border-indigo-100"
                 v-if="$slots.header"
             >
                 <div class="mx-auto max-w-7xl px-4 py-6 sm:px-6 lg:px-8">
                     <slot name="header" />
                 </div>
             </header>
+
+            <!-- Bannière indiquant la section stagiaire -->
+            <div class="bg-indigo-600 text-white text-center py-1 text-sm font-medium">
+                Espace Stagiaire - Programme de Stages du Ministère des Finances
+            </div>
 
             <!-- Page Content -->
             <main>

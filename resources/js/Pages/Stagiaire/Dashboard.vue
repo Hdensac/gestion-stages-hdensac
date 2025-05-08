@@ -88,7 +88,7 @@ loadMemberInfos();
 const handleSearchInput = () => {
   // Montrer la liste des résultats lors de la saisie
   showMembersList.value = true;
-  
+
   // Journalisation pour le débogage
   console.log('Recherche en cours:', searchQuery.value);
   setTimeout(() => {
@@ -99,11 +99,11 @@ const handleSearchInput = () => {
 // Charger les informations des membres au montage du composant
 onMounted(() => {
   loadMemberInfos();
-  
+
   // Afficher les informations sur les utilisateurs disponibles
   console.log('Montage du composant. Utilisateurs disponibles:', props.users.length);
   console.log('Premier utilisateur:', props.users.length > 0 ? props.users[0] : 'Aucun');
-  
+
   // Vérifier que les IDs sont des nombres
   if (props.users.length > 0) {
     props.users.forEach(user => {
@@ -171,10 +171,10 @@ const getUserInfo = (userId) => {
     console.error('getUserInfo appelé avec un userId invalide:', userId);
     return { nom: '', prenom: '', email: '', telephone: '' };
   }
-  
+
   // Convertir en nombre si c'est une chaîne
   const id = typeof userId === 'string' ? parseInt(userId) : userId;
-  
+
   // Essayer de trouver l'utilisateur directement dans props.users
   const user = props.users.find(u => u.id === id);
   if (user) {
@@ -186,7 +186,7 @@ const getUserInfo = (userId) => {
       telephone: user.telephone
     };
   }
-  
+
   console.error('Aucun utilisateur trouvé pour id:', id);
   return { nom: '', prenom: '', email: '', telephone: '' };
 };
@@ -198,33 +198,33 @@ const filteredUsers = computed(() => {
     console.log('Aucun utilisateur disponible');
     return [];
   }
-  
+
   // Si le champ de recherche est vide ou ne contient que des espaces, afficher jusqu'à 10 utilisateurs
   if (!searchQuery.value || searchQuery.value.trim() === '') {
     return props.users.slice(0, 10);
   }
-  
+
   // Nettoyer la requête et la convertir en minuscules
   const query = searchQuery.value.toLowerCase().trim();
-  
+
   // Filtrer les utilisateurs dont le nom ou prénom contient la requête
   const results = props.users.filter(user => {
     // S'assurer que l'utilisateur a un nom et un prénom
     if (!user.nom || !user.prenom) return false;
-    
+
     // Créer différentes variations du nom pour la recherche
     const nom = user.nom.toLowerCase();
     const prenom = user.prenom.toLowerCase();
     const fullName = `${nom} ${prenom}`;
     const reverseName = `${prenom} ${nom}`;
-    
+
     // Vérifier si la requête correspond à l'une des variations
-    return nom.includes(query) || 
-           prenom.includes(query) || 
-           fullName.includes(query) || 
+    return nom.includes(query) ||
+           prenom.includes(query) ||
+           fullName.includes(query) ||
            reverseName.includes(query);
   });
-  
+
   console.log(`Recherche "${query}" : ${results.length} résultats trouvés`);
   return results;
 });
@@ -282,12 +282,12 @@ const validateStep = () => {
   if (step.value === 2) {
     const baseValidation = form.filiere && form.niveau_etude &&
       form.date_debut && form.date_fin && isDateValid.value;
-    
+
     // Vérifier l'université uniquement pour les demandes académiques
     if (form.type === 'Académique') {
       return baseValidation && form.universite;
     }
-    
+
     return baseValidation;
   }
   if (step.value === 3) {
@@ -633,7 +633,7 @@ const validateForm = () => {
 const isMemberSelected = (userId) => {
   // Convertir userId en nombre si c'est une chaîne
   const id = typeof userId === 'string' ? parseInt(userId) : userId;
-  
+
   // Vérifier si l'ID existe dans le tableau des membres, en tenant compte du type
   return form.membres.some(memberId => {
     const memId = typeof memberId === 'string' ? parseInt(memberId) : memberId;
@@ -652,27 +652,42 @@ watch(() => form.type, (newType) => {
   <Head title="Tableau de bord" />
   <Stagiaire>
     <template #header>
-      <h2 class="text-xl font-semibold leading-tight text-gray-800">Tableau de bord</h2>
+      <div class="flex items-center justify-between">
+        <div class="flex items-center space-x-2">
+          <svg class="w-6 h-6 text-indigo-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"></path>
+          </svg>
+          <h2 class="text-xl font-semibold leading-tight text-gray-800">Tableau de bord <span class="text-indigo-600">Stagiaire</span></h2>
+        </div>
+        <div class="text-sm text-gray-500">
+          Programme de Stages - Ministère des Finances
+        </div>
+      </div>
     </template>
 
     <!-- Recherche par code de suivi -->
     <div class="py-6">
       <div class="mx-auto max-w-7xl sm:px-6 lg:px-8">
-        <div class="overflow-hidden bg-white shadow-sm sm:rounded-lg">
+        <div class="overflow-hidden bg-gradient-to-br from-blue-50 via-white to-indigo-50 shadow-lg sm:rounded-2xl border border-blue-100">
           <div class="p-6">
-            <h2 class="text-xl font-semibold text-gray-800 mb-4">Rechercher une demande par code de suivi</h2>
+            <h2 class="text-xl font-semibold text-indigo-800 mb-4 flex items-center gap-2">
+              <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 text-indigo-500" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
+              </svg>
+              Rechercher une demande par code de suivi
+            </h2>
             <div class="flex flex-wrap gap-4">
               <div class="flex-grow">
-                <input 
-                  type="text" 
+                <input
+                  type="text"
                   v-model="searchCode"
-                  placeholder="Entrez le code de suivi (ex: AB12CD34)" 
-                  class="w-full p-3 border border-gray-300 rounded-md focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500"
+                  placeholder="Entrez le code de suivi (ex: AB12CD34)"
+                  class="w-full p-3 border border-indigo-200 rounded-md focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 bg-white/80"
                 />
               </div>
-              <button 
-                @click="searchByTrackingCode" 
-                class="px-6 py-3 bg-indigo-600 text-white rounded-md hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2 transition-colors duration-200 flex items-center gap-2"
+              <button
+                @click="searchByTrackingCode"
+                class="px-6 py-3 bg-gradient-to-r from-indigo-500 to-blue-500 text-white rounded-md hover:from-indigo-600 hover:to-blue-600 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2 transition-all duration-200 flex items-center gap-2 shadow-md"
               >
                 <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                   <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
@@ -680,7 +695,7 @@ watch(() => form.type, (newType) => {
                 Rechercher
               </button>
             </div>
-            <p class="mt-3 text-sm text-gray-600">
+            <p class="mt-3 text-sm text-indigo-700">
               Vous pouvez retrouver rapidement une demande en saisissant son code de suivi unique.
               Cela vous permet de vérifier son statut même si vous n'êtes pas l'auteur de la demande.
             </p>
@@ -788,7 +803,7 @@ watch(() => form.type, (newType) => {
                     class="form-input search-input mb-2" @focus="showMembersList = true" @input="handleSearchInput">
                   <span v-if="searchQuery.trim() !== ''" class="search-clear" @click="searchQuery = ''; handleSearchInput()">×</span>
                 </div>
-                
+
                 <div class="members-select-container">
                   <div v-if="filteredUsers.length > 0">
                     <div v-for="user in filteredUsers" :key="user.id" class="member-option"
@@ -814,25 +829,25 @@ watch(() => form.type, (newType) => {
             <!-- Affichage des informations des membres sélectionnés -->
             <div v-if="form.nature === 'Groupe' && form.membres.length > 0" class="form-section">
               <h3 class="section-title">Informations des membres</h3>
-              
+
               <div v-for="memberId in form.membres" :key="memberId" class="membre-info mb-4 p-3 border rounded">
                 <div class="bg-blue-50 p-2 mb-2">
                   <div class="font-medium mb-2 text-blue-700">
-                    {{ getUserInfo(memberId).nom || 'Nom non disponible' }} 
+                    {{ getUserInfo(memberId).nom || 'Nom non disponible' }}
                     {{ getUserInfo(memberId).prenom || 'Prénom non disponible' }}
                   </div>
-                  
+
                   <div v-if="!memberInfosLoaded" class="text-red-500 text-sm">
                     Chargement des informations en cours...
                   </div>
                 </div>
-                
+
                 <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
                   <div>
                     <label>Email</label>
                     <input type="text" :value="getUserInfo(memberId).email" class="form-input bg-gray-100 w-full" disabled readonly>
                   </div>
-                  
+
                   <div>
                     <label>Téléphone</label>
                     <input type="text" :value="getUserInfo(memberId).telephone" class="form-input bg-gray-100 w-full" disabled readonly>
@@ -1071,7 +1086,7 @@ watch(() => form.type, (newType) => {
                 <div class="text-sm">
                   <p>Membres sélectionnés: {{ form.membres.join(', ') }}</p>
                   <p>Utilisateurs disponibles: {{ props.users.length }}</p>
-                  <p>Exemple d'info pour le premier membre (si disponible): 
+                  <p>Exemple d'info pour le premier membre (si disponible):
                     {{ form.membres.length > 0 ? JSON.stringify(getUserInfo(form.membres[0])) : 'Aucun membre' }}
                   </p>
                 </div>
@@ -1146,12 +1161,12 @@ watch(() => form.type, (newType) => {
       <h3 class="text-xl font-semibold mb-3">Confirmation de demande</h3>
       <p class="mb-2">Votre demande a été soumise avec succès.</p>
       <p class="mb-4">Code de suivi: <span class="font-mono bg-gray-100 px-2 py-1 rounded">{{ codeSuivi }}</span></p>
-      
-      <EmailSender 
-        :demande-id="demandeId" 
+
+      <EmailSender
+        :demande-id="demandeId"
         :email="form.email"
         :has-group-members="form.nature === 'Groupe' && form.membres.length > 0"
-        @email-sent="(data) => addToast({
+        @email-sent="() => addToast({
           type: 'success',
           title: 'Email envoyé',
           message: 'Un email de confirmation a été envoyé avec succès.',
@@ -1626,8 +1641,8 @@ watch(() => form.type, (newType) => {
 }
 
 /* Renforcer la visibilité des inputs désactivés */
-input:disabled, 
-select:disabled, 
+input:disabled,
+select:disabled,
 textarea:disabled {
   background-color: #f3f4f6 !important;
   color: #000000 !important;

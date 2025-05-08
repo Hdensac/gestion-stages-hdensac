@@ -66,13 +66,13 @@ const selectAllWithStructure = () => {
 // Fonction pour vérifier si toutes les demandes avec structure sont sélectionnées
 const allWithStructureSelected = computed(() => {
     const demandesWithStructure = (props.demandes && props.demandes.data ? props.demandes.data : []).filter(hasStructure);
-    return demandesWithStructure.length > 0 && 
+    return demandesWithStructure.length > 0 &&
            demandesWithStructure.every(d => selectedDemandes.value.includes(d.id));
 });
 
 // Debounced search function
 const debouncedSearch = debounce(() => {
-    router.get(route('agent.demandes'), { 
+    router.get(route('agent.demandes'), {
         search: search.value,
         status: status.value,
         structure_id: structure_id.value
@@ -194,7 +194,7 @@ const hasSelectedDemandes = computed(() => selectedDemandes.value.length > 0);
 
 // Computed property pour vérifier si les demandes sélectionnées peuvent être affectées
 const canAffectSelectedDemandes = computed(() => {
-    return selectedDemandes.value.length > 0 && 
+    return selectedDemandes.value.length > 0 &&
            (props.demandes && props.demandes.data ? props.demandes.data : [])
                .filter(d => selectedDemandes.value.includes(d.id))
                .every(d => d.statut === 'En attente');
@@ -255,13 +255,13 @@ const canAffectSelectedDemandes = computed(() => {
                                 <span class="text-sm text-gray-700">
                                     {{ selectedDemandes.length }} demande(s) sélectionnée(s)
                                 </span>
-                                <button 
+                                <button
                                     @click="submitDirectGroupAffectation"
                                     :disabled="!canAffectSelectedDemandes"
                                     :class="[
                                         'px-4 py-2 rounded transition-colors flex items-center gap-2',
-                                        canAffectSelectedDemandes 
-                                            ? 'bg-blue-600 text-white hover:bg-blue-700' 
+                                        canAffectSelectedDemandes
+                                            ? 'bg-blue-600 text-white hover:bg-blue-700'
                                             : 'bg-gray-300 text-gray-500 cursor-not-allowed'
                                     ]"
                                 >
@@ -293,7 +293,7 @@ const canAffectSelectedDemandes = computed(() => {
                                     </tr>
                                 </thead>
                                 <tbody class="bg-white divide-y divide-gray-200">
-                                    <tr v-for="demande in (demandes && demandes.data ? demandes.data : [])" :key="demande.id" 
+                                    <tr v-for="demande in (demandes && demandes.data ? demandes.data : [])" :key="demande.id"
                                         :class="{'bg-gray-50': selectedDemandes.includes(demande.id)}">
                                         <td class="px-6 py-4 whitespace-nowrap">
                                             <input
@@ -333,7 +333,7 @@ const canAffectSelectedDemandes = computed(() => {
                                         </td>
                                         <td class="px-6 py-4 whitespace-nowrap text-sm">
                                             <div class="flex items-center space-x-3">
-                                                <Link :href="route('agent.demandes.show', demande.id)" 
+                                                <Link :href="route('agent.demandes.show', demande.id)"
                                                     class="text-blue-600 hover:text-blue-900 font-medium">
                                                     Voir détails
                                                 </Link>
@@ -359,31 +359,38 @@ const canAffectSelectedDemandes = computed(() => {
                         </div>
 
                         <!-- Pagination -->
-                        <div v-if="demandes && demandes.links && demandes.links.length > 3" class="mt-4 flex justify-between items-center">
-                            <div class="text-sm text-gray-700">
-                                Affichage de {{ demandes.from }} à {{ demandes.to }} sur {{ demandes.total }} résultats
+                        <div v-if="demandes && demandes.links && demandes.links.length > 3" class="mt-6 flex justify-between items-center border-t border-indigo-100 pt-4">
+                            <div class="text-sm text-indigo-700 bg-indigo-50/50 px-3 py-1.5 rounded-md border border-indigo-100 inline-flex items-center">
+                                <svg class="w-4 h-4 mr-1.5 text-indigo-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+                                </svg>
+                                Affichage de <span class="font-medium mx-1">{{ demandes.from }}</span> à
+                                <span class="font-medium mx-1">{{ demandes.to }}</span> sur
+                                <span class="font-medium mx-1">{{ demandes.total }}</span> résultats
                             </div>
-                            <div class="flex gap-1">
+                            <div class="-mb-1 flex flex-wrap">
                                 <template v-for="(link, i) in demandes.links" :key="i">
-                                    <Link v-if="link.url"
+                                    <div
+                                        v-if="!link.url"
+                                        class="mb-1 mr-1 rounded border border-indigo-200 bg-indigo-50/50 px-3 py-2 text-sm font-medium text-indigo-400 cursor-not-allowed"
+                                    >
+                                        <span v-if="link.label === '&laquo; Previous'">« Précédent</span>
+                                        <span v-else-if="link.label === 'Next &raquo;'">Suivant »</span>
+                                        <span v-else>{{ link.label }}</span>
+                                    </div>
+                                    <Link
+                                        v-else
                                         :href="link.url"
-                                        class="px-3 py-1 rounded"
+                                        class="mb-1 mr-1 rounded border px-3 py-2 text-sm font-medium transition-colors duration-200"
                                         :class="{
-                                            'bg-blue-600 text-white': link.active,
-                                            'text-gray-700 hover:bg-gray-100': !link.active
+                                            'border-indigo-500 bg-indigo-100 text-indigo-600 shadow-sm': link.active,
+                                            'border-indigo-200 bg-white text-indigo-600 hover:bg-indigo-50 shadow-sm': !link.active
                                         }"
                                     >
-                                        <span v-if="link.label === '&laquo; Previous'">← Précédent</span>
-                                        <span v-else-if="link.label === 'Next &raquo;'">Suivant →</span>
+                                        <span v-if="link.label === '&laquo; Previous'">« Précédent</span>
+                                        <span v-else-if="link.label === 'Next &raquo;'">Suivant »</span>
                                         <span v-else>{{ link.label }}</span>
                                     </Link>
-                                    <span v-else
-                                        class="px-3 py-1 rounded text-gray-400 cursor-not-allowed"
-                                    >
-                                        <span v-if="link.label === '&laquo; Previous'">← Précédent</span>
-                                        <span v-else-if="link.label === 'Next &raquo;'">Suivant  →</span>
-                                        <span v-else>{{ link.label }}</span>
-                                    </span>
                                 </template>
                             </div>
                         </div>
@@ -411,7 +418,7 @@ const canAffectSelectedDemandes = computed(() => {
                 <div class="px-6 py-4">
                     <div class="mb-4">
                         <label class="block text-sm font-medium text-gray-700">Structure</label>
-                        <select 
+                        <select
                             v-model="selectedStructureId"
                             class="mt-1 block w-full pl-3 pr-10 py-2 text-base border-gray-300 focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm rounded-md"
                         >
@@ -424,19 +431,19 @@ const canAffectSelectedDemandes = computed(() => {
                 </div>
 
                 <div class="px-6 py-4 bg-gray-50 flex justify-end gap-3">
-                    <button 
+                    <button
                         @click="closeAffectationModal"
                         class="px-4 py-2 bg-gray-100 text-gray-700 rounded-lg hover:bg-gray-200 transition-colors"
                     >
                         Annuler
                     </button>
-                    <button 
+                    <button
                         @click="submitAffectation"
                         :disabled="!selectedStructureId"
                         :class="[
                             'px-4 py-2 rounded-lg transition-colors flex items-center gap-2',
-                            selectedStructureId 
-                                ? 'bg-blue-600 text-white hover:bg-blue-700' 
+                            selectedStructureId
+                                ? 'bg-blue-600 text-white hover:bg-blue-700'
                                 : 'bg-gray-300 text-gray-500 cursor-not-allowed'
                         ]"
                     >
@@ -449,9 +456,9 @@ const canAffectSelectedDemandes = computed(() => {
             </div>
         </div>
     </AgentDPAF>
-    
+
     <!-- Ajout du composant Toast -->
     <AdminToast ref="toast" />
 
 <!-- <pre>{{ demandes }}</pre> -->
-</template> 
+</template>
