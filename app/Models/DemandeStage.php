@@ -8,21 +8,21 @@ use Illuminate\Database\Eloquent\Model;
 class DemandeStage extends Model
 {
     use HasFactory;
-    
+
     /**
      * La table associée au modèle.
      *
      * @var string
      */
     protected $table = 'demande_stages';
-    
+
     /**
      * La clé primaire associée à la table.
      *
      * @var string
      */
     protected $primaryKey = 'id';
-    
+
     /**
      * Les attributs qui sont assignables en masse.
      *
@@ -42,8 +42,9 @@ class DemandeStage extends Model
         'date_traitement',
         'traite_par',
         'motif_refus',
+        'agent_id',
     ];
-    
+
     /**
      * Les attributs qui doivent être convertis.
      *
@@ -57,7 +58,7 @@ class DemandeStage extends Model
         'structure_id' => 'integer',
         'traite_par' => 'integer',
     ];
-    
+
     /**
      * Relation avec le stagiaire
      */
@@ -65,7 +66,7 @@ class DemandeStage extends Model
     {
         return $this->belongsTo(Stagiaire::class, 'stagiaire_id', 'id_stagiaire');
     }
-    
+
     /**
      * Relation avec la structure
      */
@@ -73,7 +74,7 @@ class DemandeStage extends Model
     {
         return $this->belongsTo(Structure::class);
     }
-    
+
     /**
      * Relation avec les membres du groupe
      */
@@ -96,5 +97,13 @@ class DemandeStage extends Model
     public function agentTraitement()
     {
         return $this->belongsTo(Agent::class, 'traite_par');
+    }
+
+    /**
+     * Relation avec l'agent assigné à la demande
+     */
+    public function agentAssigne()
+    {
+        return $this->belongsTo(Agent::class, 'agent_id');
     }
 }

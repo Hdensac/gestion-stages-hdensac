@@ -55,7 +55,7 @@ Route::get('/dashboard', function () {
     Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');
     Route::patch('/profile', [ProfileController::class, 'update'])->name('profile.update');
     Route::delete('/profile', [ProfileController::class, 'destroy'])->name('profile.destroy');
-    
+
     // Admin routes
     Route::prefix('admin')->name('admin.')->middleware(['auth'])->group(function() {
         // Dashboard admin avec statistiques
@@ -144,14 +144,14 @@ Route::get('/dashboard', function () {
         Route::get('/structures/available', [StructureController::class, 'available'])->name('structures.available');
 
         Route::get('/stagiaires', [StagiaireController::class, 'index'])->name('stagiaires.index');
-        
+
         // Routes pour les agents
         Route::get('/agents', [AgentController::class, 'index'])->name('agents.index');
         Route::post('/agents', [AgentController::class, 'store'])->name('agents.store');
         Route::put('/agents/{agent}', [AgentController::class, 'update'])->name('agents.update');
         Route::delete('/agents/{agent}', [AgentController::class, 'destroy'])->name('agents.destroy');
     });
-    
+
     // Routes pour les demandes de stage
     Route::post('/demande-stages', [DemandeController::class, 'store'])->name('demande_stages.store');
     Route::get('/mes-demandes', [DemandeController::class, 'index'])->name('mes.demandes');
@@ -162,14 +162,14 @@ Route::get('/dashboard', function () {
     Route::get('/recherche-code', function () {
         return Inertia::render('Stagiaire/RechercheCode');
     })->name('recherche.code');
-    
+
     // Routes pour les emails
     Route::post('/api/emails/demande-confirmation', [EmailController::class, 'sendDemandeConfirmation']);
     Route::get('/api/emails/check-config', [EmailController::class, 'checkEmailConfig']);
-    
+
     // Routes pour les stagiaires
     Route::resource('stagiaires', StagiaireController::class);
-    
+
     // Routes pour les agents DPAF
     Route::prefix('agent')->name('agent.')->middleware(['auth', 'verified'])->group(function () {
         Route::get('/dashboard', [App\Http\Controllers\Agent\DashboardController::class, 'index'])->name('dashboard');
@@ -190,6 +190,8 @@ Route::get('/dashboard', function () {
             Route::get('/demandes/{demande}', [App\Http\Controllers\Agent\RS\DemandeController::class, 'show'])->name('demandes.show');
             Route::post('/demandes/{demande}/approve', [App\Http\Controllers\Agent\RS\DemandeController::class, 'approve'])->name('demandes.approve');
             Route::post('/demandes/{demande}/reject', [App\Http\Controllers\Agent\RS\DemandeController::class, 'reject'])->name('demandes.reject');
+            Route::get('/responsable-agents', [App\Http\Controllers\Agent\RS\DemandeController::class, 'getResponsableAgents'])->name('responsable-agents');
+            Route::post('/demandes/{demande}/affecter-maitre', [App\Http\Controllers\Agent\RS\DemandeController::class, 'affecterMaitreStage'])->name('demandes.affecter-maitre');
             // CRUD agents sans rôle
             Route::resource('agents', App\Http\Controllers\Agent\RS\AgentController::class);
             Route::resource('organigramme', App\Http\Controllers\Agent\RS\StructureOrganigrammeController::class)
@@ -197,7 +199,7 @@ Route::get('/dashboard', function () {
             Route::post('organigramme/{structure}/assign-agent', [App\Http\Controllers\Agent\RS\StructureOrganigrammeController::class, 'assignAgent'])->name('organigramme.assign-agent');
         });
     });
-    
+
     // Routes pour les stagiaires
     Route::prefix('stagiaire')->name('stagiaire.')->middleware(['auth', 'verified'])->group(function () {
         Route::get('/dashboard', [App\Http\Controllers\Stagiaire\DashboardController::class, 'index'])->name('dashboard');

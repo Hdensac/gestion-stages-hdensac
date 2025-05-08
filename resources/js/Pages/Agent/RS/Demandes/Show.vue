@@ -24,7 +24,7 @@
               <!-- Informations sur la demande -->
               <div class="bg-gray-50 p-6 rounded-lg shadow-sm">
                 <h2 class="text-xl font-semibold mb-4 text-gray-800 border-b pb-2">Informations de la demande</h2>
-                
+
                 <div class="space-y-3">
                   <div class="flex flex-col">
                     <span class="text-sm text-gray-500">Statut</span>
@@ -32,27 +32,27 @@
                       {{ demande.statut }}
                     </span>
                   </div>
-                  
+
                   <div class="flex flex-col">
                     <span class="text-sm text-gray-500">Structure</span>
                     <span class="font-medium">{{ demande.structure.libelle }}</span>
                   </div>
-                  
+
                   <div class="flex flex-col">
                     <span class="text-sm text-gray-500">Type de stage</span>
                     <span class="font-medium">{{ demande.type }}</span>
                   </div>
-                  
+
                   <div class="flex flex-col">
                     <span class="text-sm text-gray-500">Nature</span>
                     <span class="font-medium">{{ demande.nature }}</span>
                   </div>
-                  
+
                   <div class="flex flex-col">
                     <span class="text-sm text-gray-500">Période</span>
                     <span class="font-medium">Du {{ formatDate(demande.date_debut) }} au {{ formatDate(demande.date_fin) }}</span>
                   </div>
-                  
+
                   <div class="flex flex-col">
                     <span class="text-sm text-gray-500">Date de soumission</span>
                     <span class="font-medium">{{ formatDate(demande.created_at) }}</span>
@@ -69,37 +69,37 @@
                   </div>
                 </div>
               </div>
-              
+
               <!-- Informations du stagiaire -->
               <div class="bg-gray-50 p-6 rounded-lg shadow-sm">
                 <h2 class="text-xl font-semibold mb-4 text-gray-800 border-b pb-2">Informations du stagiaire</h2>
-                
+
                 <div class="space-y-3">
                   <div class="flex flex-col">
                     <span class="text-sm text-gray-500">Nom complet</span>
                     <span class="font-medium">{{ demande.stagiaire?.user?.nom }} {{ demande.stagiaire?.user?.prenom }}</span>
                   </div>
-                  
+
                   <div class="flex flex-col">
                     <span class="text-sm text-gray-500">Email</span>
                     <span class="font-medium">{{ demande.stagiaire?.user?.email }}</span>
                   </div>
-                  
+
                   <div class="flex flex-col">
                     <span class="text-sm text-gray-500">Téléphone</span>
                     <span class="font-medium">{{ demande.stagiaire?.user?.telephone }}</span>
                   </div>
-                  
+
                   <div class="flex flex-col">
                     <span class="text-sm text-gray-500">Université</span>
                     <span class="font-medium">{{ demande.stagiaire?.universite }}</span>
                   </div>
-                  
+
                   <div class="flex flex-col">
                     <span class="text-sm text-gray-500">Filière</span>
                     <span class="font-medium">{{ demande.stagiaire?.filiere }}</span>
                   </div>
-                  
+
                   <div class="flex flex-col">
                     <span class="text-sm text-gray-500">Niveau d'étude</span>
                     <span class="font-medium">{{ demande.stagiaire?.niveau_etude }}</span>
@@ -117,11 +117,11 @@
                 </div>
               </div>
             </div>
-            
+
             <!-- Documents attachés -->
             <div class="mt-6 bg-gray-50 p-6 rounded-lg shadow-sm">
               <h2 class="text-xl font-semibold mb-4 text-gray-800 border-b pb-2">Documents attachés</h2>
-              
+
               <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
                 <!-- Document principal (CV ou Lettre de recommandation) -->
                 <div v-if="demande.lettre_cv_path" class="flex flex-col gap-2">
@@ -164,12 +164,16 @@
             </div>
             <div v-if="demande.statut === 'Acceptée'" class="mt-6 bg-gray-50 p-6 rounded-lg shadow-sm">
               <h2 class="text-xl font-semibold mb-4 text-gray-800 border-b pb-2">Actions</h2>
-              <button class="px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700 transition-colors flex items-center gap-2">
-                <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4" />
-                </svg>
-                Affecter maître
-              </button>
+              <div class="flex gap-4">
+                <button
+                  @click="openMaitreStageModal"
+                  class="px-4 py-2 bg-indigo-600 text-white rounded hover:bg-indigo-700 transition-colors flex items-center gap-2">
+                  <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4" />
+                  </svg>
+                  Affecter maître de stage
+                </button>
+              </div>
             </div>
           </div>
         </div>
@@ -240,14 +244,70 @@
         </div>
       </div>
     </Modal>
+
+
+
+    <!-- Modal d'affectation de maître de stage -->
+    <Modal :show="showMaitreStageModal" @close="closeMaitreStageModal">
+      <div class="p-6">
+        <h2 class="text-lg font-medium text-gray-900 mb-4">
+          Affecter un maître de stage
+        </h2>
+        <div class="mb-4">
+          <label class="block text-sm font-medium text-gray-700 mb-2">
+            Sélectionner un agent avec le rôle MS
+          </label>
+          <select
+            v-model="selectedMaitreStageId"
+            class="w-full rounded-md border-gray-300 shadow-sm focus:border-blue-300 focus:ring focus:ring-blue-200 focus:ring-opacity-50"
+          >
+            <option value="" disabled>Sélectionner un maître de stage</option>
+            <option v-for="agent in maitreStageAgents" :key="agent.id" :value="agent.id">
+              {{ agent.user?.nom }} {{ agent.user?.prenom }}
+              {{ agent.structure_responsable ? '- Responsable de: ' + agent.structure_responsable.libelle : '' }}
+            </option>
+          </select>
+          <p v-if="maitreStageForm.errors.maitre_stage_id" class="mt-2 text-sm text-red-600">
+            {{ maitreStageForm.errors.maitre_stage_id }}
+          </p>
+        </div>
+        <div class="flex justify-end gap-4">
+          <button
+            @click="closeMaitreStageModal"
+            class="px-4 py-2 bg-gray-100 text-gray-700 rounded hover:bg-gray-200 transition-colors"
+          >
+            Annuler
+          </button>
+          <button
+            @click="submitMaitreStage"
+            class="px-4 py-2 bg-indigo-600 text-white rounded hover:bg-indigo-700 transition-colors"
+            :disabled="maitreStageForm.processing || !selectedMaitreStageId"
+          >
+            Affecter le maître de stage
+          </button>
+          <button
+            @click="fetchMaitreStageAgents"
+            class="px-4 py-2 bg-yellow-500 text-white rounded hover:bg-yellow-600 transition-colors"
+            type="button"
+          >
+            Rafraîchir la liste
+          </button>
+        </div>
+
+        <div v-if="maitreStageAgents.length === 0" class="mt-4 p-4 bg-yellow-100 text-yellow-800 rounded">
+          Aucun agent avec le rôle MS n'a été trouvé. Veuillez vérifier que des agents avec ce rôle existent dans le système.
+        </div>
+      </div>
+    </Modal>
   </RSLayout>
 </template>
 
 <script setup>
-import { ref } from 'vue';
-import { Head, Link, useForm } from '@inertiajs/vue3';
+import { ref, onMounted } from 'vue';
+import { Head, Link, useForm, router } from '@inertiajs/vue3';
 import RSLayout from '@/Layouts/RSLayout.vue';
 import Modal from '@/Components/Modal.vue';
+import axios from 'axios';
 
 const props = defineProps({
   demande: Object,
@@ -256,12 +316,19 @@ const props = defineProps({
 
 const showRejectModal = ref(false);
 const showApproveModal = ref(false);
+const showMaitreStageModal = ref(false);
+const selectedMaitreStageId = ref('');
+const maitreStageAgents = ref([]);
 
 const rejectForm = useForm({
   motif_refus: '',
 });
 
 const approveForm = useForm({});
+
+const maitreStageForm = useForm({
+  maitre_stage_id: '',
+});
 
 function closeRejectModal() {
   showRejectModal.value = false;
@@ -311,4 +378,78 @@ function getStatusColor(status) {
       return 'text-gray-600 bg-gray-100';
   }
 }
-</script> 
+
+
+
+
+
+// Fonction pour ouvrir la modal d'affectation de maître de stage
+function openMaitreStageModal() {
+  // Récupérer les agents avec le rôle MS
+  fetchMaitreStageAgents();
+  showMaitreStageModal.value = true;
+}
+
+// Fonction pour fermer la modal d'affectation de maître de stage
+function closeMaitreStageModal() {
+  showMaitreStageModal.value = false;
+  selectedMaitreStageId.value = '';
+  maitreStageForm.reset();
+}
+
+
+
+// Fonction pour récupérer les agents avec le rôle MS
+async function fetchMaitreStageAgents() {
+  try {
+    console.log('Récupération des maîtres de stage...');
+
+    // Utiliser la même route pour récupérer les agents MS
+    const response = await axios.get(route('agent.rs.responsable-agents'));
+    console.log('Maîtres de stage récupérés:', response.data);
+
+    maitreStageAgents.value = response.data;
+    console.log('maitreStageAgents après affectation:', maitreStageAgents.value);
+  } catch (error) {
+    console.error('Erreur lors de la récupération des maîtres de stage:', error);
+    if (error.response) {
+      console.error('Détails de l\'erreur:', error.response.data);
+    }
+  }
+}
+
+
+
+// Fonction pour soumettre l'affectation de maître de stage
+function submitMaitreStage() {
+  if (!selectedMaitreStageId.value) return;
+
+  console.log('ID du maître de stage sélectionné:', selectedMaitreStageId.value);
+
+  // Trouver l'agent sélectionné pour afficher ses détails dans la console
+  const selectedAgent = maitreStageAgents.value.find(agent => agent.id == selectedMaitreStageId.value);
+  console.log('Agent sélectionné:', selectedAgent);
+
+  maitreStageForm.maitre_stage_id = selectedMaitreStageId.value;
+  console.log('Formulaire avant soumission:', maitreStageForm);
+
+  maitreStageForm.post(route('agent.rs.demandes.affecter-maitre', props.demande.id), {
+    onSuccess: (response) => {
+      console.log('Affectation réussie, réponse:', response);
+      closeMaitreStageModal();
+      // Recharger la page pour voir les changements
+      router.reload();
+    },
+    onError: (errors) => {
+      console.error('Erreur lors de l\'affectation du maître de stage:', errors);
+    }
+  });
+}
+
+// Charger les maîtres de stage au montage du composant
+onMounted(() => {
+  if (props.demande?.statut === 'Acceptée') {
+    fetchMaitreStageAgents();
+  }
+});
+</script>

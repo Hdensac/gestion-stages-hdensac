@@ -13,6 +13,7 @@ class AffectationMaitreStage extends Model
     protected $fillable = [
         'stage_id',
         'maitre_stage_id',
+        'agent_affectant_id',
         'date_affectation',
         'statut',
         'motif_refus',
@@ -36,6 +37,14 @@ class AffectationMaitreStage extends Model
     public function maitreStage(): BelongsTo
     {
         return $this->belongsTo(User::class, 'maitre_stage_id');
+    }
+
+    /**
+     * Get the agent who assigned the maitre de stage.
+     */
+    public function agentAffectant(): BelongsTo
+    {
+        return $this->belongsTo(Agent::class, 'agent_affectant_id');
     }
 
     // Définir d'autres relations Eloquent ici ultérieurement
