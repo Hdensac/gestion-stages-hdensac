@@ -8,7 +8,9 @@
       <!-- Icône avec badge pour indiquer le niveau hiérarchique -->
       <div class="relative">
         <div class="bg-gradient-to-br from-blue-500 to-blue-600 text-white rounded-lg p-3 flex-shrink-0 shadow-sm">
-          <component :is="iconForType" class="w-6 h-6" />
+          <BuildingOfficeIcon v-if="iconForType === 'BuildingOfficeIcon'" class="w-6 h-6" />
+          <UserGroupIcon v-else-if="iconForType === 'UserGroupIcon'" class="w-6 h-6" />
+          <UserIcon v-else class="w-6 h-6" />
         </div>
         <div v-if="hasChildren"
           class="absolute -bottom-1 -right-1 bg-blue-100 text-blue-700 rounded-full w-5 h-5 flex items-center justify-center text-xs font-bold border border-white shadow-sm"
@@ -93,9 +95,9 @@
             class="flex items-center gap-1 px-3 py-1.5 text-xs bg-red-50 text-red-600 rounded-md hover:bg-red-100 transition-all duration-300 shadow-sm font-medium"
             @click="confirmDelete"
             :aria-label="'Supprimer'"
-            :disabled="!props.structure.parent_id || hasChildren.value"
-            :class="{'opacity-50 cursor-not-allowed': !props.structure.parent_id || hasChildren.value}"
-            :title="hasChildren.value ? 'Impossible de supprimer une structure avec des sous-structures' : 'Supprimer cette structure'"
+            :disabled="!props.structure.parent_id || hasChildren"
+            :class="{'opacity-50 cursor-not-allowed': !props.structure.parent_id || hasChildren}"
+            :title="hasChildren ? 'Impossible de supprimer une structure avec des sous-structures' : 'Supprimer cette structure'"
           >
             <svg xmlns="http://www.w3.org/2000/svg" class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" /></svg>
             Supprimer
@@ -300,7 +302,10 @@ import { router } from '@inertiajs/vue3';
 import {
   PlusIcon,
   XMarkIcon,
-  CheckIcon
+  CheckIcon,
+  BuildingOfficeIcon,
+  UserGroupIcon,
+  UserIcon
 } from '@heroicons/vue/24/solid';
 
 const props = defineProps({
@@ -430,7 +435,8 @@ function submitEdit() {
 
 function confirmDelete() {
   // Vérifier si la structure a des enfants
-  if (hasChildren.value) {
+  const hasChildStructures = props.structure.children && props.structure.children.length > 0;
+  if (hasChildStructures) {
     window.alert('Impossible de supprimer une structure qui contient des sous-structures. Veuillez d\'abord supprimer toutes les sous-structures.');
     return;
   }
@@ -476,27 +482,14 @@ function affecterAgent() {
 const iconForType = computed(() => {
   const type = (props.structure.type_structure || '').toLowerCase();
 
-  // Utiliser des icônes SVG inline pour plus de flexibilité
   if (type.includes('direction') || type.includes('service') || type.includes('département')) {
-    return {
-      template: `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor">
-        <path d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M5 9h14M5 13h14M5 17h14" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" />
-      </svg>`
-    };
+    return 'BuildingOfficeIcon';
   }
   if (type.includes('équipe') || type.includes('groupe')) {
-    return {
-      template: `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor">
-        <path d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197M13 7a4 4 0 11-8 0 4 4 0 018 0z" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" />
-      </svg>`
-    };
+    return 'UserGroupIcon';
   }
 
-  return {
-    template: `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor">
-      <path d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" />
-    </svg>`
-  };
+  return 'UserIcon';
 });
 </script>
 
