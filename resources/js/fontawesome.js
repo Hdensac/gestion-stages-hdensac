@@ -1,35 +1,53 @@
 // fontawesome.js
 import { library } from '@fortawesome/fontawesome-svg-core';
 import { FontAwesomeIcon } from '@fortawesome/vue-fontawesome';
-import { 
-    faUsers, 
-    faBuilding, 
-    faUserGraduate, 
-    faBriefcase, 
+import {
+    faUsers,
+    faBuilding,
+    faUserGraduate,
+    faBriefcase,
     faUserPlus,
     faFileAlt,
     faChartBar,
     faComments,
     faCog,
     faExclamationCircle,
-    faDownload, // Ajout de l'icône download
-    faFileSignature // ajout de l'icône file-signature
+    faDownload,
+    faFileSignature,
+    faChevronRight,
+    faBell,
+    faCheckCircle,
+    faExclamationTriangle,
+    faArrowRight,
+    faSync,
+    faCalendar,
+    faArrowUp,
+    faArrowDown
 } from '@fortawesome/free-solid-svg-icons';
 
 // Add icons to the library
 library.add(
-    faUsers, 
-    faBuilding, 
-    faUserGraduate, 
-    faBriefcase, 
+    faUsers,
+    faBuilding,
+    faUserGraduate,
+    faBriefcase,
     faUserPlus,
     faFileAlt,
     faChartBar,
     faComments,
     faCog,
     faExclamationCircle,
-    faDownload, // Ajout de l'icône download à la librairie
-    faFileSignature // ajout à la librairie
+    faDownload,
+    faFileSignature,
+    faChevronRight,
+    faBell,
+    faCheckCircle,
+    faExclamationTriangle,
+    faArrowRight,
+    faSync,
+    faCalendar,
+    faArrowUp,
+    faArrowDown
 );
 
 export { FontAwesomeIcon };
