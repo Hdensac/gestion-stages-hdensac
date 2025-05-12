@@ -57,7 +57,7 @@
               <select v-model="form.structure_responsable_id" class="w-full border rounded-lg p-2 focus:ring-2 focus:ring-blue-500 focus:border-blue-500">
                 <option :value="null">Aucune structure</option>
                 <option v-for="structure in structures" :key="structure.id" :value="structure.id">
-                  {{ structure.libelle }} {{ structure.sigle ? `(${structure.sigle})` : '' }}
+                  {{ getStructureDisplayName(structure) }}
                 </option>
               </select>
               <p class="text-xs text-gray-500 mt-1">
@@ -97,5 +97,39 @@ const form = useForm({
 });
 function submit() {
   form.post(route('agent.rs.agents.store'));
+}
+
+// Fonction pour afficher le nom de la structure avec indication de la hiérarchie
+function getStructureDisplayName(structure) {
+  let displayName = structure.libelle;
+  if (structure.sigle) {
+    displayName += ` (${structure.sigle})`;
+  }
+
+  // Ajouter un préfixe pour indiquer le niveau hiérarchique
+  if (structure.parent_id) {
+    // Calculer le niveau de profondeur de la structure
+    let depth = 1; // Commencer à 1 pour les sous-structures directes
+    let currentParentId = structure.parent_id;
+
+    // Remonter la chaîne des parents pour déterminer le niveau de profondeur
+    while (currentParentId) {
+      const parent = props.structures.find(s => s.id === currentParentId);
+      if (!parent || !parent.parent_id) break; // Arrêter si on atteint la structure principale
+
+      depth++;
+      currentParentId = parent.parent_id;
+    }
+
+    // Ajouter des flèches en fonction du niveau de profondeur
+    let prefix = '';
+    for (let i = 0; i < depth; i++) {
+      prefix += '→';
+    }
+
+    displayName = `${prefix} ${displayName}`;
+  }
+
+  return displayName;
 }
 </script>

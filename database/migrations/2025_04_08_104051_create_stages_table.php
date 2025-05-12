@@ -15,7 +15,7 @@ return new class extends Migration
             $table->id();
             $table->foreignId('demande_stage_id')->constrained('demande_stages')->onDelete('cascade');
             $table->foreignId('structure_id')->constrained('structures')->onDelete('cascade');
-            $table->foreignId('theme_stage_id')->constrained('theme_stages')->onDelete('cascade');
+            $table->foreignId('theme_stage_id')->nullable()->constrained('theme_stages')->onDelete('set null');
             $table->date('date_debut')->nullable();
             $table->date('date_fin')->nullable();
             $table->enum('statut', ['En cours', 'Terminé'])->default('En cours');

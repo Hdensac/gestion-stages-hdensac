@@ -115,6 +115,7 @@
                     <tr>
                       <th class="px-6 py-3 text-left text-xs font-bold text-gray-500 uppercase tracking-wider">Stagiaire</th>
                       <th class="px-6 py-3 text-left text-xs font-bold text-gray-500 uppercase tracking-wider">Date de soumission</th>
+                      <th class="px-6 py-3 text-left text-xs font-bold text-gray-500 uppercase tracking-wider">Date d'affectation</th>
                       <th class="px-6 py-3 text-left text-xs font-bold text-gray-500 uppercase tracking-wider">Statut</th>
                       <th class="px-6 py-3 text-left text-xs font-bold text-gray-500 uppercase tracking-wider">Actions</th>
                     </tr>
@@ -142,10 +143,21 @@
                       </td>
                       <td class="px-6 py-4 whitespace-nowrap">
                         <div class="text-sm text-gray-900">
-                          {{ formatDate(demande.created_at) }}
+                          {{ formatDate(demande.date_soumission || demande.created_at) }}
                         </div>
                         <div class="text-xs text-gray-500">
-                          {{ formatTime(demande.created_at) }}
+                          {{ formatTime(demande.date_soumission || demande.created_at) }}
+                        </div>
+                      </td>
+                      <td class="px-6 py-4 whitespace-nowrap">
+                        <div v-if="getAffectationDate(demande)" class="text-sm text-gray-900">
+                          {{ formatDate(getAffectationDate(demande)) }}
+                        </div>
+                        <div v-if="getAffectationDate(demande)" class="text-xs text-gray-500">
+                          {{ formatTime(getAffectationDate(demande)) }}
+                        </div>
+                        <div v-else class="text-xs text-gray-400 italic">
+                          Non affectée
                         </div>
                       </td>
                       <td class="px-6 py-4 whitespace-nowrap">
@@ -154,7 +166,7 @@
                         </span>
                       </td>
                       <td class="px-6 py-4 whitespace-nowrap text-sm font-medium">
-                        <Link 
+                        <Link
                           :href="route('agent.rs.demandes.show', demande.id)"
                           class="text-blue-600 hover:text-blue-900 font-semibold transition"
                         >
@@ -298,5 +310,31 @@ function getStatusClass(status) {
     'Refusée': 'bg-red-100 text-red-800'
   };
   return classes[status] || 'bg-gray-100 text-gray-800';
+}
+
+// Récupérer la date d'affectation d'une demande
+function getAffectationDate(demande) {
+  if (demande.affectations && demande.affectations.length > 0) {
+    // Les affectations sont déjà triées par le contrôleur, prendre la première
+    const affectation = demande.affectations[0];
+
+    // Vérifier que la date d'affectation est postérieure à la date de soumission
+    const dateAffectation = new Date(affectation.date_affectation || affectation.created_at);
+    const dateSoumission = new Date(demande.date_soumission || demande.created_at);
+
+    // Si la date d'affectation est antérieure à la date de soumission, c'est une erreur de données
+    // Dans ce cas, utiliser la date de soumission + 1 heure comme approximation
+    if (dateAffectation < dateSoumission) {
+      console.warn('Anomalie: date d\'affectation antérieure à la date de soumission pour la demande ' + demande.id);
+      // Créer une nouvelle date 1 heure après la soumission comme approximation
+      const dateCorrigee = new Date(dateSoumission);
+      dateCorrigee.setHours(dateCorrigee.getHours() + 1);
+      return dateCorrigee;
+    }
+
+    // Retourner la date d'affectation ou la date de création si la date d'affectation n'est pas définie
+    return affectation.date_affectation || affectation.created_at;
+  }
+  return null;
 }
 </script>

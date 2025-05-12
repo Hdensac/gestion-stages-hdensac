@@ -1,9 +1,14 @@
 <template>
     <AgentDPAF>
         <template #header>
-            <h2 class="font-semibold text-xl text-gray-800 leading-tight">
-                Tableau de bord DPAF
-            </h2>
+            <div class="flex items-center gap-4 mb-2">
+                <div class="bg-blue-100 text-blue-700 rounded-full w-12 h-12 flex items-center justify-center text-2xl font-bold shadow">
+                    <svg class="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
+                    </svg>
+                </div>
+                <h1 class="text-3xl font-extrabold text-blue-800 leading-tight">Tableau de bord DPAF</h1>
+            </div>
         </template>
 
         <div class="py-12">
@@ -148,7 +153,7 @@
                     </div>
                 </div>
 
-                
+
             </div>
         </div>
     </AgentDPAF>
@@ -195,4 +200,4 @@ const getStatusClass = (status) => {
     };
     return classes[status] || 'bg-gray-100 text-gray-800';
 };
-</script> 
+</script>

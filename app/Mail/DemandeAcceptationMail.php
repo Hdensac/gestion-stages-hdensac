@@ -30,12 +30,25 @@ class DemandeAcceptationMail extends Mailable
     {
         $this->demande = $demande;
         $this->user = $user;
-        $this->codeSuivi = $demande->code_suivi;
+        $this->codeSuivi = $demande->code_suivi ?? 'CODE_INCONNU';
         $this->url = route('mes.demandes');
         $this->structure = $demande->structure->libelle ?? 'Non spécifiée';
-        $this->dateDebut = $demande->date_debut->format('d/m/Y');
-        $this->dateFin = $demande->date_fin->format('d/m/Y');
+
+        // Gérer les cas où les dates pourraient être nulles
+        $this->dateDebut = $demande->date_debut ? $demande->date_debut->format('d/m/Y') : 'Date non spécifiée';
+        $this->dateFin = $demande->date_fin ? $demande->date_fin->format('d/m/Y') : 'Date non spécifiée';
+
         $this->nomUser = $user->nom . ' ' . $user->prenom;
+
+        // Journaliser les informations pour le débogage
+        \Illuminate\Support\Facades\Log::info('Construction de l\'email d\'acceptation', [
+            'demande_id' => $demande->id,
+            'code_suivi' => $this->codeSuivi,
+            'structure' => $this->structure,
+            'date_debut' => $this->dateDebut,
+            'date_fin' => $this->dateFin,
+            'user_email' => $user->email
+        ]);
     }
 
     /**
@@ -67,4 +80,4 @@ class DemandeAcceptationMail extends Mailable
     {
         return [];
     }
-} 
+}

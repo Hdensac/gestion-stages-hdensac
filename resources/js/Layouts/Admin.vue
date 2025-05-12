@@ -28,8 +28,8 @@ const showingNavigationDropdown = ref(false);
 
                             <!-- Navigation Links -->
                             <div class="hidden space-x-8 sm:-my-px sm:ms-10 sm:flex">
-                                <NavLink :href="route('dashboard')" :active="route().current('dashboard')">
-                                    Dashboard
+                                <NavLink :href="route('admin.dashboard')" :active="route().current('admin.dashboard')">
+                                    Tableau de bord
                                 </NavLink>
                                 <NavLink :href="route('admin.users.index')"
                                     :active="route().current('admin.users.index')">
@@ -37,7 +37,7 @@ const showingNavigationDropdown = ref(false);
                                 </NavLink>
                                 <NavLink :href="route('admin.structures.index')"
                                     :active="route().current('admin.structures.index')">
-                                    Structures 
+                                    Structures
                                 </NavLink>
                                 <NavLink :href="route('admin.stagiaires.index')"
                                     :active="route().current('admin.stagiaires.index')">
@@ -45,7 +45,7 @@ const showingNavigationDropdown = ref(false);
                                 </NavLink>
                                 <NavLink :href="route('admin.agents.index')"
                                     :active="route().current('admin.agents.index')">
-                                    Agents 
+                                    Agents
                                 </NavLink>
 
                             </div>
@@ -121,22 +121,22 @@ const showingNavigationDropdown = ref(false);
                         hidden: !showingNavigationDropdown,
                     }" class="sm:hidden">
                     <div class="space-y-1 pb-3 pt-2">
-                        <ResponsiveNavLink :href="route('dashboard')" :active="route().current('dashboard')">
-                            Dashboard
+                        <ResponsiveNavLink :href="route('admin.dashboard')" :active="route().current('admin.dashboard')">
+                            Tableau de bord
                         </ResponsiveNavLink>
-                        
+
                         <ResponsiveNavLink :href="route('admin.users.index')" :active="route().current('admin.users.index')">
                             Users
                         </ResponsiveNavLink>
-                        
+
                         <ResponsiveNavLink :href="route('admin.structures.index')" :active="route().current('admin.structures.index')">
                             Structures
                         </ResponsiveNavLink>
-                        
+
                         <ResponsiveNavLink :href="route('admin.stagiaires.index')" :active="route().current('admin.stagiaires.index')">
                             Stagiaires
                         </ResponsiveNavLink>
-                        
+
                         <ResponsiveNavLink :href="route('admin.agents.index')" :active="route().current('admin.agents.index')">
                             Entreprises
                         </ResponsiveNavLink>

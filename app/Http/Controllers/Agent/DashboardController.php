@@ -16,13 +16,16 @@ class DashboardController extends Controller
     {
         try {
             $user = Auth::user();
-            
+
             // Log pour le débogage
             Log::info('Tentative d\'accès au dashboard DPAF', [
                 'user_id' => $user->id,
                 'user_role' => $user->role,
                 'has_agent' => $user->agent ? 'oui' : 'non',
-                'agent_role' => $user->agent ? $user->agent->role_agent : 'aucun'
+                'agent_role' => $user->agent ? $user->agent->role_agent : 'aucun',
+                'is_dpaf_responsable' => Structure::where('responsable_id', $user->agent->id)
+                    ->where('sigle', 'DPAF')
+                    ->exists() ? 'oui' : 'non'
             ]);
 
             // Vérifier si l'utilisateur a un agent associé
@@ -32,10 +35,21 @@ class DashboardController extends Controller
                 ]);
             }
 
-            // Vérifier si l'agent est un DPAF
-            if ($user->agent->role_agent !== 'DPAF') {
+            // Vérifier si l'agent est un RS
+            if ($user->agent->role_agent !== 'RS') {
                 return Inertia::render('Dashboard/Default', [
-                    'error' => 'Accès réservé aux agents DPAF. Votre rôle actuel: ' . $user->agent->role_agent
+                    'error' => 'Accès réservé aux Responsables de Structure (RS).'
+                ]);
+            }
+
+            // Vérifier si l'agent est responsable de la structure DPAF
+            $isDpafResponsable = Structure::where('responsable_id', $user->agent->id)
+                ->where('sigle', 'DPAF')
+                ->exists();
+
+            if (!$isDpafResponsable) {
+                return Inertia::render('Dashboard/Default', [
+                    'error' => 'Accès réservé au responsable de la structure DPAF. Vous n\'êtes pas responsable de cette structure.'
                 ]);
             }
 
@@ -93,7 +107,10 @@ class DashboardController extends Controller
                     'userId' => $user->id,
                     'userRole' => $user->role,
                     'agentId' => $user->agent->id,
-                    'agentRole' => $user->agent->role_agent
+                    'agentRole' => $user->agent->role_agent,
+                    'structureResponsable' => Structure::where('responsable_id', $user->agent->id)
+                        ->where('sigle', 'DPAF')
+                        ->first()
                 ]
             ]);
 
@@ -110,4 +127,4 @@ class DashboardController extends Controller
             ]);
         }
     }
-} 
+}

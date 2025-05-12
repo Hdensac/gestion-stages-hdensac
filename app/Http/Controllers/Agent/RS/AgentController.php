@@ -50,13 +50,33 @@ class AgentController extends Controller
         // Récupérer la structure principale du RS
         $rsStructure = \App\Models\Structure::where('responsable_id', $rs->id)->first();
 
-        // Récupérer uniquement les sous-structures de la structure principale
+        // Récupérer toutes les sous-structures de la structure principale, y compris les sous-sous-structures
         $structures = [];
         if ($rsStructure) {
-            // Récupérer uniquement les sous-structures (pas la structure principale)
-            $structures = \App\Models\Structure::where('parent_id', $rsStructure->id)
-                ->orderBy('libelle')
-                ->get(['id', 'libelle', 'sigle']);
+            // Récupérer toutes les sous-structures de manière récursive
+            $getAllSubStructures = function($parentId, $level = 0, $maxDepth = 10) use (&$getAllSubStructures) {
+                if ($level >= $maxDepth) {
+                    return collect(); // Éviter les boucles infinies en cas de structure circulaire
+                }
+
+                $directSubStructures = \App\Models\Structure::where('parent_id', $parentId)
+                    ->orderBy('libelle')
+                    ->get(['id', 'libelle', 'sigle', 'parent_id', 'niveau']);
+
+                $allSubStructures = $directSubStructures;
+
+                foreach ($directSubStructures as $subStructure) {
+                    $childrenSubStructures = $getAllSubStructures($subStructure->id, $level + 1, $maxDepth);
+                    $allSubStructures = $allSubStructures->concat($childrenSubStructures);
+                }
+
+                return $allSubStructures;
+            };
+
+            // Récupérer toutes les sous-structures de manière récursive
+            $structures = $getAllSubStructures($rsStructure->id);
+
+            // Les structures sont déjà récupérées
         }
 
         return Inertia::render('Agent/RS/Agents/Create', [
@@ -147,13 +167,33 @@ class AgentController extends Controller
         // Récupérer la structure principale du RS
         $rsStructure = \App\Models\Structure::where('responsable_id', $rs->id)->first();
 
-        // Récupérer uniquement les sous-structures de la structure principale
+        // Récupérer toutes les sous-structures de la structure principale, y compris les sous-sous-structures
         $structures = [];
         if ($rsStructure) {
-            // Récupérer uniquement les sous-structures (pas la structure principale)
-            $structures = \App\Models\Structure::where('parent_id', $rsStructure->id)
-                ->orderBy('libelle')
-                ->get(['id', 'libelle', 'sigle']);
+            // Récupérer toutes les sous-structures de manière récursive
+            $getAllSubStructures = function($parentId, $level = 0, $maxDepth = 10) use (&$getAllSubStructures) {
+                if ($level >= $maxDepth) {
+                    return collect(); // Éviter les boucles infinies en cas de structure circulaire
+                }
+
+                $directSubStructures = \App\Models\Structure::where('parent_id', $parentId)
+                    ->orderBy('libelle')
+                    ->get(['id', 'libelle', 'sigle', 'parent_id', 'niveau']);
+
+                $allSubStructures = $directSubStructures;
+
+                foreach ($directSubStructures as $subStructure) {
+                    $childrenSubStructures = $getAllSubStructures($subStructure->id, $level + 1, $maxDepth);
+                    $allSubStructures = $allSubStructures->concat($childrenSubStructures);
+                }
+
+                return $allSubStructures;
+            };
+
+            // Récupérer toutes les sous-structures de manière récursive
+            $structures = $getAllSubStructures($rsStructure->id);
+
+            // Les structures sont déjà récupérées
         }
 
         // Charger l'agent avec ses relations

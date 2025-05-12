@@ -3,7 +3,6 @@
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\Api\EmailController;
-use App\Http\Controllers\Api\TestMailController;
 
 /*
 |--------------------------------------------------------------------------
@@ -20,6 +19,8 @@ Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
     return $request->user();
 });
 
+
+
 // Routes pour l'envoi d'emails
 // Désactivation temporaire de l'authentification pour faciliter les tests
 // Route::middleware('auth:sanctum')->group(function () {
@@ -32,18 +33,18 @@ Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
 Route::get('/test-email', function() {
     $demande = \App\Models\DemandeStage::first();
     $user = \App\Models\User::first();
-    
+
     if (!$demande || !$user) {
         return response()->json([
             'success' => false,
             'message' => 'Impossible de trouver une demande ou un utilisateur pour le test'
         ], 404);
     }
-    
+
     try {
         \Illuminate\Support\Facades\Mail::to($user->email)
             ->send(new \App\Mail\DemandeConfirmationMail($demande, $user));
-        
+
         return response()->json([
             'success' => true,
             'message' => 'Email de test envoyé à ' . $user->email
@@ -61,10 +62,10 @@ Route::get('/diagnose-queue', function() {
     // Vérifier la configuration de base
     $queueConnection = config('queue.default');
     $queueDriver = config("queue.connections.{$queueConnection}.driver");
-    
+
     // Vérifier si le dossier de stockage est accessible en écriture (pour le driver 'file')
     $storageWritable = is_writable(storage_path());
-    
+
     return response()->json([
         'success' => true,
         'queue_diagnostics' => [
@@ -84,4 +85,4 @@ Route::get('/diagnose-queue', function() {
             ],
         ]
     ]);
-}); 
+});

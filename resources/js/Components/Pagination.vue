@@ -1,15 +1,28 @@
 <template>
-    <div v-if="links.length > 3" class="flex flex-wrap -mb-1">
+    <div v-if="links.length > 3" class="-mb-1 flex flex-wrap">
         <template v-for="(link, key) in links" :key="key">
-            <div v-if="link.url === null" 
-                class="mr-1 mb-1 px-4 py-3 text-sm leading-4 text-gray-400 border rounded"
-                v-html="link.label" />
+            <div
+                v-if="link.url === null"
+                class="mb-1 mr-1 rounded border border-indigo-200 bg-indigo-50/50 px-3 py-2 text-sm font-medium text-indigo-400 cursor-not-allowed"
+            >
+                <span v-if="link.label === '&laquo; Previous'">« Précédent</span>
+                <span v-else-if="link.label === 'Next &raquo;'">Suivant »</span>
+                <span v-else>{{ link.label }}</span>
+            </div>
 
-            <button v-else
+            <button
+                v-else
                 @click="handleClick(link)"
-                class="mr-1 mb-1 px-4 py-3 text-sm leading-4 border rounded hover:bg-gray-100 focus:border-indigo-500 focus:text-indigo-500"
-                :class="{ 'bg-blue-700 text-white': link.active }"
-                v-html="link.label" />
+                class="mb-1 mr-1 rounded border px-3 py-2 text-sm font-medium transition-colors duration-200"
+                :class="{
+                    'border-indigo-500 bg-indigo-100 text-indigo-600 shadow-sm': link.active,
+                    'border-indigo-200 bg-white text-indigo-600 hover:bg-indigo-50 shadow-sm': !link.active
+                }"
+            >
+                <span v-if="link.label === '&laquo; Previous'">« Précédent</span>
+                <span v-else-if="link.label === 'Next &raquo;'">Suivant »</span>
+                <span v-else>{{ link.label }}</span>
+            </button>
         </template>
     </div>
 </template>
@@ -26,11 +39,11 @@ const props = defineProps({
 
 function handleClick(link) {
     if (!link.url) return;
-    
+
     // Extraire le numéro de page de l'URL
     const url = new URL(link.url);
     const page = url.searchParams.get('page') || '1';
-    
+
     emit('change', page);
 }
-</script> 
+</script>

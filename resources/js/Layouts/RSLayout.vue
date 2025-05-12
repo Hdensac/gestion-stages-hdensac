@@ -15,7 +15,7 @@
                         <!-- Liens de navigation -->
                         <div class="hidden space-x-8 sm:-my-px sm:ml-10 sm:flex">
                             <NavLink :href="route('agent.rs.dashboard')" :active="route().current('agent.rs.dashboard')">
-                                Tableau de bord
+                                Tableau de bord RS
                             </NavLink>
                             <NavLink :href="route('agent.rs.demandes')" :active="route().current('agent.rs.demandes')">
                                 Demandes
@@ -25,6 +25,9 @@
                             </NavLink>
                             <NavLink :href="route('agent.rs.organigramme.index')" :active="route().current('agent.rs.organigramme.index')">
                                 Organigramme
+                            </NavLink>
+                            <NavLink v-if="isDpafResponsable" :href="route('agent.dashboard')" :active="route().current('agent.dashboard')">
+                                Tableau de bord DPAF
                             </NavLink>
                         </div>
                     </div>
@@ -87,7 +90,7 @@
             <div :class="{'block': showingNavigationDropdown, 'hidden': !showingNavigationDropdown}" class="sm:hidden">
                 <div class="pt-2 pb-3 space-y-1">
                     <ResponsiveNavLink :href="route('agent.rs.dashboard')" :active="route().current('agent.rs.dashboard')">
-                        Tableau de bord
+                        Tableau de bord RS
                     </ResponsiveNavLink>
                     <ResponsiveNavLink :href="route('agent.rs.demandes')" :active="route().current('agent.rs.demandes')">
                         Demandes
@@ -97,6 +100,9 @@
                     </ResponsiveNavLink>
                     <ResponsiveNavLink :href="route('agent.rs.organigramme.index')" :active="route().current('agent.rs.organigramme.index')">
                         Organigramme
+                    </ResponsiveNavLink>
+                    <ResponsiveNavLink v-if="isDpafResponsable" :href="route('agent.dashboard')" :active="route().current('agent.dashboard')">
+                        Tableau de bord DPAF
                     </ResponsiveNavLink>
                 </div>
 
@@ -155,6 +161,9 @@ import { Link, usePage } from '@inertiajs/vue3';
 
 const showingNavigationDropdown = ref(false);
 const user = usePage().props.auth?.user;
+
+// Récupérer la valeur isDpafResponsable depuis les props de la page
+const isDpafResponsable = ref(usePage().props.isDpafResponsable || false);
 </script>
 
 <style scoped>
@@ -166,4 +175,4 @@ const user = usePage().props.auth?.user;
 main {
     flex: 1;
 }
-</style> 
+</style>
