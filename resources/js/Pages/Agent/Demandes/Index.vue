@@ -126,32 +126,58 @@ const submitDirectGroupAffectation = () => {
         .filter(d => selectedDemandes.value.includes(d.id))
         .filter(d => d.structure);
 
-    const promises = demandesWithStructures.map(demande => {
-        return router.post(route('agent.demandes.affecter', demande.id), {
-            structure_id: demande.structure.id
-        });
-    });
+    // Afficher une seule notification pour toutes les affectations
+    let notificationShown = false;
 
-    Promise.all(promises)
-        .then(() => {
+    // Traiter les demandes séquentiellement pour éviter les problèmes de concurrence
+    const processNextDemande = (index = 0) => {
+        if (index >= demandesWithStructures.length) {
+            // Toutes les demandes ont été traitées
             selectedDemandes.value = [];
-            if (toast.value) {
+
+            // Afficher une seule notification à la fin
+            if (!notificationShown && toast.value) {
+                notificationShown = true;
                 toast.value.addToast({
                     type: 'success',
                     title: 'Succès',
-                    message: 'Les demandes ont été affectées avec succès'
+                    message: 'Les demandes ont été affectées avec succès',
+                    duration: 3000 // Réduire la durée d'affichage
                 });
             }
-        })
-        .catch(() => {
-            if (toast.value) {
-                toast.value.addToast({
-                    type: 'error',
-                    title: 'Erreur',
-                    message: 'Une erreur est survenue lors de l\'affectation groupée'
-                });
+
+            // Recharger la page pour mettre à jour les données
+            router.reload({ only: ['demandes'] });
+            return;
+        }
+
+        const demande = demandesWithStructures[index];
+        router.post(route('agent.demandes.affecter', demande.id), {
+            structure_id: demande.structure.id
+        }, {
+            preserveScroll: true,
+            onSuccess: () => {
+                // Passer à la demande suivante
+                processNextDemande(index + 1);
+            },
+            onError: () => {
+                // En cas d'erreur, afficher une notification et continuer
+                if (toast.value) {
+                    toast.value.addToast({
+                        type: 'error',
+                        title: 'Erreur',
+                        message: `Erreur lors de l'affectation de la demande ${demande.code_suivi}`,
+                        duration: 3000
+                    });
+                }
+                // Continuer avec la demande suivante malgré l'erreur
+                processNextDemande(index + 1);
             }
         });
+    };
+
+    // Démarrer le traitement séquentiel
+    processNextDemande();
 };
 
 // Fonction pour soumettre l'affectation
@@ -163,22 +189,28 @@ const submitAffectation = () => {
         router.post(route('agent.demandes.affecter', selectedDemande.value.id), {
             structure_id: selectedStructureId.value
         }, {
+            preserveScroll: true,
             onSuccess: (response) => {
                 closeAffectationModal();
+                // Afficher une notification avec une durée réduite
                 if (toast.value) {
                     toast.value.addToast({
                         type: 'success',
                         title: 'Succès',
-                        message: 'La demande a été affectée avec succès'
+                        message: 'La demande a été affectée avec succès',
+                        duration: 3000 // Réduire la durée d'affichage
                     });
                 }
+                // Recharger uniquement les données des demandes
+                router.reload({ only: ['demandes'] });
             },
             onError: (errors) => {
                 if (toast.value) {
                     toast.value.addToast({
                         type: 'error',
                         title: 'Erreur',
-                        message: 'Une erreur est survenue lors de l\'affectation'
+                        message: 'Une erreur est survenue lors de l\'affectation',
+                        duration: 3000
                     });
                 }
             }

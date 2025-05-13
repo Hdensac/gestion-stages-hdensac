@@ -175,14 +175,28 @@ class DemandeController extends Controller
                 'statut' => 'En cours'
             ]);
 
-            // Créer une nouvelle affectation
-            AffectationResponsableStructure::create([
-                'structure_id' => $request->structure_id,
-                'id_demande_stages' => $demande->id,
-                'date_affectation' => now(),
-            ]);
+            // Vérifier si une affectation existe déjà pour cette demande et cette structure
+            $existingAffectation = AffectationResponsableStructure::where('id_demande_stages', $demande->id)
+                ->where('structure_id', $request->structure_id)
+                ->exists();
 
-            return redirect()->back()->with('success', "La demande '{$demande->code_suivi}' a été affectée à la structure '{$structure->sigle}' avec succès");
+            if (!$existingAffectation) {
+                // Créer une nouvelle affectation seulement si elle n'existe pas déjà
+                AffectationResponsableStructure::create([
+                    'structure_id' => $request->structure_id,
+                    'id_demande_stages' => $demande->id,
+                    'date_affectation' => now(),
+                ]);
+            }
+
+            // Utiliser une session flash unique pour éviter les doublons
+            $flashKey = 'affectation_' . $demande->id . '_' . $request->structure_id;
+            if (!session()->has($flashKey)) {
+                session()->put($flashKey, true);
+                return redirect()->back()->with('success', "La demande '{$demande->code_suivi}' a été affectée à la structure '{$structure->sigle}' avec succès");
+            }
+
+            return redirect()->back();
         } catch (\Exception $e) {
             Log::error('Erreur lors de l\'affectation de la structure', [
                 'demande_id' => $demande->id,
@@ -193,4 +207,4 @@ class DemandeController extends Controller
             return back()->with('error', 'Une erreur est survenue lors de l\'affectation de la structure.');
         }
     }
-} 
+}

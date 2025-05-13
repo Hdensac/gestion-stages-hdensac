@@ -88,7 +88,7 @@ class DemandeStage extends Model
      */
     public function affectations()
     {
-        return $this->hasMany(AffectationResponsableStructure::class, 'demande_id');
+        return $this->hasMany(AffectationResponsableStructure::class, 'id_demande_stages');
     }
 
     /**
@@ -105,5 +105,13 @@ class DemandeStage extends Model
     public function agentAssigne()
     {
         return $this->belongsTo(Agent::class, 'agent_id');
+    }
+
+    /**
+     * Récupère toutes les structures auxquelles cette demande est affectée
+     */
+    public function structuresAffectees()
+    {
+        return Structure::whereIn('id', $this->affectations()->pluck('structure_id'));
     }
 }

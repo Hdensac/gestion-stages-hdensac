@@ -35,7 +35,7 @@
 
                   <div class="flex flex-col">
                     <span class="text-sm text-gray-500">Structure</span>
-                    <span class="font-medium">{{ demande.structure.libelle }}</span>
+                    <span class="font-medium">{{ demande.structure ? demande.structure.libelle : 'Non spécifiée' }}</span>
                   </div>
 
                   <div class="flex flex-col">
@@ -139,7 +139,7 @@
             </div>
 
             <!-- Actions -->
-            <div v-if="demande.statut === 'En cours'" class="mt-6 bg-gray-50 p-6 rounded-lg shadow-sm">
+            <div v-if="demande.statut === 'En cours' || demande.statut === 'Encours'" class="mt-6 bg-gray-50 p-6 rounded-lg shadow-sm">
               <h2 class="text-xl font-semibold mb-4 text-gray-800 border-b pb-2">Actions</h2>
               <div class="flex gap-4">
                 <button
@@ -341,18 +341,36 @@ function closeApproveModal() {
 }
 
 function rejectDemande() {
+  console.log('Soumission du formulaire de rejet pour la demande ID:', props.demande.id);
+
   rejectForm.post(route('agent.rs.demandes.reject', props.demande.id), {
     onSuccess: () => {
+      console.log('Demande rejetée avec succès, redirection...');
       closeRejectModal();
+
+      // Rediriger vers la page des demandes puis revenir pour forcer un rechargement complet
+      window.location.href = route('agent.rs.demandes.show', props.demande.id);
     },
+    onError: (errors) => {
+      console.error('Erreur lors du rejet de la demande:', errors);
+    }
   });
 }
 
 function approveDemande() {
+  console.log('Soumission du formulaire d\'approbation pour la demande ID:', props.demande.id);
+
   approveForm.post(route('agent.rs.demandes.approve', props.demande.id), {
     onSuccess: () => {
+      console.log('Demande approuvée avec succès, redirection...');
       closeApproveModal();
+
+      // Rediriger vers la page des demandes puis revenir pour forcer un rechargement complet
+      window.location.href = route('agent.rs.demandes.show', props.demande.id);
     },
+    onError: (errors) => {
+      console.error('Erreur lors de l\'approbation de la demande:', errors);
+    }
   });
 }
 

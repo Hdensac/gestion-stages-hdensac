@@ -36,24 +36,37 @@ class DashboardController extends Controller
             $structure = Structure::where('responsable_id', $agent->id)->first();
 
             if ($structure) {
-                // Statistiques des demandes pour cette structure
-                $stats['demandesEnAttente'] = DemandeStage::where('structure_id', $structure->id)
+                // Récupérer les IDs des demandes affectées à cette structure via la table d'affectation
+                $demandesAffecteesIds = \App\Models\AffectationResponsableStructure::where('structure_id', $structure->id)
+                    ->pluck('id_demande_stages')
+                    ->toArray();
+
+                // Statistiques des demandes pour cette structure (directes + affectées)
+                $demandesQuery = DemandeStage::where(function($query) use ($structure, $demandesAffecteesIds) {
+                    $query->where('structure_id', $structure->id)
+                          ->orWhereIn('id', $demandesAffecteesIds);
+                });
+
+                $stats['demandesEnAttente'] = (clone $demandesQuery)
                     ->where('statut', 'En cours')
                     ->count();
-                    
-                $stats['demandesAcceptees'] = DemandeStage::where('structure_id', $structure->id)
+
+                $stats['demandesAcceptees'] = (clone $demandesQuery)
                     ->where('statut', 'Acceptée')
                     ->count();
-                    
-                $stats['demandesRejetees'] = DemandeStage::where('structure_id', $structure->id)
+
+                $stats['demandesRejetees'] = (clone $demandesQuery)
                     ->where('statut', 'Refusée')
                     ->count();
-                    
+
                 $stats['demandesTraitees'] = $stats['demandesAcceptees'] + $stats['demandesRejetees'];
 
-                // Récupérer les 5 dernières demandes
+                // Récupérer les 5 dernières demandes (directes + affectées)
                 $dernieresDemandes = DemandeStage::with(['stagiaire.user'])
-                    ->where('structure_id', $structure->id)
+                    ->where(function($query) use ($structure, $demandesAffecteesIds) {
+                        $query->where('structure_id', $structure->id)
+                              ->orWhereIn('id', $demandesAffecteesIds);
+                    })
                     ->latest()
                     ->take(5)
                     ->get();
@@ -92,4 +105,4 @@ class DashboardController extends Controller
             ]);
         }
     }
-} 
+}

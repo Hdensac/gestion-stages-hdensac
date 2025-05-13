@@ -69,5 +69,9 @@ class Kernel extends HttpKernel
         'verified' => \Illuminate\Auth\Middleware\EnsureEmailIsVerified::class,
         // Ajoutez votre middleware admin ici
         'admin' => \App\Http\Middleware\AdminMiddleware::class,
+        // Middleware pour vérifier si un agent est responsable d'une structure spécifique
+        'structure.responsable' => \App\Http\Middleware\CheckStructureResponsable::class,
+        // Middleware pour vérifier le rôle d'un agent
+        'agent.role' => \App\Http\Middleware\CheckAgentRole::class,
     ];
 }

@@ -15,14 +15,14 @@
                         <!-- Navigation Links -->
                         <div class="hidden space-x-8 sm:-my-px sm:ml-10 sm:flex">
                             <NavLink :href="route('agent.dashboard')" :active="route().current('agent.dashboard')">
-                                Tableau de bord
+                                Tableau de bord DPAF
                             </NavLink>
                             <NavLink :href="route('agent.demandes')" :active="route().current('agent.demandes')">
                                 Demandes de stage
                             </NavLink>
-                            <!-- <NavLink :href="route('agent.structures')" :active="route().current('agent.structures')">
-                                Structures
-                            </NavLink> -->
+                            <NavLink v-if="isRSAgent" :href="route('agent.rs.dashboard')" :active="route().current('agent.rs.dashboard')">
+                                Tableau de bord RS
+                            </NavLink>
                         </div>
                     </div>
 
@@ -75,9 +75,14 @@
 </template>
 
 <script setup>
-import { Link } from '@inertiajs/vue3';
+import { Link, usePage } from '@inertiajs/vue3';
 import NavLink from '@/Components/NavLink.vue';
 import Dropdown from '@/Components/Dropdown.vue';
 import DropdownLink from '@/Components/DropdownLink.vue';
+import { ref } from 'vue';
 
-</script> 
+// Récupérer la valeur isRSAgent depuis les props de la page
+const isRSAgent = ref(usePage().props.isRSAgent || false);
+const user = usePage().props.auth?.user;
+
+</script>

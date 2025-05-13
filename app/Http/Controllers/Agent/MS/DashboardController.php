@@ -208,10 +208,14 @@ class DashboardController extends Controller
                 'stages' => $stagesSerialises->toArray()
             ]);
 
+            // Récupérer la structure dont l'agent est responsable
+            $structureResponsable = \App\Models\Structure::where('responsable_id', $agent->id)->first();
+
             return Inertia::render('Agent/MS/Dashboard', [
                 'stats' => $stats,
                 'derniersStages' => $stagesSerialises,
                 'agent' => $agent->load('user'),
+                'structureResponsable' => $structureResponsable,
             ]);
 
         } catch (\Exception $e) {
@@ -220,10 +224,14 @@ class DashboardController extends Controller
                 'agent_id' => $agent->id
             ]);
 
+            // Récupérer la structure dont l'agent est responsable même en cas d'erreur
+            $structureResponsable = \App\Models\Structure::where('responsable_id', $agent->id)->first();
+
             return Inertia::render('Agent/MS/Dashboard', [
                 'stats' => $stats,
                 'derniersStages' => [],
                 'agent' => $agent->load('user'),
+                'structureResponsable' => $structureResponsable,
                 'error' => 'Une erreur est survenue lors du chargement des données. ' . $e->getMessage()
             ]);
         }

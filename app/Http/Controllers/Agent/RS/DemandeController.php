@@ -33,9 +33,24 @@ class DemandeController extends Controller
                 return redirect()->back()->with('error', 'Vous n\'êtes responsable d\'aucune structure.');
             }
 
-            // Construction de la requête de base
+            // Récupérer les IDs des demandes affectées à cette structure via la table d'affectation
+            $demandesAffecteesIds = \App\Models\AffectationResponsableStructure::where('structure_id', $structure->id)
+                ->pluck('id_demande_stages')
+                ->toArray();
+
+            // Construction de la requête de base (demandes directes + affectées)
             $query = DemandeStage::with(['stagiaire.user'])
-                ->where('structure_id', $structure->id);
+                ->where(function($q) use ($structure, $demandesAffecteesIds) {
+                    $q->where('structure_id', $structure->id)
+                      ->orWhereIn('id', $demandesAffecteesIds);
+                });
+
+            // Ajouter la relation avec les affectations pour récupérer la date d'affectation
+            $query->with(['affectations' => function($query) use ($structure) {
+                $query->where('structure_id', $structure->id)
+                      ->orderBy('date_affectation', 'desc')
+                      ->orderBy('created_at', 'desc');
+            }]);
 
             // Filtre par statut
             if ($request->filled('status')) {
@@ -104,11 +119,29 @@ class DemandeController extends Controller
         try {
             $structure = Structure::where('responsable_id', $agent->id)->first();
 
-            if (!$structure || $demande->structure_id !== $structure->id) {
+            // Vérifier si la demande est directement liée à la structure ou affectée via la table d'affectation
+            $estAffectee = \App\Models\AffectationResponsableStructure::where('structure_id', $structure->id)
+                ->where('id_demande_stages', $demande->id)
+                ->exists();
+
+            if (!$structure || ($demande->structure_id !== $structure->id && !$estAffectee)) {
                 return redirect()->back()->with('error', 'Vous n\'avez pas accès à cette demande.');
             }
 
-            $demande->load(['stagiaire.user', 'structure', 'membres.user']);
+            $demande->load(['stagiaire.user', 'structure', 'membres.user', 'affectations.structure']);
+
+            // Si la demande est affectée mais n'a pas de structure directe, utiliser la structure de l'affectation
+            if (!$demande->structure && $estAffectee) {
+                $affectation = \App\Models\AffectationResponsableStructure::where('structure_id', $structure->id)
+                    ->where('id_demande_stages', $demande->id)
+                    ->with('structure')
+                    ->first();
+
+                if ($affectation && $affectation->structure) {
+                    // Attacher temporairement la structure de l'affectation à la demande
+                    $demande->structure = $affectation->structure;
+                }
+            }
 
             return Inertia::render('Agent/RS/Demandes/Show', [
                 'demande' => $demande,
@@ -134,48 +167,250 @@ class DemandeController extends Controller
         try {
             $structure = Structure::where('responsable_id', $agent->id)->first();
 
-            if (!$structure || $demande->structure_id !== $structure->id) {
+            // Vérifier si la demande est directement liée à la structure ou affectée via la table d'affectation
+            $estAffectee = \App\Models\AffectationResponsableStructure::where('structure_id', $structure->id)
+                ->where('id_demande_stages', $demande->id)
+                ->exists();
+
+            if (!$structure || ($demande->structure_id !== $structure->id && !$estAffectee)) {
                 return redirect()->back()->with('error', 'Vous n\'avez pas accès à cette demande.');
             }
 
             // Charger les relations nécessaires pour l'email
-            $demande->load(['stagiaire.user', 'structure']);
+            $demande->load(['stagiaire.user', 'structure', 'affectations.structure']);
 
-            // Mettre à jour le statut de la demande
-            $demande->update([
-                'statut' => 'Acceptée',
-                'date_traitement' => now(),
-                'traite_par' => $agent->id
+            // Si la demande est affectée mais n'a pas de structure directe, utiliser la structure de l'affectation
+            if (!$demande->structure && $estAffectee) {
+                $affectation = \App\Models\AffectationResponsableStructure::where('structure_id', $structure->id)
+                    ->where('id_demande_stages', $demande->id)
+                    ->with('structure')
+                    ->first();
+
+                if ($affectation && $affectation->structure) {
+                    // Attacher temporairement la structure de l'affectation à la demande
+                    $demande->structure = $affectation->structure;
+                }
+            }
+
+            // Charger les relations nécessaires pour l'email et la création du stage
+            $demande->load(['stagiaire.user', 'structure', 'affectations.structure', 'membres.user']);
+
+            // Journaliser l'état actuel de la demande
+            Log::info('État actuel de la demande avant approbation', [
+                'demande_id' => $demande->id,
+                'statut_actuel' => $demande->statut,
+                'structure_id' => $demande->structure_id
+            ]);
+
+            // Vérifier si le statut est "Encours" et le corriger en "En cours"
+            if ($demande->statut === 'Encours') {
+                Log::info('Correction du statut "Encours" en "En cours"', [
+                    'demande_id' => $demande->id
+                ]);
+
+                try {
+                    \Illuminate\Support\Facades\DB::table('demande_stages')
+                        ->where('id', $demande->id)
+                        ->update([
+                            'statut' => 'En cours',
+                            'updated_at' => now()
+                        ]);
+
+                    $demande->refresh();
+                    // Recharger les relations après le refresh
+                    $demande->load(['stagiaire.user', 'structure', 'affectations.structure', 'membres.user']);
+                } catch (\Exception $e) {
+                    Log::error('Erreur lors de la correction du statut', [
+                        'demande_id' => $demande->id,
+                        'error' => $e->getMessage()
+                    ]);
+                }
+            }
+
+            // Mettre à jour le statut de la demande avec une requête SQL directe
+            try {
+                $updateResult = \Illuminate\Support\Facades\DB::table('demande_stages')
+                    ->where('id', $demande->id)
+                    ->update([
+                        'statut' => 'Acceptée',
+                        'date_traitement' => now(),
+                        'traite_par' => $agent->id,
+                        'updated_at' => now()
+                    ]);
+
+                Log::info('Résultat de la mise à jour directe', [
+                    'demande_id' => $demande->id,
+                    'update_result' => $updateResult
+                ]);
+
+                if ($updateResult === 0) {
+                    Log::error('Échec de la mise à jour du statut de la demande (SQL direct)', [
+                        'demande_id' => $demande->id
+                    ]);
+                    return redirect()->back()->with('error', 'Une erreur est survenue lors de la mise à jour du statut de la demande.');
+                }
+            } catch (\Exception $e) {
+                Log::error('Exception lors de la mise à jour du statut de la demande', [
+                    'demande_id' => $demande->id,
+                    'error' => $e->getMessage()
+                ]);
+                return redirect()->back()->with('error', 'Une erreur est survenue lors de la mise à jour du statut de la demande: ' . $e->getMessage());
+            }
+
+            // Vérifier que la mise à jour a bien été effectuée et recharger les relations
+            $demande->refresh();
+            $demande->load(['stagiaire.user', 'structure', 'affectations.structure', 'membres.user']);
+
+            // Mettre à jour manuellement le statut dans l'objet demande pour s'assurer qu'il est correct
+            $demande->statut = 'Acceptée';
+
+            Log::info('État de la demande après approbation', [
+                'demande_id' => $demande->id,
+                'nouveau_statut' => $demande->statut,
+                'stagiaire_id' => $demande->stagiaire->id ?? 'non défini',
+                'stagiaire_email' => $demande->stagiaire->user->email ?? 'non défini'
             ]);
 
             // Créer un stage à partir de la demande acceptée
-            $stage = \App\Models\Stage::firstOrCreate(
-                ['demande_stage_id' => $demande->id],
-                [
+            try {
+                // Journaliser les données avant la création
+                Log::info('Données pour la création du stage', [
+                    'demande_id' => $demande->id,
                     'structure_id' => $demande->structure_id,
                     'date_debut' => $demande->date_debut,
                     'date_fin' => $demande->date_fin,
-                    'statut' => 'En cours',
                     'type' => $demande->type
-                ]
-            );
+                ]);
 
-            Log::info('Stage créé lors de l\'acceptation de la demande', [
-                'stage_id' => $stage->id,
-                'demande_stage_id' => $demande->id,
-                'structure_id' => $demande->structure_id,
-                'was_created' => $stage->wasRecentlyCreated
-            ]);
+                // S'assurer que structure_id est défini, sinon utiliser la structure du RS
+                if (!$demande->structure_id && $structure) {
+                    Log::info('Structure ID manquante, utilisation de la structure du RS', [
+                        'structure_id_rs' => $structure->id
+                    ]);
+                    $demande->structure_id = $structure->id;
+                }
+
+                // Vérifier si un stage existe déjà pour cette demande
+                $existingStage = \App\Models\Stage::where('demande_stage_id', $demande->id)->first();
+
+                if ($existingStage) {
+                    Log::info('Un stage existe déjà pour cette demande', [
+                        'stage_id' => $existingStage->id,
+                        'demande_id' => $demande->id
+                    ]);
+                    $stage = $existingStage;
+                } else {
+                    // Convertir le type au format attendu par la base de données
+                    $typeFormatted = strtolower(str_replace('é', 'e', $demande->type));
+
+                    Log::info('Type formaté pour la création du stage', [
+                        'type_original' => $demande->type,
+                        'type_formatted' => $typeFormatted
+                    ]);
+
+                    // Créer le stage directement avec create() au lieu de firstOrCreate()
+                    $stage = \App\Models\Stage::create([
+                        'demande_stage_id' => $demande->id,
+                        'structure_id' => $demande->structure_id,
+                        'date_debut' => $demande->date_debut,
+                        'date_fin' => $demande->date_fin,
+                        'statut' => 'En cours',
+                        'type' => $typeFormatted
+                    ]);
+
+                    Log::info('Stage créé avec la méthode create()', [
+                        'stage_id' => $stage->id,
+                        'demande_stage_id' => $demande->id
+                    ]);
+                }
+
+                // Vérifier que le stage a bien été créé
+                $stageCheck = \App\Models\Stage::find($stage->id);
+
+                Log::info('Vérification de la création du stage', [
+                    'stage_id' => $stage->id,
+                    'demande_stage_id' => $demande->id,
+                    'structure_id' => $demande->structure_id,
+                    'stage_exists' => $stageCheck ? 'oui' : 'non'
+                ]);
+
+                // Vérifier tous les stages dans la base de données
+                $allStages = \App\Models\Stage::all();
+                Log::info('Nombre total de stages dans la base de données', [
+                    'count' => $allStages->count(),
+                    'ids' => $allStages->pluck('id')->toArray()
+                ]);
+
+            } catch (\Exception $e) {
+                Log::error('Erreur lors de la création du stage', [
+                    'error' => $e->getMessage(),
+                    'trace' => $e->getTraceAsString(),
+                    'demande_id' => $demande->id
+                ]);
+
+                // Essayer une approche alternative avec une requête SQL directe
+                try {
+                    // Convertir le type au format attendu par la base de données
+                    $typeFormatted = strtolower(str_replace('é', 'e', $demande->type));
+
+                    Log::info('Type formaté pour la création du stage (SQL direct)', [
+                        'type_original' => $demande->type,
+                        'type_formatted' => $typeFormatted
+                    ]);
+
+                    $stageId = \Illuminate\Support\Facades\DB::table('stages')->insertGetId([
+                        'demande_stage_id' => $demande->id,
+                        'structure_id' => $demande->structure_id,
+                        'date_debut' => $demande->date_debut,
+                        'date_fin' => $demande->date_fin,
+                        'statut' => 'En cours',
+                        'type' => $typeFormatted,
+                        'created_at' => now(),
+                        'updated_at' => now()
+                    ]);
+
+                    Log::info('Stage créé avec une requête SQL directe', [
+                        'stage_id' => $stageId,
+                        'demande_id' => $demande->id
+                    ]);
+                } catch (\Exception $innerException) {
+                    Log::error('Échec de la création du stage même avec une requête SQL directe', [
+                        'error' => $innerException->getMessage(),
+                        'demande_id' => $demande->id
+                    ]);
+                }
+            }
 
             // Envoyer l'email au stagiaire
             try {
-                Mail::to($demande->stagiaire->user->email)
-                    ->send(new DemandeAcceptationMail($demande, $demande->stagiaire->user));
+                // Vérifier que le stagiaire et son utilisateur sont bien chargés
+                if ($demande->stagiaire && $demande->stagiaire->user) {
+                    Log::info('Envoi d\'email d\'acceptation au stagiaire', [
+                        'email' => $demande->stagiaire->user->email,
+                        'nom' => $demande->stagiaire->user->nom,
+                        'prenom' => $demande->stagiaire->user->prenom
+                    ]);
+
+                    Mail::to($demande->stagiaire->user->email)
+                        ->send(new DemandeAcceptationMail($demande, $demande->stagiaire->user));
+                } else {
+                    Log::error('Impossible d\'envoyer l\'email : stagiaire ou utilisateur non défini', [
+                        'demande_id' => $demande->id,
+                        'stagiaire' => $demande->stagiaire ? 'défini' : 'non défini',
+                        'user' => ($demande->stagiaire && $demande->stagiaire->user) ? 'défini' : 'non défini'
+                    ]);
+                }
 
                 // Si c'est une demande de groupe, envoyer aux membres aussi
-                if ($demande->nature === 'Groupe') {
+                if ($demande->nature === 'Groupe' && $demande->membres) {
                     foreach ($demande->membres as $membre) {
-                        if ($membre->user && $membre->user->email !== $demande->stagiaire->user->email) {
+                        if ($membre->user && $membre->user->email && $demande->stagiaire && $demande->stagiaire->user && $membre->user->email !== $demande->stagiaire->user->email) {
+                            Log::info('Envoi d\'email d\'acceptation à un membre du groupe', [
+                                'email' => $membre->user->email,
+                                'nom' => $membre->user->nom,
+                                'prenom' => $membre->user->prenom
+                            ]);
+
                             Mail::to($membre->user->email)
                                 ->send(new DemandeAcceptationMail($demande, $membre->user));
                         }
@@ -184,7 +419,8 @@ class DemandeController extends Controller
             } catch (\Exception $e) {
                 Log::error('Erreur lors de l\'envoi de l\'email d\'acceptation', [
                     'error' => $e->getMessage(),
-                    'demande_id' => $demande->id
+                    'demande_id' => $demande->id,
+                    'trace' => $e->getTraceAsString()
                 ]);
                 // On continue même si l'email échoue
             }
@@ -210,7 +446,12 @@ class DemandeController extends Controller
         try {
             $structure = Structure::where('responsable_id', $agent->id)->first();
 
-            if (!$structure || $demande->structure_id !== $structure->id) {
+            // Vérifier si la demande est directement liée à la structure ou affectée via la table d'affectation
+            $estAffectee = \App\Models\AffectationResponsableStructure::where('structure_id', $structure->id)
+                ->where('id_demande_stages', $demande->id)
+                ->exists();
+
+            if (!$structure || ($demande->structure_id !== $structure->id && !$estAffectee)) {
                 return redirect()->back()->with('error', 'Vous n\'avez pas accès à cette demande.');
             }
 
@@ -220,14 +461,87 @@ class DemandeController extends Controller
             ]);
 
             // Charger les relations nécessaires pour l'email
-            $demande->load(['stagiaire.user', 'structure']);
+            $demande->load(['stagiaire.user', 'structure', 'affectations.structure']);
 
-            // Mettre à jour la demande
-            $demande->update([
-                'statut' => 'Refusée',
-                'date_traitement' => now(),
-                'traite_par' => $agent->id,
-                'motif_refus' => $validated['motif_refus']
+            // Si la demande est affectée mais n'a pas de structure directe, utiliser la structure de l'affectation
+            if (!$demande->structure && $estAffectee) {
+                $affectation = \App\Models\AffectationResponsableStructure::where('structure_id', $structure->id)
+                    ->where('id_demande_stages', $demande->id)
+                    ->with('structure')
+                    ->first();
+
+                if ($affectation && $affectation->structure) {
+                    // Attacher temporairement la structure de l'affectation à la demande
+                    $demande->structure = $affectation->structure;
+                }
+            }
+
+            // Journaliser l'état actuel de la demande
+            Log::info('État actuel de la demande avant rejet', [
+                'demande_id' => $demande->id,
+                'statut_actuel' => $demande->statut,
+                'structure_id' => $demande->structure_id
+            ]);
+
+            // Vérifier si le statut est "Encours" et le corriger en "En cours"
+            if ($demande->statut === 'Encours') {
+                Log::info('Correction du statut "Encours" en "En cours"', [
+                    'demande_id' => $demande->id
+                ]);
+
+                try {
+                    \Illuminate\Support\Facades\DB::table('demande_stages')
+                        ->where('id', $demande->id)
+                        ->update([
+                            'statut' => 'En cours',
+                            'updated_at' => now()
+                        ]);
+
+                    $demande->refresh();
+                } catch (\Exception $e) {
+                    Log::error('Erreur lors de la correction du statut', [
+                        'demande_id' => $demande->id,
+                        'error' => $e->getMessage()
+                    ]);
+                }
+            }
+
+            // Mettre à jour la demande avec une requête SQL directe
+            try {
+                $updateResult = \Illuminate\Support\Facades\DB::table('demande_stages')
+                    ->where('id', $demande->id)
+                    ->update([
+                        'statut' => 'Refusée',
+                        'date_traitement' => now(),
+                        'traite_par' => $agent->id,
+                        'motif_refus' => $validated['motif_refus'],
+                        'updated_at' => now()
+                    ]);
+
+                Log::info('Résultat de la mise à jour directe (rejet)', [
+                    'demande_id' => $demande->id,
+                    'update_result' => $updateResult
+                ]);
+
+                if ($updateResult === 0) {
+                    Log::error('Échec de la mise à jour du statut de la demande (SQL direct - rejet)', [
+                        'demande_id' => $demande->id
+                    ]);
+                    return redirect()->back()->with('error', 'Une erreur est survenue lors de la mise à jour du statut de la demande.');
+                }
+            } catch (\Exception $e) {
+                Log::error('Exception lors de la mise à jour du statut de la demande (rejet)', [
+                    'demande_id' => $demande->id,
+                    'error' => $e->getMessage()
+                ]);
+                return redirect()->back()->with('error', 'Une erreur est survenue lors de la mise à jour du statut de la demande: ' . $e->getMessage());
+            }
+
+            // Vérifier que la mise à jour a bien été effectuée
+            $demande->refresh();
+            Log::info('État de la demande après rejet', [
+                'demande_id' => $demande->id,
+                'nouveau_statut' => $demande->statut
             ]);
 
             // Envoyer l'email au stagiaire
@@ -281,9 +595,10 @@ class DemandeController extends Controller
                 return response()->json([], 200);
             }
 
-            // Récupérer tous les agents avec le rôle MS
+            // Récupérer les agents avec le rôle MS appartenant à la structure dont l'agent est responsable
             $msAgents = Agent::with(['user', 'structuresResponsable'])
                 ->where('role_agent', 'MS')
+                ->where('structure_id', $structure->id)
                 ->get()
                 ->map(function ($agent) {
                     // Ajouter la structure dont l'agent est responsable (si applicable)
@@ -362,7 +677,12 @@ class DemandeController extends Controller
             // Vérifier que l'agent est bien responsable de la structure concernée
             $structure = Structure::where('responsable_id', $agent->id)->first();
 
-            if (!$structure || $demande->structure_id !== $structure->id) {
+            // Vérifier si la demande est directement liée à la structure ou affectée via la table d'affectation
+            $estAffectee = \App\Models\AffectationResponsableStructure::where('structure_id', $structure->id)
+                ->where('id_demande_stages', $demande->id)
+                ->exists();
+
+            if (!$structure || ($demande->structure_id !== $structure->id && !$estAffectee)) {
                 return redirect()->back()->with('error', 'Vous n\'avez pas accès à cette demande.');
             }
 
@@ -410,7 +730,12 @@ class DemandeController extends Controller
             // Vérifier que l'agent est bien responsable de la structure concernée
             $structure = Structure::where('responsable_id', $agent->id)->first();
 
-            if (!$structure || $demande->structure_id !== $structure->id) {
+            // Vérifier si la demande est directement liée à la structure ou affectée via la table d'affectation
+            $estAffectee = \App\Models\AffectationResponsableStructure::where('structure_id', $structure->id)
+                ->where('id_demande_stages', $demande->id)
+                ->exists();
+
+            if (!$structure || ($demande->structure_id !== $structure->id && !$estAffectee)) {
                 return redirect()->back()->with('error', 'Vous n\'avez pas accès à cette demande.');
             }
 
@@ -443,9 +768,30 @@ class DemandeController extends Controller
                 return redirect()->back()->with('error', 'L\'agent sélectionné n\'est pas un maître de stage (rôle MS).');
             }
 
+            // Vérifier que le maître de stage appartient à la structure du RS
+            if ($maitreStage->structure_id !== $structure->id) {
+                return redirect()->back()->with('error', 'Le maître de stage sélectionné n\'appartient pas à votre structure.');
+            }
+
             // Vérifier que la demande est acceptée
             if ($demande->statut !== 'Acceptée') {
                 return redirect()->back()->with('error', 'La demande doit être acceptée avant d\'affecter un maître de stage.');
+            }
+
+            // Charger les relations nécessaires
+            $demande->load(['structure', 'affectations.structure']);
+
+            // Si la demande est affectée mais n'a pas de structure directe, utiliser la structure de l'affectation
+            if (!$demande->structure && $estAffectee) {
+                $affectation = \App\Models\AffectationResponsableStructure::where('structure_id', $structure->id)
+                    ->where('id_demande_stages', $demande->id)
+                    ->with('structure')
+                    ->first();
+
+                if ($affectation && $affectation->structure) {
+                    // Attacher temporairement la structure de l'affectation à la demande
+                    $demande->structure = $affectation->structure;
+                }
             }
 
             // Récupérer le stage associé à la demande (qui a été créé lors de l'acceptation)
@@ -455,7 +801,7 @@ class DemandeController extends Controller
                 // Si pour une raison quelconque le stage n'existe pas, le créer
                 $stage = \App\Models\Stage::create([
                     'demande_stage_id' => $demande->id,
-                    'structure_id' => $demande->structure_id,
+                    'structure_id' => $demande->structure ? $demande->structure->id : $structure->id,
                     'date_debut' => $demande->date_debut,
                     'date_fin' => $demande->date_fin,
                     'statut' => 'En cours',

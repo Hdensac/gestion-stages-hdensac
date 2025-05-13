@@ -1,9 +1,9 @@
 <template>
   <div class="toast-container fixed top-4 right-4 z-50 w-80 space-y-3">
     <transition-group name="toast" tag="div">
-      <div 
-        v-for="(toast, index) in toasts" 
-        :key="toast.id" 
+      <div
+        v-for="(toast, index) in toasts"
+        :key="toast.id"
         class="toast-item rounded-lg shadow-lg overflow-hidden border-l-4 flex items-start p-4"
         :class="getToastClasses(toast.type)"
       >
@@ -30,8 +30,8 @@
         </div>
 
         <!-- Bouton de fermeture -->
-        <button 
-          @click="removeToast(index)" 
+        <button
+          @click="removeToast(index)"
           class="ml-3 flex-shrink-0 text-gray-400 hover:text-gray-500 focus:outline-none"
         >
           <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" viewBox="0 0 20 20" fill="currentColor">
@@ -107,49 +107,62 @@ function getTitleClasses(type) {
 // Vérifier les messages flash depuis Inertia
 function checkFlashMessages() {
   const { flash } = usePage().props;
-  
+
   if (flash) {
-    if (flash.success) {
+    // Utiliser notre Set global pour suivre les messages déjà affichés
+    if (flash.success && !processedFlashMessages.has(flash.success)) {
+      processedFlashMessages.add(flash.success);
       addToast({
         type: 'success',
         title: 'Succès',
-        message: flash.success
+        message: flash.success,
+        duration: 3000 // Réduire la durée d'affichage à 3 secondes
       });
     }
-    
-    if (flash.error) {
+
+    if (flash.error && !processedFlashMessages.has(flash.error)) {
+      processedFlashMessages.add(flash.error);
       addToast({
         type: 'error',
         title: 'Erreur',
-        message: flash.error
+        message: flash.error,
+        duration: 3000
       });
     }
-    
-    if (flash.warning) {
+
+    if (flash.warning && !processedFlashMessages.has(flash.warning)) {
+      processedFlashMessages.add(flash.warning);
       addToast({
         type: 'warning',
         title: 'Attention',
-        message: flash.warning
+        message: flash.warning,
+        duration: 3000
       });
     }
-    
-    if (flash.info) {
+
+    if (flash.info && !processedFlashMessages.has(flash.info)) {
+      processedFlashMessages.add(flash.info);
       addToast({
         type: 'info',
         title: 'Information',
-        message: flash.info
+        message: flash.info,
+        duration: 3000
       });
     }
   }
 }
 
+// Stocker les messages déjà traités
+const processedFlashMessages = new Set();
+
 // Hook de cycle de vie pour surveiller les changements de props
 onMounted(() => {
   // Vérifier les messages flash au chargement initial
   checkFlashMessages();
-  
+
   // Configurer un intervalle pour vérifier régulièrement les nouveaux messages flash
-  flashCheckInterval = setInterval(checkFlashMessages, 500);
+  // Réduire la fréquence à 2 secondes au lieu de 500ms
+  flashCheckInterval = setInterval(checkFlashMessages, 2000);
 });
 
 onUnmounted(() => {
@@ -180,4 +193,4 @@ defineExpose({
   transform: translateX(100%);
   opacity: 0;
 }
-</style> 
+</style>

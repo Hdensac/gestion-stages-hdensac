@@ -35,11 +35,14 @@ Route::get('/dashboard', function () {
         }
 
         if ($user->agent) {
+            // Si l'agent est un RS, rediriger vers le dashboard RS
             if ($user->agent->role_agent === 'RS') {
                 return redirect()->route('agent.rs.dashboard');
             }
-            if ($user->agent->role_agent === 'DPAF') {
-                return redirect()->route('agent.dashboard');
+
+            // Si l'agent est un MS, rediriger vers le dashboard MS
+            if ($user->agent->role_agent === 'MS') {
+                return redirect()->route('agent.ms.dashboard');
             }
         }
 
@@ -170,7 +173,7 @@ Route::get('/dashboard', function () {
     // Routes pour les stagiaires
     Route::resource('stagiaires', StagiaireController::class);
 
-    // Routes pour les agents DPAF
+    // Routes pour les agents responsables de la structure DPAF
     Route::prefix('agent')->name('agent.')->middleware(['auth', 'verified'])->group(function () {
         Route::get('/dashboard', [App\Http\Controllers\Agent\DashboardController::class, 'index'])->name('dashboard');
         Route::get('/demandes', [App\Http\Controllers\Agent\DemandeController::class, 'index'])->name('demandes');
@@ -197,6 +200,17 @@ Route::get('/dashboard', function () {
             Route::resource('organigramme', App\Http\Controllers\Agent\RS\StructureOrganigrammeController::class)
                 ->parameters(['organigramme' => 'structure']);
             Route::post('organigramme/{structure}/assign-agent', [App\Http\Controllers\Agent\RS\StructureOrganigrammeController::class, 'assignAgent'])->name('organigramme.assign-agent');
+        });
+
+        // Routes pour les maîtres de stage (MS)
+        Route::prefix('ms')->name('ms.')->middleware(['auth'])->group(function () {
+            Route::get('/dashboard', [App\Http\Controllers\Agent\MS\DashboardController::class, 'index'])->name('dashboard');
+            Route::get('/stages', [App\Http\Controllers\Agent\MS\StageController::class, 'index'])->name('stages');
+            Route::get('/stages/{stage}', [App\Http\Controllers\Agent\MS\StageController::class, 'show'])->name('stages.show');
+            Route::post('/stages/{stage}/update-status', [App\Http\Controllers\Agent\MS\StageController::class, 'updateStatus'])->name('stages.update-status');
+            Route::post('/stages/{stage}/valider-theme', [App\Http\Controllers\Agent\MS\StageController::class, 'validerTheme'])->name('stages.valider-theme');
+            Route::post('/stages/{stage}/refuser-theme', [App\Http\Controllers\Agent\MS\StageController::class, 'refuserTheme'])->name('stages.refuser-theme');
+            Route::post('/stages/{stage}/noter', [App\Http\Controllers\Agent\MS\StageController::class, 'noter'])->name('stages.noter');
         });
     });
 
