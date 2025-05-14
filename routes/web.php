@@ -8,6 +8,7 @@ use App\Http\Controllers\DemandeController;
 use App\Http\Controllers\UserController;
 use App\Http\Controllers\StagiaireController;
 use App\Http\Controllers\Api\EmailController;
+use App\Http\Controllers\Api\StagiaireMessageController;
 use Illuminate\Foundation\Application;
 use Illuminate\Support\Facades\Route;
 use Illuminate\Support\Facades\Auth;
@@ -211,6 +212,11 @@ Route::get('/dashboard', function () {
             Route::post('/stages/{stage}/valider-theme', [App\Http\Controllers\Agent\MS\StageController::class, 'validerTheme'])->name('stages.valider-theme');
             Route::post('/stages/{stage}/refuser-theme', [App\Http\Controllers\Agent\MS\StageController::class, 'refuserTheme'])->name('stages.refuser-theme');
             Route::post('/stages/{stage}/noter', [App\Http\Controllers\Agent\MS\StageController::class, 'noter'])->name('stages.noter');
+            Route::get('/stages/{stage}/maitres-stage-substructures', [App\Http\Controllers\Agent\MS\StageController::class, 'getMaitresStageSubstructures'])->name('stages.maitres-stage-substructures');
+            Route::post('/stages/{stage}/reaffecter', [App\Http\Controllers\Agent\MS\StageController::class, 'reaffecter'])->name('stages.reaffecter');
+
+            // Route pour envoyer un message à un stagiaire
+            Route::post('/stages/send-message', [StagiaireMessageController::class, 'sendMessage'])->name('stages.send-message');
         });
     });
 

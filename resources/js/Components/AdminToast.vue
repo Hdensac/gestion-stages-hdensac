@@ -70,8 +70,18 @@ function addToast({ type = 'info', title = '', message = '', duration = 5000 }) 
 }
 
 // Fonction pour supprimer un toast
-function removeToast(index) {
-  toasts.value.splice(index, 1);
+function removeToast(indexOrId) {
+  // Si c'est un nombre et que c'est un index valide, supprimer directement
+  if (typeof indexOrId === 'number' && indexOrId >= 0 && indexOrId < toasts.value.length) {
+    toasts.value.splice(indexOrId, 1);
+    return;
+  }
+
+  // Sinon, considérer que c'est un ID et chercher le toast correspondant
+  const index = toasts.value.findIndex(t => t.id === indexOrId);
+  if (index !== -1) {
+    toasts.value.splice(index, 1);
+  }
 }
 
 // Classes de style selon le type de toast

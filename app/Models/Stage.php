@@ -61,5 +61,22 @@ class Stage extends Model
         return $this->hasOne(AffectationMaitreStage::class);
     }
 
+    /**
+     * Get all affectations of maitres de stage for this stage.
+     */
+    public function affectationsMaitreStage(): HasMany
+    {
+        return $this->hasMany(AffectationMaitreStage::class);
+    }
+
+    /**
+     * Get the current active affectation of maitre de stage for this stage.
+     */
+    public function activeAffectationMaitreStage(): HasOne
+    {
+        return $this->hasOne(AffectationMaitreStage::class)
+            ->whereIn('statut', ['En cours', 'Acceptée']);
+    }
+
     // Définir d'autres relations Eloquent ici ultérieurement
 }

@@ -64,12 +64,15 @@
                   </tr>
                 </thead>
                 <tbody class="bg-white divide-y divide-gray-200">
-                  <tr v-for="stage in filteredStages" :key="stage.id" class="hover:bg-gray-50">
+                  <tr v-for="stage in filteredStages" :key="stage.id" class="hover:bg-gray-50" :class="{ 'bg-gray-100': stage.est_reaffecte }">
                     <td class="px-6 py-4 whitespace-nowrap">
                       <div class="flex items-center">
                         <div>
                           <div class="text-sm font-medium text-gray-900">
-                            <template v-if="stage.demandeStage?.stagiaire?.user?.nom">
+                            <template v-if="stage.stagiaire_info?.nom">
+                              {{ stage.stagiaire_info.nom }} {{ stage.stagiaire_info.prenom }}
+                            </template>
+                            <template v-else-if="stage.demandeStage?.stagiaire?.user?.nom">
                               {{ stage.demandeStage.stagiaire.user.nom }} {{ stage.demandeStage.stagiaire.user.prenom }}
                             </template>
                             <template v-else>
@@ -77,7 +80,10 @@
                             </template>
                           </div>
                           <div class="text-sm text-gray-500">
-                            <template v-if="stage.demandeStage?.stagiaire?.user?.email">
+                            <template v-if="stage.stagiaire_info?.email">
+                              {{ stage.stagiaire_info.email }}
+                            </template>
+                            <template v-else-if="stage.demandeStage?.stagiaire?.user?.email">
                               {{ stage.demandeStage.stagiaire.user.email }}
                             </template>
                             <template v-else>
@@ -90,6 +96,14 @@
                     <td class="px-6 py-4 whitespace-nowrap">
                       <div class="text-sm text-gray-900">{{ stage.structure?.libelle }}</div>
                       <div class="text-sm text-gray-500">{{ stage.structure?.sigle }}</div>
+
+                      <!-- Afficher les informations de réaffectation si le stage a été réaffecté -->
+                      <div v-if="stage.est_reaffecte && stage.reaffectation_info" class="mt-2 text-xs bg-yellow-50 p-2 rounded border border-yellow-200">
+                        <p class="font-semibold text-yellow-700">Réaffecté à:</p>
+                        <p class="text-gray-700">{{ stage.reaffectation_info.nouveau_ms_prenom }} {{ stage.reaffectation_info.nouveau_ms_nom }}</p>
+                        <p class="text-gray-600">{{ stage.reaffectation_info.structure_libelle }}</p>
+                        <p class="text-gray-500 text-xs mt-1">Le {{ formatDate(stage.reaffectation_info.date_reaffectation) }}</p>
+                      </div>
                     </td>
                     <td class="px-6 py-4 whitespace-nowrap">
                       <div class="text-sm text-gray-900">
@@ -107,6 +121,11 @@
                           'bg-yellow-100 text-yellow-800': stage.statut === 'En attente',
                         }">
                         {{ stage.statut }}
+                      </span>
+
+                      <!-- Badge de réaffectation -->
+                      <span v-if="stage.est_reaffecte" class="mt-2 px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-gray-100 text-gray-800">
+                        Réaffecté
                       </span>
                     </td>
                     <td class="px-6 py-4 whitespace-nowrap">
@@ -133,25 +152,32 @@
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z" />
                           </svg>
                         </Link>
-                        <button
-                          @click="contactStagiaire(stage)"
-                          class="text-green-600 hover:text-green-900 bg-green-50 hover:bg-green-100 px-2 py-1 rounded transition-colors duration-200"
-                          title="Contacter le stagiaire"
-                        >
-                          <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z" />
-                          </svg>
-                        </button>
-                        <button
-                          v-if="stage.statut === 'En cours'"
-                          @click="updateStageStatus(stage, 'Terminé')"
-                          class="text-purple-600 hover:text-purple-900 bg-purple-50 hover:bg-purple-100 px-2 py-1 rounded transition-colors duration-200"
-                          title="Marquer comme terminé"
-                        >
-                          <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
-                          </svg>
-                        </button>
+                        <!-- N'afficher les boutons d'action que si le stage est actif -->
+                        <template v-if="stage.est_actif !== false">
+                          <button
+                            @click="contactStagiaire(stage)"
+                            class="text-green-600 hover:text-green-900 bg-green-50 hover:bg-green-100 px-2 py-1 rounded transition-colors duration-200"
+                            title="Contacter le stagiaire"
+                          >
+                            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z" />
+                            </svg>
+                          </button>
+                          <button
+                            v-if="stage.statut === 'En cours'"
+                            @click="updateStageStatus(stage, 'Terminé')"
+                            class="text-purple-600 hover:text-purple-900 bg-purple-50 hover:bg-purple-100 px-2 py-1 rounded transition-colors duration-200"
+                            title="Marquer comme terminé"
+                          >
+                            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
+                            </svg>
+                          </button>
+                        </template>
+                        <!-- Message informatif pour les stages réaffectés -->
+                        <span v-else-if="stage.est_reaffecte" class="text-gray-500 text-xs italic">
+                          Réaffecté
+                        </span>
                       </div>
                     </td>
                   </tr>
@@ -174,6 +200,13 @@ const props = defineProps({
   stages: Array,
   error: String
 });
+
+// Débogage des données reçues
+console.log('Stages reçus:', props.stages);
+if (props.stages && props.stages.length > 0) {
+  console.log('Premier stage:', props.stages[0]);
+  console.log('Infos stagiaire du premier stage:', props.stages[0].stagiaire_info);
+}
 
 // État pour les filtres
 const filters = ref({

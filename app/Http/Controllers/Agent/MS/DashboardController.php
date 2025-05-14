@@ -31,12 +31,15 @@ class DashboardController extends Controller
         ];
 
         try {
-            // Récupérer les affectations du maître de stage avec toutes les relations nécessaires
+            // Récupérer les affectations du maître de stage avec toutes les relations nécessaires (y compris les réaffectées)
             $affectations = AffectationMaitreStage::where('maitre_stage_id', $user->id)
                 ->with([
                     'stage.demandeStage.stagiaire.user',
                     'stage.structure',
-                    'maitreStage'
+                    'maitreStage',
+                    // Charger les autres affectations pour le même stage
+                    'stage.affectationsMaitreStage.maitreStage',
+                    'stage.affectationsMaitreStage.maitreStage.agent.structuresResponsable'
                 ])
                 ->get();
 
@@ -77,18 +80,22 @@ class DashboardController extends Controller
                 })->toArray()
             ]);
 
-            // Calculer les statistiques
-            $stats['stagesEnCours'] = $affectations->filter(function ($affectation) {
+            // Calculer les statistiques (uniquement pour les affectations actives)
+            $affectationsActives = $affectations->filter(function ($affectation) {
+                return in_array($affectation->statut, ['En cours', 'Acceptée']);
+            });
+
+            $stats['stagesEnCours'] = $affectationsActives->filter(function ($affectation) {
                 return $affectation->stage && $affectation->stage->statut === 'En cours';
             })->count();
 
-            $stats['stagesTermines'] = $affectations->filter(function ($affectation) {
+            $stats['stagesTermines'] = $affectationsActives->filter(function ($affectation) {
                 return $affectation->stage && $affectation->stage->statut === 'Terminé';
             })->count();
 
             // Compter le nombre total de stagiaires (en tenant compte des stages de groupe)
             $totalStagiaires = 0;
-            foreach ($affectations as $affectation) {
+            foreach ($affectationsActives as $affectation) {
                 if ($affectation->stage && $affectation->stage->demandeStage) {
                     $demande = $affectation->stage->demandeStage;
                     if ($demande->nature === 'Groupe') {
@@ -103,7 +110,7 @@ class DashboardController extends Controller
             // Récupérer les stages affectés avec toutes les relations nécessaires
             $derniersStages = $affectations->sortByDesc(function ($affectation) {
                 return $affectation->date_affectation;
-            })->take(5)->map(function ($affectation) {
+            })->map(function ($affectation) use ($user) {
                 $stage = $affectation->stage;
 
                 // S'assurer que toutes les relations sont chargées
@@ -114,6 +121,42 @@ class DashboardController extends Controller
                         ($stage->demandeStage && $stage->demandeStage->stagiaire && !$stage->demandeStage->stagiaire->relationLoaded('user'))) {
 
                         $stage->load(['demandeStage.stagiaire.user', 'structure']);
+                    }
+
+                    // Ajouter des informations sur l'affectation
+                    $stage->est_reaffecte = $affectation->statut === 'Réaffectée';
+                    $stage->est_actif = in_array($affectation->statut, ['En cours', 'Acceptée']);
+
+                    // Si le stage a été réaffecté, ajouter les informations sur le nouveau maître de stage
+                    if ($stage->est_reaffecte) {
+                        // Trouver l'affectation active pour ce stage
+                        $nouvelleAffectation = $stage->affectationsMaitreStage()
+                            ->where('maitre_stage_id', '!=', $user->id)
+                            ->whereIn('statut', ['En cours', 'Acceptée'])
+                            ->with(['maitreStage', 'maitreStage.agent.structuresResponsable'])
+                            ->first();
+
+                        if ($nouvelleAffectation && $nouvelleAffectation->maitreStage) {
+                            $nouveauMS = $nouvelleAffectation->maitreStage;
+
+                            // Récupérer l'agent associé à l'utilisateur
+                            $nouveauMSAgent = \App\Models\Agent::where('user_id', $nouveauMS->id)->first();
+
+                            if ($nouveauMSAgent) {
+                                // Récupérer la structure dont l'agent est responsable
+                                $structure = \App\Models\Structure::where('responsable_id', $nouveauMSAgent->id)->first();
+
+                                $stage->reaffectation_info = [
+                                    'nouveau_ms_id' => $nouveauMS->id,
+                                    'nouveau_ms_nom' => $nouveauMS->nom,
+                                    'nouveau_ms_prenom' => $nouveauMS->prenom,
+                                    'structure_id' => $structure ? $structure->id : null,
+                                    'structure_libelle' => $structure ? $structure->libelle : 'Non spécifiée',
+                                    'structure_sigle' => $structure ? $structure->sigle : '',
+                                    'date_reaffectation' => $nouvelleAffectation->date_affectation,
+                                ];
+                            }
+                        }
                     }
                 }
 
@@ -170,7 +213,7 @@ class DashboardController extends Controller
 
             // Sérialiser explicitement les données des stages avant de les envoyer à la vue
             $stagesSerialises = $derniersStages->map(function ($stage) {
-                return [
+                $data = [
                     'id' => $stage->id,
                     'demande_stage_id' => $stage->demande_stage_id,
                     'structure' => $stage->structure ? [
@@ -183,6 +226,8 @@ class DashboardController extends Controller
                     'statut' => $stage->statut,
                     'type' => $stage->type,
                     'note' => $stage->note,
+                    'est_reaffecte' => $stage->est_reaffecte ?? false,
+                    'est_actif' => $stage->est_actif ?? true,
                     'demandeStage' => $stage->demandeStage ? [
                         'id' => $stage->demandeStage->id,
                         'stagiaire' => $stage->demandeStage->stagiaire ? [
@@ -200,6 +245,13 @@ class DashboardController extends Controller
                         ] : null
                     ] : null
                 ];
+
+                // Ajouter les informations de réaffectation si le stage a été réaffecté
+                if ($stage->est_reaffecte && isset($stage->reaffectation_info)) {
+                    $data['reaffectation_info'] = $stage->reaffectation_info;
+                }
+
+                return $data;
             });
 
             // Journaliser les données sérialisées pour le débogage
@@ -211,9 +263,12 @@ class DashboardController extends Controller
             // Récupérer la structure dont l'agent est responsable
             $structureResponsable = \App\Models\Structure::where('responsable_id', $agent->id)->first();
 
+            // Convertir en tableau indexé numériquement pour s'assurer que JavaScript le traite comme un tableau
+            $stagesArray = array_values($stagesSerialises->toArray());
+
             return Inertia::render('Agent/MS/Dashboard', [
                 'stats' => $stats,
-                'derniersStages' => $stagesSerialises,
+                'derniersStages' => $stagesArray,
                 'agent' => $agent->load('user'),
                 'structureResponsable' => $structureResponsable,
             ]);
@@ -229,7 +284,7 @@ class DashboardController extends Controller
 
             return Inertia::render('Agent/MS/Dashboard', [
                 'stats' => $stats,
-                'derniersStages' => [],
+                'derniersStages' => [], // Tableau vide en cas d'erreur
                 'agent' => $agent->load('user'),
                 'structureResponsable' => $structureResponsable,
                 'error' => 'Une erreur est survenue lors du chargement des données. ' . $e->getMessage()

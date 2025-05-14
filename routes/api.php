@@ -3,6 +3,7 @@
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\Api\EmailController;
+use App\Http\Controllers\Api\StagiaireMessageController;
 
 /*
 |--------------------------------------------------------------------------
@@ -28,6 +29,9 @@ Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
     Route::post('/emails/demande-confirmation', [EmailController::class, 'sendDemandeConfirmation']);
     Route::get('/emails/check-config', [EmailController::class, 'checkEmailConfig']);
 // });
+
+// Route pour l'envoi de messages aux stagiaires (protégée par authentification)
+Route::middleware('auth')->post('stagiaire/send-message', [StagiaireMessageController::class, 'sendMessage']);
 
 // Route pour le test d'envoi d'email
 Route::get('/test-email', function() {
