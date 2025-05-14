@@ -5,6 +5,7 @@ import Dropdown from '@/Components/Dropdown.vue';
 import DropdownLink from '@/Components/DropdownLink.vue';
 import NavLink from '@/Components/NavLink.vue';
 import ResponsiveNavLink from '@/Components/ResponsiveNavLink.vue';
+import ApplicationLogo from '@/Components/ApplicationLogo.vue';
 
 const showingNavigationDropdown = ref(false);
 const user = usePage().props.auth?.user;
@@ -22,12 +23,8 @@ const user = usePage().props.auth?.user;
                         <div class="flex">
                             <!-- Logo -->
                             <div class="flex shrink-0 items-center">
-                                <Link :href="route('dashboard')">
-                                    <img
-                                        src="/images/logoministere.png"
-                                        alt="Logo du Ministère"
-                                        class="h-12 w-auto transition-transform duration-300 hover:scale-105"
-                                    />
+                                <Link :href="route('dashboard')" class="text-xl font-bold text-blue-600">
+                                    Gestion des Stages
                                 </Link>
                             </div>
 
@@ -101,7 +98,7 @@ const user = usePage().props.auth?.user;
                                             method="post"
                                             as="button"
                                         >
-                                            Log Out
+                                            Déconnexion
                                         </DropdownLink>
                                     </template>
                                 </Dropdown>
@@ -204,7 +201,7 @@ const user = usePage().props.auth?.user;
                                 method="post"
                                 as="button"
                             >
-                                Log Out
+                                Déconnexion
                             </ResponsiveNavLink>
                         </div>
                     </div>
@@ -216,7 +213,7 @@ const user = usePage().props.auth?.user;
                 class="bg-gradient-to-r from-indigo-50 to-blue-50 shadow-sm border-b border-indigo-100"
                 v-if="$slots.header"
             >
-                <div class="mx-auto max-w-7xl px-4 py-6 sm:px-6 lg:px-8">
+                <div class="mx-auto max-w-7xl px-4 py-2 sm:px-6 lg:px-8">
                     <slot name="header" />
                 </div>
             </header>

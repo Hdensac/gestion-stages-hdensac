@@ -7,7 +7,7 @@ import { Link, useForm, usePage } from '@inertiajs/vue3';
 import { ref, computed } from 'vue';
 import axios from 'axios';
 
-const { mustVerifyEmail, status } = defineProps({
+const props = defineProps({
     mustVerifyEmail: {
         type: Boolean,
     },
@@ -18,6 +18,17 @@ const { mustVerifyEmail, status } = defineProps({
 
 const user = usePage().props.auth.user;
 const showSuccessMessage = ref(false);
+const showAvatarInfo = ref(false);
+const hasChanges = ref(false);
+const modifiedFields = ref(new Set());
+
+const initialData = {
+    nom: user.nom,
+    prenom: user.prenom,
+    email: user.email,
+    telephone: user.telephone,
+    date_de_naissance: user.date_de_naissance,
+};
 
 const form = useForm({
     nom: user.nom,
@@ -36,85 +47,86 @@ const selectNewAvatar = (event) => {
     if (file) {
         form.avatar = file;
         avatarPreview.value = URL.createObjectURL(file);
+        modifiedFields.value.add('avatar');
+        hasChanges.value = true;
     }
 };
 
-const hasChanges = computed(() => {
-    return form.nom !== user.nom ||
-           form.prenom !== user.prenom ||
-           form.email !== user.email ||
-           form.telephone !== user.telephone ||
-           form.date_de_naissance !== user.date_de_naissance;
-});
+const updateField = (fieldName, value) => {
+    form[fieldName] = value;
+    if (value !== initialData[fieldName]) {
+        modifiedFields.value.add(fieldName);
+        hasChanges.value = true;
+    } else {
+        modifiedFields.value.delete(fieldName);
+        hasChanges.value = modifiedFields.value.size > 0;
+    }
+};
 
-const updateProfileInformation = async () => {
-    isUploading.value = true;
-    
-    if (form.avatar instanceof File) {
+const saveChanges = () => {
+    if (!hasChanges.value) return;
+
+    // Créer un nouvel objet FormData avec uniquement les champs modifiés
         const formData = new FormData();
-        formData.append('_method', 'PATCH');
-        formData.append('avatar', form.avatar);
-        formData.append('nom', form.nom);
-        formData.append('prenom', form.prenom);
-        formData.append('email', form.email);
-        formData.append('telephone', form.telephone);
-        formData.append('date_de_naissance', form.date_de_naissance);
+    modifiedFields.value.forEach(field => {
+        if (field === 'avatar' && form[field] instanceof File) {
+            formData.append(field, form[field]);
+        } else if (form[field] !== undefined && form[field] !== null) {
+            formData.append(field, form[field]);
+        }
+    });
 
-        try {
-            const response = await axios.post(route('profile.update'), formData, {
+    // Utiliser Axios directement pour plus de contrôle sur la requête
+    axios.post(route('profile.update'), formData, {
                 headers: {
                     'Content-Type': 'multipart/form-data',
-                },
-            });
-            
-            // Mise à jour de l'aperçu avec la nouvelle image
-            if (response.data && response.data.avatar) {
-                avatarPreview.value = `/storage/${response.data.avatar}`;
+            'X-HTTP-Method-Override': 'PATCH'
+        }
+    }).then(response => {
+        // Mettre à jour les données initiales avec les nouvelles valeurs
+        modifiedFields.value.forEach(field => {
+            if (field !== 'avatar') {
+                initialData[field] = form[field];
             }
+        });
             
             showSuccessMessage.value = true;
+        hasChanges.value = false;
+        modifiedFields.value.clear();
+        
             setTimeout(() => {
                 showSuccessMessage.value = false;
-            }, 3000);
-        } catch (error) {
+        }, 2000);
+    }).catch(error => {
             if (error.response?.data?.errors) {
-                form.setError(error.response.data.errors);
-            }
+            Object.keys(error.response.data.errors).forEach(key => {
+                form.setError(key, error.response.data.errors[key]);
+            });
         }
-    } else {
-        await form.patch(route('profile.update'), {
-            preserveScroll: true,
-            onSuccess: () => {
-                showSuccessMessage.value = true;
-                setTimeout(() => {
-                    showSuccessMessage.value = false;
-                }, 3000);
-            },
-        });
-    }
-    
-    isUploading.value = false;
+    }).finally(() => {
+        isUploading.value = false;
+    });
 };
 </script>
 
 <template>
-    <section class="bg-white rounded-lg shadow-sm p-6 transition-all duration-300 hover:shadow-md">
+    <section>
         <header class="text-center mb-8">
             <h2 class="text-2xl font-bold text-gray-900 mb-2">Informations du profil</h2>
             <p class="text-gray-600 max-w-lg mx-auto">
-                Mettez à jour les informations de votre profil et votre adresse email.
+                Gérez vos informations personnelles et votre photo de profil.
             </p>
         </header>
 
-        <form @submit.prevent="updateProfileInformation" class="space-y-6 max-w-2xl mx-auto">
-            <!-- Avatar -->
+        <form @submit.prevent="saveChanges" class="space-y-8">
+            <!-- Avatar section -->
             <div class="flex flex-col items-center space-y-4">
-                <div class="relative">
-                    <div class="w-32 h-32 rounded-full overflow-hidden bg-gray-100 flex items-center justify-center border-4 border-white shadow-lg relative">
+                <div class="relative group">
+                    <div class="w-40 h-40 rounded-full overflow-hidden bg-gradient-to-b from-[#2962B4] to-[#1E4B8F] flex items-center justify-center border-4 border-white shadow-lg relative">
                         <img v-if="avatarPreview" :src="avatarPreview" class="w-full h-full object-cover" alt="Avatar" />
-                        <svg v-else xmlns="http://www.w3.org/2000/svg" class="h-16 w-16 text-gray-400" viewBox="0 0 20 20" fill="currentColor">
-                            <path fill-rule="evenodd" d="M10 9a3 3 0 100-6 3 3 0 000 6zm-7 9a7 7 0 1114 0H3z" clip-rule="evenodd" />
-                        </svg>
+                        <div v-else class="text-white text-5xl font-bold">
+                            {{ user?.nom?.charAt(0).toUpperCase() }}
+                        </div>
                         
                         <!-- Overlay de chargement -->
                         <div v-if="isUploading" class="absolute inset-0 bg-black bg-opacity-50 flex items-center justify-center">
@@ -123,8 +135,20 @@ const updateProfileInformation = async () => {
                                 <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
                             </svg>
                         </div>
+
+                        <!-- Overlay au survol avec info format -->
+                        <div 
+                            class="absolute inset-0 bg-black bg-opacity-40 opacity-0 group-hover:opacity-100 transition-opacity duration-200 flex flex-col items-center justify-center space-y-2"
+                            @mouseenter="showAvatarInfo = true"
+                            @mouseleave="showAvatarInfo = false"
+                        >
+                            <span class="text-white text-sm">Modifier la photo</span>
+                            <span v-if="showAvatarInfo" class="text-white text-xs text-center px-2">
+                                Format recommandé : JPG, PNG<br>Taille max : 1MB
+                            </span>
+                        </div>
                     </div>
-                    <label for="avatar" class="absolute bottom-0 right-0 bg-blue-600 text-white rounded-full p-2 cursor-pointer shadow-lg hover:bg-blue-700 transition-colors">
+                    <label for="avatar" class="absolute bottom-0 right-0 bg-[#2962B4] text-white rounded-full p-2 cursor-pointer shadow-lg hover:bg-[#1E4B8F] transition-colors">
                         <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
                             <path d="M13.586 3.586a2 2 0 112.828 2.828l-.793.793-2.828-2.828.793-.793zM11.379 5.793L3 14.172V17h2.828l8.38-8.379-2.83-2.828z" />
                         </svg>
@@ -137,158 +161,120 @@ const updateProfileInformation = async () => {
                         />
                     </label>
                 </div>
-                <p class="text-sm text-gray-500">Cliquez sur l'icône pour modifier votre photo de profil</p>
             </div>
 
             <!-- Message de succès -->
-            <transition
-                enter-active-class="transition ease-out duration-300"
-                enter-from-class="transform opacity-0 scale-95"
-                enter-to-class="transform opacity-100 scale-100"
-                leave-active-class="transition ease-in duration-200"
-                leave-from-class="transform opacity-100 scale-100"
-                leave-to-class="transform opacity-0 scale-95"
-            >
-                <p v-if="showSuccessMessage" class="text-sm text-green-600 mt-2 flex items-center justify-center">
-                    <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mr-1" viewBox="0 0 20 20" fill="currentColor">
-                        <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd" />
+            <div v-if="showSuccessMessage" 
+                 class="fixed top-4 right-4 bg-green-100 border border-green-400 text-green-700 px-4 py-3 rounded z-50"
+                 role="alert">
+                <div class="flex items-center">
+                    <svg class="h-5 w-5 mr-2" fill="currentColor" viewBox="0 0 20 20">
+                        <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd"/>
                     </svg>
-                    Modifications enregistrées avec succès !
-                </p>
-            </transition>
+                    <span>Modifications enregistrées avec succès</span>
+                </div>
+            </div>
 
-            <!-- Informations personnelles -->
-            <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
-                <div class="space-y-2">
-                    <InputLabel for="nom" value="Nom" class="text-gray-700" />
-                    <div class="relative">
+            <!-- Grille d'informations personnelles -->
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
+                <div class="space-y-6">
+                    <!-- Nom -->
+                    <div>
+                        <InputLabel for="nom" value="Nom" class="text-gray-700 font-medium" />
+                        <div class="relative mt-1">
                 <TextInput
                             id="nom"
                     type="text"
                             v-model="form.nom"
-                            class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-all duration-200"
+                                class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#2962B4] focus:border-[#2962B4] transition-all duration-200"
                     required
                             placeholder="Votre nom"
+                                @input="updateField('nom', $event.target.value)"
                         />
-                        <div v-if="form.nom" class="absolute right-3 top-2.5 text-green-500">
-                            <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
-                                <path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd" />
-                            </svg>
-                        </div>
                     </div>
                     <InputError :message="form.errors.nom" class="mt-1" />
                 </div>
 
-                <div class="space-y-2">
-                    <InputLabel for="prenom" value="Prénom" class="text-gray-700" />
-                    <div class="relative">
-                        <TextInput
-                            id="prenom"
-                            type="text"
-                            v-model="form.prenom"
-                            class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-all duration-200"
-                            required
-                            placeholder="Votre prénom"
-                        />
-                        <div v-if="form.prenom" class="absolute right-3 top-2.5 text-green-500">
-                            <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
-                                <path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd" />
-                            </svg>
-                        </div>
-                    </div>
-                    <InputError :message="form.errors.prenom" class="mt-1" />
-                </div>
-            </div>
-
-            <!-- Contact -->
-            <div class="space-y-2">
-                <InputLabel for="email" value="Email" class="text-gray-700" />
-                <div class="relative">
-                    <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-                        <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-gray-400" viewBox="0 0 20 20" fill="currentColor">
-                            <path d="M2.003 5.884L10 9.882l7.997-3.998A2 2 0 0016 4H4a2 2 0 00-1.997 1.884z" />
-                            <path d="M18 8.118l-8 4-8-4V14a2 2 0 002 2h12a2 2 0 002-2V8.118z" />
-                        </svg>
-                    </div>
+                    <!-- Email -->
+                    <div>
+                        <InputLabel for="email" value="Email" class="text-gray-700 font-medium" />
+                        <div class="relative mt-1">
                 <TextInput
                     id="email"
                     type="email"
                     v-model="form.email"
-                        class="w-full pl-10 pr-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-all duration-200"
+                                class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#2962B4] focus:border-[#2962B4] transition-all duration-200"
                         required
                         placeholder="votre@email.com"
+                                @input="updateField('email', $event.target.value)"
                     />
                 </div>
                 <InputError :message="form.errors.email" class="mt-1" />
             </div>
 
-            <div class="space-y-2">
-                <InputLabel for="telephone" value="Téléphone" class="text-gray-700" />
-                <div class="relative">
-                    <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-                        <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-gray-400" viewBox="0 0 20 20" fill="currentColor">
-                            <path d="M2 3a1 1 0 011-1h2.153a1 1 0 01.986.836l.74 4.435a1 1 0 01-.54 1.06l-1.548.773a11.037 11.037 0 006.105 6.105l.774-1.548a1 1 0 011.059-.54l4.435.74a1 1 0 01.836.986V17a1 1 0 01-1 1h-2C7.82 18 2 12.18 2 5V3z" />
-                        </svg>
-                    </div>
-                    <TextInput
-                        id="telephone"
-                        type="tel"
-                        v-model="form.telephone"
-                        class="w-full pl-10 pr-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-all duration-200"
-                    required
-                        pattern="[0-9]{10}"
-                        placeholder="0123456789"
-                    />
-                </div>
-                <InputError :message="form.errors.telephone" class="mt-1" />
-            </div>
-
-            <div class="space-y-2">
-                <InputLabel for="date_de_naissance" value="Date de naissance" class="text-gray-700" />
-                <div class="relative">
-                    <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-                        <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-gray-400" viewBox="0 0 20 20" fill="currentColor">
-                            <path fill-rule="evenodd" d="M6 2a1 1 0 00-1 1v1H4a2 2 0 00-2 2v10a2 2 0 002 2h12a2 2 0 002-2V6a2 2 0 00-2-2h-1V3a1 1 0 10-2 0v1H7V3a1 1 0 00-1-1zm0 5a1 1 0 000 2h8a1 1 0 100-2H6z" clip-rule="evenodd" />
-                        </svg>
-                    </div>
+                    <!-- Date de naissance -->
+                    <div>
+                        <InputLabel for="date_de_naissance" value="Date de naissance" class="text-gray-700 font-medium" />
+                        <div class="relative mt-1">
                     <TextInput
                         id="date_de_naissance"
                         type="date"
                         v-model="form.date_de_naissance"
-                        class="w-full pl-10 pr-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-all duration-200"
+                                class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#2962B4] focus:border-[#2962B4] transition-all duration-200"
                         required
+                                @input="updateField('date_de_naissance', $event.target.value)"
                     />
                 </div>
                 <InputError :message="form.errors.date_de_naissance" class="mt-1" />
+                    </div>
             </div>
 
-            <div v-if="mustVerifyEmail && user.email_verified_at === null" class="bg-yellow-50 p-4 rounded-lg">
-                <div class="flex">
-                    <div class="flex-shrink-0">
-                        <svg class="h-5 w-5 text-yellow-400" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor">
-                            <path fill-rule="evenodd" d="M8.257 3.099c.765-1.36 2.722-1.36 3.486 0l5.58 9.92c.75 1.334-.213 2.98-1.742 2.98H4.42c-1.53 0-2.493-1.646-1.743-2.98l5.58-9.92zM11 13a1 1 0 11-2 0 1 1 0 012 0zm-1-8a1 1 0 00-1 1v3a1 1 0 002 0V6a1 1 0 00-1-1z" clip-rule="evenodd" />
-                        </svg>
+                <div class="space-y-6">
+                    <!-- Prénom -->
+                    <div>
+                        <InputLabel for="prenom" value="Prénom" class="text-gray-700 font-medium" />
+                        <div class="relative mt-1">
+                            <TextInput
+                                id="prenom"
+                                type="text"
+                                v-model="form.prenom"
+                                class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#2962B4] focus:border-[#2962B4] transition-all duration-200"
+                                required
+                                placeholder="Votre prénom"
+                                @input="updateField('prenom', $event.target.value)"
+                            />
+                        </div>
+                        <InputError :message="form.errors.prenom" class="mt-1" />
                     </div>
-                    <div class="ml-3">
-                        <p class="text-sm text-yellow-700">
-                            Votre adresse email n'est pas vérifiée.
-                    <Link
-                        :href="route('verification.send')"
-                        method="post"
-                        as="button"
-                                class="font-medium text-yellow-700 underline hover:text-yellow-600"
-                    >
-                                Cliquez ici pour renvoyer l'email de vérification.
-                    </Link>
-                </p>
+
+                    <!-- Téléphone -->
+                    <div>
+                        <InputLabel for="telephone" value="Téléphone" class="text-gray-700 font-medium" />
+                        <div class="relative mt-1">
+                            <TextInput
+                                id="telephone"
+                                type="tel"
+                                v-model="form.telephone"
+                                class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#2962B4] focus:border-[#2962B4] transition-all duration-200"
+                                required
+                                placeholder="Ex: +229 01-23-45-67"
+                                @input="updateField('telephone', $event.target.value)"
+                            />
+                        </div>
+                        <InputError :message="form.errors.telephone" class="mt-1" />
                     </div>
                 </div>
             </div>
 
-            <div class="flex items-center justify-end space-x-4">
+            <!-- Bouton de sauvegarde -->
+            <div class="flex justify-end mt-6">
                 <PrimaryButton
-                    :class="{ 'opacity-25': form.processing }"
-                    :disabled="form.processing || !hasChanges"
+                    type="submit"
+                    :disabled="!hasChanges || form.processing"
+                    :class="{ 
+                        'opacity-50 cursor-not-allowed': !hasChanges || form.processing,
+                        'bg-[#2962B4] hover:bg-[#1E4B8F]': hasChanges && !form.processing 
+                    }"
                 >
                     <span v-if="form.processing" class="flex items-center">
                         <svg class="animate-spin -ml-1 mr-2 h-4 w-4 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
@@ -297,7 +283,7 @@ const updateProfileInformation = async () => {
                         </svg>
                         Enregistrement...
                     </span>
-                    <span v-else>Sauvegarder</span>
+                    <span v-else>Enregistrer les modifications</span>
                 </PrimaryButton>
             </div>
         </form>
@@ -306,6 +292,6 @@ const updateProfileInformation = async () => {
 
 <style scoped>
 .form-input:focus {
-    box-shadow: 0 0 0 2px rgba(59, 130, 246, 0.5);
+    box-shadow: 0 0 0 2px rgba(41, 98, 180, 0.5);
 }
 </style>

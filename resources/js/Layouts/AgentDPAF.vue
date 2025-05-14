@@ -80,9 +80,11 @@ import NavLink from '@/Components/NavLink.vue';
 import Dropdown from '@/Components/Dropdown.vue';
 import DropdownLink from '@/Components/DropdownLink.vue';
 import { ref } from 'vue';
+import ApplicationLogo from '@/Components/ApplicationLogo.vue';
 
 // Récupérer la valeur isRSAgent depuis les props de la page
 const isRSAgent = ref(usePage().props.isRSAgent || false);
 const user = usePage().props.auth?.user;
 
+const showingNavigationDropdown = ref(false);
 </script>

@@ -189,34 +189,34 @@ function refreshDashboard() {
 
     <AdminLayout>
         <template #header>
-            <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between">
+            <div class="flex items-center justify-between">
+                <div class="flex items-center gap-4">
                 <h2 class="text-xl font-semibold leading-tight text-gray-800">
                     Tableau de bord d'administration
                 </h2>
-                <div class="mt-2 sm:mt-0 flex items-center text-sm text-gray-500">
-                    <span class="mr-4 flex items-center">
+                    <span class="flex items-center text-sm text-gray-500">
                         <FontAwesomeIcon icon="calendar" class="mr-1" />
                         {{ new Date().toLocaleDateString('fr-FR', { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' }) }}
                     </span>
+                </div>
                     <button 
                         @click="refreshDashboard" 
-                        class="inline-flex items-center px-2.5 py-1.5 border border-gray-300 shadow-sm text-xs rounded 
-                              text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 
-                              focus:ring-blue-500 focus:ring-offset-2 transition-colors"
+                    class="inline-flex items-center px-3 py-2 border border-transparent text-sm font-medium rounded-md
+                          text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 
+                          focus:ring-blue-500 focus:ring-offset-2 transition-colors shadow-sm"
                         :disabled="refreshing"
                     >
                         <FontAwesomeIcon 
-                            :icon="refreshing ? 'spinner' : 'sync'" 
+                        :icon="refreshing ? 'spinner' : 'arrows-rotate'" 
                             :class="{'animate-spin': refreshing}"
-                            class="mr-1" 
+                        class="mr-2" 
                         />
                         Actualiser
                     </button>
-                </div>
             </div>
         </template>
 
-        <div class="py-12">
+        <div class="py-0">
             <div class="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
                 <!-- Error Message with enhanced styling and animation -->
                 <transition 
@@ -243,13 +243,13 @@ function refreshDashboard() {
                 </transition>
                 
                 <!-- Last refreshed info -->
-                <div class="mb-6 text-right text-xs text-gray-500">
+                <div class="mb-2 text-right text-xs text-gray-500">
                     Dernière actualisation: {{ lastRefreshed.toLocaleTimeString('fr-FR') }}
                 </div>
                 
                 <!-- Stats Cards with enhanced styling and trend indicators -->
                 <div 
-                    class="mb-8 grid grid-cols-1 gap-5 sm:grid-cols-2 lg:grid-cols-4"
+                    class="mb-6 grid grid-cols-1 gap-5 sm:grid-cols-2 lg:grid-cols-4"
                     :class="{ 'opacity-100 transform translate-y-0': isLoaded, 'opacity-0 transform -translate-y-4': !isLoaded }"
                     style="transition: all 0.5s ease;"
                 >

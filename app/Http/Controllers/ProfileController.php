@@ -13,6 +13,7 @@ use Illuminate\Support\Facades\Storage;
 use Inertia\Inertia;
 use Inertia\Response;
 use Illuminate\Http\JsonResponse;
+use Illuminate\Support\Facades\DB;
 
 class ProfileController extends Controller
 {
@@ -35,49 +36,54 @@ class ProfileController extends Controller
         $user = $request->user();
         $data = $request->validated();
 
-        \Log::info('Update Profile Request', [
-            'has_file' => $request->hasFile('avatar'),
-            'all_data' => $request->all(),
-            'validated_data' => $data
-        ]);
+        try {
+            DB::beginTransaction();
 
+            // Gestion de la mise à jour de l'avatar
         if ($request->hasFile('avatar')) {
-            \Log::info('Processing avatar file');
+                $avatarPath = storage_path('app/public/avatars');
+                if (!file_exists($avatarPath)) {
+                    mkdir($avatarPath, 0755, true);
+                }
             
-            // Suppression de l'ancien avatar s'il existe
             if ($user->avatar) {
-                \Log::info('Deleting old avatar: ' . $user->avatar);
                 Storage::disk('public')->delete($user->avatar);
             }
 
-            // Upload du nouvel avatar
-            $path = $request->file('avatar')->store('avatars', 'public');
-            \Log::info('New avatar path: ' . $path);
+                $fileName = uniqid('avatar_') . '.' . $request->file('avatar')->getClientOriginalExtension();
+                $path = $request->file('avatar')->storeAs('avatars', $fileName, 'public');
             $data['avatar'] = $path;
         }
 
-        $user->fill($data);
-
-        if ($user->isDirty('email')) {
+            // Ne mettre à jour que les champs qui ont été soumis
+            foreach ($data as $field => $value) {
+                if ($field === 'email' && $value !== $user->email) {
             $user->email_verified_at = null;
+                }
+                $user->{$field} = $value;
         }
 
         $user->save();
+            DB::commit();
 
-        \Log::info('User updated', [
+            return response()->json([
+                'message' => 'Profil mis à jour avec succès',
+                'user' => $user
+            ]);
+
+        } catch (\Exception $e) {
+            DB::rollBack();
+            \Log::error('Error updating profile: ' . $e->getMessage(), [
+                'exception' => $e,
             'user_id' => $user->id,
-            'avatar' => $user->avatar
+                'data' => $data
         ]);
 
-        if ($request->wantsJson()) {
             return response()->json([
-                'message' => 'Profile updated successfully',
-                'avatar' => $user->avatar,
-                'avatar_url' => $user->avatar ? asset('storage/' . $user->avatar) : null
-            ]);
+                'error' => 'Une erreur est survenue lors de la mise à jour du profil.',
+                'details' => $e->getMessage()
+            ], 500);
         }
-
-        return Redirect::route('profile.edit')->with('success', 'Profil mis à jour avec succès.');
     }
 
     /**

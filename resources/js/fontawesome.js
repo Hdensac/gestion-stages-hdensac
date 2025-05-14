@@ -6,15 +6,12 @@ import {
     faBuilding,
     faUserGraduate,
     faBriefcase,
-    faUserPlus,
-    faFileAlt,
     faChartBar,
-    faComments,
-    faCog,
+    faFileAlt,
     faExclamationCircle,
     faDownload,
-    faFileSignature,
     faChevronRight,
+    faChevronLeft,
     faBell,
     faCheckCircle,
     faExclamationTriangle,
@@ -22,24 +19,26 @@ import {
     faSync,
     faCalendar,
     faArrowUp,
-    faArrowDown
+    faArrowDown,
+    faBars,
+    faUser,
+    faSignOutAlt,
+    faCog,
+    faSearch
 } from '@fortawesome/free-solid-svg-icons';
 
-// Add icons to the library
+// Add icons to library
 library.add(
     faUsers,
     faBuilding,
     faUserGraduate,
     faBriefcase,
-    faUserPlus,
-    faFileAlt,
     faChartBar,
-    faComments,
-    faCog,
+    faFileAlt,
     faExclamationCircle,
     faDownload,
-    faFileSignature,
     faChevronRight,
+    faChevronLeft,
     faBell,
     faCheckCircle,
     faExclamationTriangle,
@@ -47,7 +46,12 @@ library.add(
     faSync,
     faCalendar,
     faArrowUp,
-    faArrowDown
+    faArrowDown,
+    faBars,
+    faUser,
+    faSignOutAlt,
+    faCog,
+    faSearch
 );
 
 export { FontAwesomeIcon };

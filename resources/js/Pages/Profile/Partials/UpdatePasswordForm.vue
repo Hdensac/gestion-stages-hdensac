@@ -63,7 +63,7 @@ const updatePassword = () => {
                         ref="currentPasswordInput"
                         v-model="form.current_password"
                         type="password"
-                        class="w-full pl-10 pr-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-all duration-200"
+                        class="w-full pl-10 pr-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#2962B4] focus:border-[#2962B4] transition-all duration-200"
                         autocomplete="current-password"
                         placeholder="••••••••"
                     />
@@ -84,7 +84,7 @@ const updatePassword = () => {
                         ref="passwordInput"
                         v-model="form.password"
                         type="password"
-                        class="w-full pl-10 pr-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-all duration-200"
+                        class="w-full pl-10 pr-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#2962B4] focus:border-[#2962B4] transition-all duration-200"
                         autocomplete="new-password"
                         placeholder="••••••••"
                     />
@@ -104,7 +104,7 @@ const updatePassword = () => {
                         id="password_confirmation"
                         v-model="form.password_confirmation"
                         type="password"
-                        class="w-full pl-10 pr-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-all duration-200"
+                        class="w-full pl-10 pr-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#2962B4] focus:border-[#2962B4] transition-all duration-200"
                         autocomplete="new-password"
                         placeholder="••••••••"
                     />
@@ -130,7 +130,7 @@ const updatePassword = () => {
                 </transition>
 
                 <PrimaryButton
-                    :class="{ 'opacity-25': form.processing }"
+                    :class="{ 'opacity-25': form.processing, 'bg-[#2962B4] hover:bg-[#1E4B8F]': !form.processing }"
                     :disabled="form.processing"
                 >
                     <span v-if="form.processing" class="flex items-center">

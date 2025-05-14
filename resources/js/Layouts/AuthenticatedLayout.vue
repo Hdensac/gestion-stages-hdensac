@@ -87,7 +87,7 @@ const user = usePage().props.auth?.user;
                                             method="post"
                                             as="button"
                                         >
-                                            Log Out
+                                            Déconnexion
                                         </DropdownLink>
                                     </template>
                                 </Dropdown>
@@ -178,7 +178,7 @@ const user = usePage().props.auth?.user;
                                 method="post"
                                 as="button"
                             >
-                                Log Out
+                                Déconnexion
                             </ResponsiveNavLink>
                         </div>
                     </div>
@@ -190,7 +190,7 @@ const user = usePage().props.auth?.user;
                 class="bg-white shadow"
                 v-if="$slots.header"
             >
-                <div class="mx-auto max-w-7xl px-4 py-6 sm:px-6 lg:px-8">
+                <div class="mx-auto max-w-7xl px-4 py-2 sm:px-6 lg:px-8">
                     <slot name="header" />
                 </div>
             </header>
