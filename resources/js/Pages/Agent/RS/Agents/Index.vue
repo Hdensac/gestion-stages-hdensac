@@ -3,7 +3,7 @@
     <template #header>
       <div class="flex items-center gap-3">
         <svg class="w-8 h-8 text-blue-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>
-        <h1 class="text-2xl sm:text-3xl font-extrabold text-gray-800">Gestion des Agents sans rôle</h1>
+        <h1 class="text-2xl sm:text-3xl font-extrabold text-gray-800">Gestion des Agents de votre structure</h1>
         <span class="ml-2 bg-blue-100 text-blue-700 text-xs font-semibold px-3 py-1 rounded-full">{{ agents.length }} agents</span>
       </div>
     </template>

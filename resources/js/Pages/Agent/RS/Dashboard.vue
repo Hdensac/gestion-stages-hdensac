@@ -24,7 +24,15 @@
         <!-- Information de la structure -->
         <div v-if="structure" class="bg-white shadow-lg rounded-xl mb-8 p-6 flex flex-col md:flex-row md:items-center md:justify-between">
           <div>
-            <h3 class="text-lg font-semibold mb-2 text-blue-700">Votre Structure</h3>
+            <h3 class="text-lg font-semibold mb-2 text-blue-700 flex items-center gap-2">
+              <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <rect x="2" y="2" width="20" height="8" rx="2" ry="2"></rect>
+                <rect x="2" y="14" width="20" height="8" rx="2" ry="2"></rect>
+                <line x1="6" y1="6" x2="6" y2="6"></line>
+                <line x1="6" y1="18" x2="6" y2="18"></line>
+              </svg>
+              Votre Structure
+            </h3>
             <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
               <div>
                 <p class="text-sm text-gray-600">Sigle</p>
@@ -36,23 +44,7 @@
               </div>
             </div>
           </div>
-         <!--  <div class="mt-6 md:mt-0 flex gap-3">
-            <button class="px-4 py-2 bg-blue-600 text-white rounded-lg shadow hover:bg-blue-700 transition-colors">Modifier</button>
-            <button class="px-4 py-2 bg-gray-200 text-gray-700 rounded-lg shadow hover:bg-gray-300 transition-colors">Voir profil</button>
-          </div> -->
         </div>
-
-        <!-- Actions rapides -->
-       <!--  <div class="mb-8 flex flex-wrap gap-4">
-          <button class="flex items-center gap-2 px-5 py-3 bg-green-600 text-white rounded-xl shadow hover:bg-green-700 transition">
-            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4" /></svg>
-            Nouvelle demande
-          </button>
-          <button class="flex items-center gap-2 px-5 py-3 bg-yellow-500 text-white rounded-xl shadow hover:bg-yellow-600 transition">
-            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 10h18M3 6h18M3 14h18M3 18h18" /></svg>
-            Voir toutes les demandes
-          </button>
-        </div> -->
 
         <!-- Statistiques -->
         <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-10">
@@ -66,8 +58,10 @@
             <div>
               <p class="text-sm font-medium text-gray-600">Demandes en attente</p>
               <p class="text-3xl font-extrabold text-gray-800">{{ stats.demandesEnAttente }}</p>
+              <p class="text-xs text-gray-500 mt-1">Requêtes à traiter</p>
             </div>
           </div>
+          
           <!-- Demandes acceptées -->
           <div class="bg-white rounded-2xl shadow-lg hover:shadow-2xl transition-shadow duration-300 p-6 flex items-center gap-4">
             <div class="p-4 rounded-full bg-green-100 text-green-600 shadow">
@@ -78,8 +72,10 @@
             <div>
               <p class="text-sm font-medium text-gray-600">Demandes acceptées</p>
               <p class="text-3xl font-extrabold text-gray-800">{{ stats.demandesAcceptees }}</p>
+              <p class="text-xs text-gray-500 mt-1">Requêtes approuvées</p>
             </div>
           </div>
+          
           <!-- Demandes rejetées -->
           <div class="bg-white rounded-2xl shadow-lg hover:shadow-2xl transition-shadow duration-300 p-6 flex items-center gap-4">
             <div class="p-4 rounded-full bg-red-100 text-red-600 shadow">
@@ -90,6 +86,7 @@
             <div>
               <p class="text-sm font-medium text-gray-600">Demandes rejetées</p>
               <p class="text-3xl font-extrabold text-gray-800">{{ stats.demandesRejetees }}</p>
+              <p class="text-xs text-gray-500 mt-1">Requêtes refusées</p>
             </div>
           </div>
         </div>
@@ -100,14 +97,25 @@
             <h3 class="text-xl font-bold text-gray-800">Dernières demandes</h3>
             <Link 
               :href="route('agent.rs.demandes')" 
-              class="px-5 py-2 bg-blue-600 text-white rounded-lg shadow hover:bg-blue-700 transition-colors font-semibold"
+              class="px-5 py-2 bg-blue-600 text-white rounded-lg shadow hover:bg-blue-700 transition-colors font-semibold flex items-center gap-1"
             >
-              Voir toutes les demandes
+              <span>Voir toutes les demandes</span>
+              <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" viewBox="0 0 20 20" fill="currentColor">
+                <path fill-rule="evenodd" d="M7.293 14.707a1 1 0 010-1.414L10.586 10 7.293 6.707a1 1 0 011.414-1.414l4 4a1 1 0 010 1.414l-4 4a1 1 0 01-1.414 0z" clip-rule="evenodd" />
+              </svg>
             </Link>
           </div>
 
-          <div v-if="dernieresDemandes.length === 0" class="text-center py-8">
-            <p class="text-gray-500">Aucune demande à afficher</p>
+          <div v-if="dernieresDemandes.length === 0" class="py-12 px-6 text-center bg-gray-50 rounded-xl">
+            <svg xmlns="http://www.w3.org/2000/svg" class="mx-auto h-16 w-16 text-gray-400 mb-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path>
+              <polyline points="14 2 14 8 20 8"></polyline>
+              <line x1="16" y1="13" x2="8" y2="13"></line>
+              <line x1="16" y1="17" x2="8" y2="17"></line>
+              <polyline points="10 9 9 9 8 9"></polyline>
+            </svg>
+            <h3 class="text-lg font-semibold text-gray-700 mb-1">Aucune demande à afficher</h3>
+            <p class="text-sm text-gray-500">Les nouvelles demandes de stage apparaîtront ici</p>
           </div>
 
           <div v-else class="overflow-x-auto">
@@ -123,10 +131,17 @@
               <tbody class="bg-white divide-y divide-gray-200">
                 <tr v-for="demande in dernieresDemandes" :key="demande.id" class="hover:bg-gray-50 transition">
                   <td class="px-6 py-4 whitespace-nowrap">
-                    <div class="text-sm font-semibold text-gray-900">
-                      {{ demande.stagiaire.user.nom }} {{ demande.stagiaire.user.prenom }}
+                    <div class="flex items-center">
+                      <div class="h-10 w-10 rounded-full bg-blue-100 text-blue-700 flex items-center justify-center font-semibold shadow-sm">
+                        {{ getInitials(demande.stagiaire.user.nom, demande.stagiaire.user.prenom) }}
+                      </div>
+                      <div class="ml-4">
+                        <div class="text-sm font-semibold text-gray-900">
+                          {{ demande.stagiaire.user.nom }} {{ demande.stagiaire.user.prenom }}
+                        </div>
+                        <div class="text-xs text-gray-500">{{ demande.stagiaire.user.email }}</div>
+                      </div>
                     </div>
-                    <div class="text-xs text-gray-500">{{ demande.stagiaire.user.email }}</div>
                   </td>
                   <td class="px-6 py-4 whitespace-nowrap">
                     <div class="text-sm text-gray-900">
@@ -141,9 +156,12 @@
                   <td class="px-6 py-4 whitespace-nowrap text-sm font-medium">
                     <Link 
                       :href="route('agent.rs.demandes.show', demande.id)"
-                      class="text-blue-600 hover:text-blue-900 font-semibold transition"
+                      class="text-blue-600 hover:text-blue-900 font-semibold transition flex items-center gap-1 group"
                     >
-                      Voir les détails
+                      <span>Voir les détails</span>
+                      <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 transition-transform group-hover:translate-x-1" viewBox="0 0 20 20" fill="currentColor">
+                        <path fill-rule="evenodd" d="M7.293 14.707a1 1 0 010-1.414L10.586 10 7.293 6.707a1 1 0 011.414-1.414l4 4a1 1 0 010 1.414l-4 4a1 1 0 01-1.414 0z" clip-rule="evenodd" />
+                      </svg>
                     </Link>
                   </td>
                 </tr>
@@ -158,9 +176,7 @@
 
 <script setup>
 import { Head, Link } from '@inertiajs/vue3';
-// import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout.vue';
 import RSLayout from '@/Layouts/RSLayout.vue';
-//import Pagination from '@/Components/Pagination.vue';
 
 defineProps({
   stats: Object,
@@ -190,4 +206,8 @@ function getStatusClass(status) {
       return 'bg-gray-100 text-gray-800';
   }
 }
-</script> 
+
+function getInitials(nom, prenom) {
+  return `${prenom.charAt(0)}${nom.charAt(0)}`.toUpperCase();
+}
+</script>
