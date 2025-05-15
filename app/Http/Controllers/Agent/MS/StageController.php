@@ -217,7 +217,15 @@ class StageController extends Controller
             if (!$stage->relationLoaded('demandeStage') ||
                 !$stage->demandeStage ||
                 !$stage->demandeStage->relationLoaded('stagiaire')) {
-                $stage->load('demandeStage.stagiaire.user');
+                $stage->load([
+                    'demandeStage.stagiaire.user',
+                    'affectationsMaitreStage' => function($query) {
+                        $query->orderBy('date_affectation', 'desc');
+                    },
+                    'affectationsMaitreStage.maitreStage',
+                    'affectationsMaitreStage.agentAffectant.user',
+                    'themeStage'
+                ]);
             }
 
             // Ajouter les informations du stagiaire directement dans l'objet stage

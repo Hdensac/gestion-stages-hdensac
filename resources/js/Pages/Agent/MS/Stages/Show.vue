@@ -127,6 +127,16 @@
           <div class="p-6">
             <!-- Informations générales -->
             <div v-if="activeTab === 'infos'" class="space-y-6">
+              <!-- Timeline du stage -->
+              <div class="bg-white p-6 rounded-lg shadow-sm border border-gray-200">
+                <h3 class="text-lg font-semibold mb-4">Progression du stage</h3>
+                <StageTimeline
+                  :start-date="stage.date_debut"
+                  :end-date="stage.date_fin"
+                  :events="getStageEvents()"
+                />
+              </div>
+
               <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
                 <div>
                   <h3 class="text-lg font-semibold mb-4">Informations du stagiaire</h3>
@@ -548,6 +558,7 @@ import MSLayout from '@/Layouts/MSLayout.vue';
 import { ref, onMounted, watch } from 'vue';
 import axios from 'axios';
 import AdminToast from '@/Components/AdminToast.vue';
+import StageTimeline from '@/Components/StageTimeline.vue';
 
 const props = defineProps({
   stage: Object,
@@ -699,6 +710,49 @@ const getStagiaireInitials = (stage) => {
 const getMotsCles = (themeStage) => {
   if (!themeStage || !themeStage.mots_cles) return [];
   return themeStage.mots_cles.split(',').map(mot => mot.trim());
+};
+
+// Générer les événements pour la timeline du stage
+const getStageEvents = () => {
+  const events = [];
+
+  // Ajouter les événements d'affectation
+  if (props.stage.affectationsMaitreStage && props.stage.affectationsMaitreStage.length > 0) {
+    props.stage.affectationsMaitreStage.forEach(affectation => {
+      if (affectation.date_affectation) {
+        events.push({
+          date: affectation.date_affectation,
+          title: `Affectation à ${affectation.maitre_stage?.nom || 'un maître de stage'}`
+        });
+      }
+    });
+  }
+
+  // Ajouter la date de soumission de la demande
+  if (props.stage.demandeStage?.date_soumission) {
+    events.push({
+      date: props.stage.demandeStage.date_soumission,
+      title: 'Soumission de la demande'
+    });
+  }
+
+  // Ajouter la date de traitement de la demande
+  if (props.stage.demandeStage?.date_traitement) {
+    events.push({
+      date: props.stage.demandeStage.date_traitement,
+      title: 'Traitement de la demande'
+    });
+  }
+
+  // Ajouter la date de réaffectation si applicable
+  if (props.stage.est_reaffecte && props.stage.reaffectation_info?.date_reaffectation) {
+    events.push({
+      date: props.stage.reaffectation_info.date_reaffectation,
+      title: 'Réaffectation du stage'
+    });
+  }
+
+  return events;
 };
 
 // Mettre à jour le statut d'un stage

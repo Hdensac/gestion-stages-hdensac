@@ -196,6 +196,9 @@ Route::get('/dashboard', function () {
             Route::post('/demandes/{demande}/reject', [App\Http\Controllers\Agent\RS\DemandeController::class, 'reject'])->name('demandes.reject');
             Route::get('/responsable-agents', [App\Http\Controllers\Agent\RS\DemandeController::class, 'getResponsableAgents'])->name('responsable-agents');
             Route::post('/demandes/{demande}/affecter-maitre', [App\Http\Controllers\Agent\RS\DemandeController::class, 'affecterMaitreStage'])->name('demandes.affecter-maitre');
+            // Routes pour les stages
+            Route::get('/stages', [App\Http\Controllers\Agent\RS\StageController::class, 'index'])->name('stages');
+            Route::get('/stages/{stage}', [App\Http\Controllers\Agent\RS\StageController::class, 'show'])->name('stages.show');
             // CRUD agents sans rôle
             Route::resource('agents', App\Http\Controllers\Agent\RS\AgentController::class);
             Route::resource('organigramme', App\Http\Controllers\Agent\RS\StructureOrganigrammeController::class)

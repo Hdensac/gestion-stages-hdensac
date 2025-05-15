@@ -18,9 +18,11 @@ class DashboardController extends Controller
         $user = Auth::user();
         $stagiaire = $user->stagiaire;
 
-        // Récupérer toutes les structures actives
-        $structures = Structure::where('active', true)->get();
-        
+        // Récupérer uniquement les structures principales (parent_id = null)
+        $structures = Structure::where('active', true)
+            ->whereNull('parent_id')
+            ->get();
+
         // Récupérer tous les utilisateurs pour la sélection des membres
         $users = User::where('role', 'stagiaire')
             ->where('id', '!=', $user->id)
@@ -78,4 +80,4 @@ class DashboardController extends Controller
             'users' => $users
         ]);
     }
-} 
+}

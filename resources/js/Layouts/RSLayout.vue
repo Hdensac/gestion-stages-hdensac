@@ -20,6 +20,9 @@
                             <NavLink :href="route('agent.rs.demandes')" :active="route().current('agent.rs.demandes')">
                                 Demandes
                             </NavLink>
+                            <NavLink :href="route('agent.rs.stages')" :active="route().current('agent.rs.stages*')">
+                                Stages
+                            </NavLink>
                             <NavLink :href="route('agent.rs.agents.index')" :active="route().current('agent.rs.agents.index')">
                                 Agents
                             </NavLink>
@@ -94,6 +97,9 @@
                     </ResponsiveNavLink>
                     <ResponsiveNavLink :href="route('agent.rs.demandes')" :active="route().current('agent.rs.demandes')">
                         Demandes
+                    </ResponsiveNavLink>
+                    <ResponsiveNavLink :href="route('agent.rs.stages')" :active="route().current('agent.rs.stages*')">
+                        Stages
                     </ResponsiveNavLink>
                     <ResponsiveNavLink :href="route('agent.rs.agents.index')" :active="route().current('agent.rs.agents.index')">
                         Agents

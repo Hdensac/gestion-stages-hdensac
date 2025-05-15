@@ -53,8 +53,9 @@ class DemandeController extends Controller
 
             $demandes = $query->paginate(10)->withQueryString();
 
-            // Récupérer toutes les structures pour le filtre
+            // Récupérer uniquement les structures principales (parent_id = null) pour le filtre
             $structures = Structure::select('id', 'libelle', 'sigle')
+                ->whereNull('parent_id')
                 ->orderBy('libelle')
                 ->get()
                 ->map(function($structure) {
@@ -92,6 +93,7 @@ class DemandeController extends Controller
     {
         $demande->load(['stagiaire.user', 'structure', 'membres.user']);
         $structures = Structure::select('id', 'libelle', 'sigle')
+            ->whereNull('parent_id')
             ->orderBy('libelle')
             ->get()
             ->map(function($structure) {

@@ -6,6 +6,9 @@
       <h2 class="text-xl font-semibold text-gray-800">Détails de la demande</h2>
     </template>
 
+    <!-- Composant Toast pour les notifications -->
+    <Toast ref="toast" />
+
     <div class="py-12">
       <div class="mx-auto max-w-7xl sm:px-6 lg:px-8">
         <div class="overflow-hidden bg-white shadow-sm sm:rounded-lg">
@@ -307,6 +310,7 @@ import { ref, onMounted } from 'vue';
 import { Head, Link, useForm, router } from '@inertiajs/vue3';
 import RSLayout from '@/Layouts/RSLayout.vue';
 import Modal from '@/Components/Modal.vue';
+import Toast from '@/Components/Toast.vue';
 import axios from 'axios';
 
 const props = defineProps({
@@ -319,6 +323,7 @@ const showApproveModal = ref(false);
 const showMaitreStageModal = ref(false);
 const selectedMaitreStageId = ref('');
 const maitreStageAgents = ref([]);
+const toast = ref(null);
 
 const rejectForm = useForm({
   motif_refus: '',
@@ -455,11 +460,30 @@ function submitMaitreStage() {
     onSuccess: (response) => {
       console.log('Affectation réussie, réponse:', response);
       closeMaitreStageModal();
+
+      // Afficher un toast de confirmation
+      if (toast.value) {
+        toast.value.addToast({
+          type: 'success',
+          title: 'Affectation réussie',
+          message: 'Le maître de stage a été affecté avec succès.'
+        });
+      }
+
       // Recharger la page pour voir les changements
       router.reload();
     },
     onError: (errors) => {
       console.error('Erreur lors de l\'affectation du maître de stage:', errors);
+
+      // Afficher un toast d'erreur
+      if (toast.value) {
+        toast.value.addToast({
+          type: 'error',
+          title: 'Erreur',
+          message: 'Une erreur est survenue lors de l\'affectation du maître de stage.'
+        });
+      }
     }
   });
 }

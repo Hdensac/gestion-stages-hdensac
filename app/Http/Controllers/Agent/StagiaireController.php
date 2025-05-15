@@ -48,8 +48,11 @@ class StagiaireController extends Controller
     public function create()
     {
         try {
-            $structures = Structure::where('active', true)->get();
-            
+            // Ne récupérer que les structures principales (parent_id = null)
+            $structures = Structure::where('active', true)
+                ->whereNull('parent_id')
+                ->get();
+
             Log::info('Formulaire de création de stagiaire chargé', [
                 'structures_count' => $structures->count()
             ]);
@@ -127,7 +130,7 @@ class StagiaireController extends Controller
 
         } catch (\Exception $e) {
             DB::rollBack();
-            
+
             // Delete uploaded files if they exist
             if (isset($cvPath)) Storage::disk('public')->delete($cvPath);
             if (isset($lettrePath)) Storage::disk('public')->delete($lettrePath);
@@ -151,7 +154,7 @@ class StagiaireController extends Controller
     {
         try {
             $stagiaire->load(['user', 'structure']);
-            
+
             Log::info('Affichage des détails du stagiaire', [
                 'stagiaire_id' => $stagiaire->id_stagiaire
             ]);
@@ -192,7 +195,7 @@ class StagiaireController extends Controller
         try {
             $stagiaire->load(['user', 'structure']);
             $structures = Structure::where('active', true)->get();
-            
+
             Log::info('Formulaire d\'édition du stagiaire chargé', [
                 'stagiaire_id' => $stagiaire->id_stagiaire
             ]);
@@ -339,4 +342,4 @@ class StagiaireController extends Controller
                 ->with('error', 'Une erreur est survenue lors de la suppression du stagiaire.');
         }
     }
-} 
+}
