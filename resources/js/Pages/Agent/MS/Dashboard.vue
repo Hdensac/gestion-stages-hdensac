@@ -9,15 +9,15 @@
         <div class="flex items-center gap-4">
           <div class="bg-green-100 text-green-700 rounded-full w-12 h-12 flex items-center justify-center text-2xl font-bold shadow">
             <svg class="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253" />
-            </svg>
-          </div>
-          <div>
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253" />
+          </svg>
+        </div>
+        <div>
             <h1 class="text-3xl font-extrabold text-green-800 leading-tight">Tableau de bord Maître de Stage</h1>
             <p v-if="structureResponsable" class="text-blue-600 font-medium">
-              Responsable de : {{ structureResponsable.libelle }}
-              <span v-if="structureResponsable.sigle" class="text-gray-500">({{ structureResponsable.sigle }})</span>
-            </p>
+            Responsable de : {{ structureResponsable.libelle }}
+            <span v-if="structureResponsable.sigle" class="text-gray-500">({{ structureResponsable.sigle }})</span>
+          </p>
           </div>
         </div>
       </div>
@@ -38,15 +38,15 @@
               <svg class="w-10 h-10" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
               </svg>
-            </div>
-            <div>
+              </div>
+              <div>
               <h2 class="text-2xl font-bold text-gray-800">{{ agent?.user?.nom }} {{ agent?.user?.prenom }}</h2>
               <p class="text-gray-600">{{ agent?.fonction }}</p>
               <p class="text-green-600 font-semibold">Maître de Stage</p>
               <p v-if="structureResponsable" class="text-blue-600 mt-1">
-                Responsable de : <span class="font-semibold">{{ structureResponsable.libelle }}</span>
-                <span v-if="structureResponsable.sigle" class="text-gray-500">({{ structureResponsable.sigle }})</span>
-              </p>
+                    Responsable de : <span class="font-semibold">{{ structureResponsable.libelle }}</span>
+                    <span v-if="structureResponsable.sigle" class="text-gray-500">({{ structureResponsable.sigle }})</span>
+                </p>
             </div>
           </div>
         </div>
@@ -57,11 +57,11 @@
           <div class="bg-white rounded-2xl shadow-lg hover:shadow-2xl transition-shadow duration-300 p-6 flex items-center gap-4">
             <div class="p-4 rounded-full bg-blue-100 text-blue-600 shadow">
               <svg class="h-10 w-10" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2" />
-              </svg>
-            </div>
-            <div>
-              <p class="text-sm font-medium text-gray-600">Stages en cours</p>
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2" />
+                  </svg>
+                </div>
+                <div>
+                  <p class="text-sm font-medium text-gray-600">Stages en cours</p>
               <p class="text-3xl font-extrabold text-gray-800">{{ stats.stagesEnCours }}</p>
             </div>
           </div>
@@ -69,11 +69,11 @@
           <div class="bg-white rounded-2xl shadow-lg hover:shadow-2xl transition-shadow duration-300 p-6 flex items-center gap-4">
             <div class="p-4 rounded-full bg-green-100 text-green-600 shadow">
               <svg class="h-10 w-10" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
-              </svg>
-            </div>
-            <div>
-              <p class="text-sm font-medium text-gray-600">Stages terminés</p>
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
+                  </svg>
+                </div>
+                <div>
+                  <p class="text-sm font-medium text-gray-600">Stages terminés</p>
               <p class="text-3xl font-extrabold text-gray-800">{{ stats.stagesTermines }}</p>
             </div>
           </div>
@@ -81,17 +81,17 @@
           <div class="bg-white rounded-2xl shadow-lg hover:shadow-2xl transition-shadow duration-300 p-6 flex items-center gap-4">
             <div class="p-4 rounded-full bg-purple-100 text-purple-600 shadow">
               <svg class="h-10 w-10" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z" />
-              </svg>
-            </div>
-            <div>
-              <p class="text-sm font-medium text-gray-600">Total stagiaires</p>
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z" />
+                  </svg>
+                </div>
+                <div>
+                  <p class="text-sm font-medium text-gray-600">Total stagiaires</p>
               <p class="text-3xl font-extrabold text-gray-800">{{ stats.totalStagiaires }}</p>
             </div>
           </div>
         </div>
 
-        <!-- Filtres pour les stages -->
+            <!-- Filtres pour les stages -->
         <div class="bg-white overflow-hidden shadow-sm sm:rounded-lg mb-6">
           <div class="p-6 bg-white border-b border-gray-200">
             <div class="flex flex-wrap items-center justify-between gap-4 mb-4">
@@ -183,8 +183,8 @@
                           'bg-blue-100 text-blue-800': stage.statut === 'En cours',
                           'bg-yellow-100 text-yellow-800': stage.statut === 'En attente',
                         }">
-                        {{ stage.statut }}
-                      </span>
+                          {{ stage.statut }}
+                        </span>
 
                       <!-- Badge de réaffectation -->
                       <span v-if="stage.est_reaffecte" class="mt-2 px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-gray-100 text-gray-800">
@@ -236,8 +236,8 @@
               </table>
             </div>
           </div>
-        </div>
-
+            </div>
+            
         <!-- Modal pour les détails du stage -->
         <div v-if="showStageDetailsModal" class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
           <div class="bg-white rounded-lg shadow-xl max-w-4xl w-full max-h-[90vh] overflow-y-auto">
@@ -297,15 +297,15 @@
                     class="px-4 py-2 bg-green-600 text-white rounded-md hover:bg-green-700 transition-colors duration-200"
                   >
                     Contacter le stagiaire
-                  </button>
-                  <button
+                </button>
+                <button 
                     v-if="selectedStage.statut === 'En cours'"
                     @click="updateStageStatus(selectedStage, 'Terminé')"
                     class="px-4 py-2 bg-purple-600 text-white rounded-md hover:bg-purple-700 transition-colors duration-200"
                   >
                     Marquer comme terminé
-                  </button>
-                  <button
+                </button>
+                <button 
                     @click="openReaffectationModal(selectedStage)"
                     class="px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 transition-colors duration-200"
                   >
@@ -322,7 +322,7 @@
             </div>
           </div>
         </div>
-
+        
         <!-- Modal pour contacter le stagiaire -->
         <div v-if="showContactModal" class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
           <div class="bg-white rounded-lg shadow-xl max-w-2xl w-full">
@@ -503,7 +503,7 @@
                 >
                   Fermer
                 </button>
-              </div>
+                </div>
             </div>
           </div>
         </div>
@@ -654,7 +654,7 @@ const filteredStages = computed(() => {
     if (filters.value.statut && stage.statut !== filters.value.statut) {
       return false;
     }
-
+    
     // Filtrer par recherche si une recherche est effectuée
     if (filters.value.search) {
       const searchTerm = filters.value.search.toLowerCase();
@@ -663,14 +663,14 @@ const filteredStages = computed(() => {
       const stagiaireEmail = stage.demandeStage?.stagiaire?.user?.email?.toLowerCase() || '';
       const structureLibelle = stage.structure?.libelle?.toLowerCase() || '';
       const structureSigle = stage.structure?.sigle?.toLowerCase() || '';
-
-      return stagiaireNom.includes(searchTerm) ||
-             stagiairePrenom.includes(searchTerm) ||
+      
+      return stagiaireNom.includes(searchTerm) || 
+             stagiairePrenom.includes(searchTerm) || 
              stagiaireEmail.includes(searchTerm) ||
              structureLibelle.includes(searchTerm) ||
              structureSigle.includes(searchTerm);
     }
-
+    
     return true;
   });
 });
@@ -830,7 +830,7 @@ const loadMaitresStage = async (stageId) => {
 
     if (response.data.success) {
       maitresStage.value = response.data.maitresStage;
-    } else {
+  } else {
       errorMsg.value = response.data.message || 'Une erreur est survenue lors du chargement des maîtres de stage.';
     }
   } catch (error) {

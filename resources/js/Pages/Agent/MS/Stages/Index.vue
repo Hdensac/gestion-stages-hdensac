@@ -4,54 +4,100 @@
   <MSLayout>
     <template #header>
       <div class="flex items-center gap-4 mb-2">
-        <div class="bg-green-100 text-green-700 rounded-full w-12 h-12 flex items-center justify-center text-2xl font-bold shadow">
-          <svg class="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+        <div class="bg-gradient-to-r from-blue-500 to-blue-700 text-white rounded-lg w-12 h-12 flex items-center justify-center shadow-md">
+          <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2" />
           </svg>
         </div>
-        <h1 class="text-3xl font-extrabold text-green-800 leading-tight">Mes Stages</h1>
+        <div>
+          <h1 class="text-2xl font-bold text-gray-800 leading-tight md:text-3xl">Mes Stages</h1>
+          <p class="text-sm text-gray-500 mt-1">Suivez et gérez les stages sous votre supervision</p>
+        </div>
       </div>
     </template>
 
-    <div class="py-12">
+    <div class="py-6">
       <div class="max-w-7xl mx-auto sm:px-6 lg:px-8">
         <!-- Message d'erreur -->
-        <div v-if="error" class="mb-6 bg-red-100 border-l-4 border-red-500 text-red-700 p-4 rounded-md shadow">
-          <p class="font-bold">Erreur</p>
-          <p>{{ error }}</p>
+        <div v-if="error" class="mb-6 bg-red-50 border-l-4 border-red-500 text-red-700 p-4 rounded-md shadow-sm">
+          <div class="flex items-center">
+            <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+            </svg>
+            <p class="font-semibold">{{ error }}</p>
+          </div>
         </div>
 
-        <!-- Filtres pour les stages -->
-        <div class="bg-white overflow-hidden shadow-sm sm:rounded-lg mb-6">
-          <div class="p-6 bg-white border-b border-gray-200">
-            <div class="flex flex-wrap items-center justify-between gap-4 mb-4">
-              <h2 class="text-xl font-semibold text-gray-800">Liste de mes stages</h2>
-              <div class="flex flex-wrap gap-3">
-                <select v-model="filters.statut" class="rounded-md border-gray-300 shadow-sm focus:border-green-500 focus:ring focus:ring-green-200 focus:ring-opacity-50">
+        <!-- Carte principale -->
+        <div class="bg-white overflow-hidden shadow-sm rounded-lg mb-6">
+          <div class="border-b border-gray-200 bg-gradient-to-r from-blue-600 to-blue-800 py-4 px-6">
+            <h2 class="text-lg font-medium text-white flex items-center">
+              <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2" />
+              </svg>
+              Liste de mes stages
+            </h2>
+          </div>
+          
+          <div class="p-6">
+            <!-- Filtres pour les stages -->
+            <div class="mb-6 grid grid-cols-1 md:grid-cols-3 gap-4">
+              <div>
+                <label for="search" class="block text-sm font-medium text-gray-700 mb-1">Rechercher</label>
+                <div class="relative rounded-md shadow-sm">
+                  <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                    <svg class="h-4 w-4 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path>
+                    </svg>
+                  </div>
+                  <input
+                    id="search"
+                    v-model="filters.search"
+                    type="text"
+                    placeholder="Rechercher un stagiaire..."
+                    class="pl-10 w-full rounded-md border-gray-300 shadow-sm focus:ring-blue-500 focus:border-blue-500"
+                  />
+                </div>
+              </div>
+              
+              <div>
+                <label for="statut" class="block text-sm font-medium text-gray-700 mb-1">Statut</label>
+                <select
+                  id="statut"
+                  v-model="filters.statut"
+                  class="w-full rounded-md border-gray-300 shadow-sm focus:ring-blue-500 focus:border-blue-500"
+                >
                   <option value="">Tous les statuts</option>
                   <option value="En cours">En cours</option>
                   <option value="Terminé">Terminés</option>
                   <option value="En attente">En attente</option>
                 </select>
-                <input
-                  v-model="filters.search"
-                  type="text"
-                  placeholder="Rechercher un stagiaire..."
-                  class="rounded-md border-gray-300 shadow-sm focus:border-green-500 focus:ring focus:ring-green-200 focus:ring-opacity-50"
-                />
+              </div>
+              
+              <div class="flex items-end">
                 <button
                   @click="resetFilters"
-                  class="px-3 py-2 bg-gray-100 text-gray-700 rounded-md hover:bg-gray-200 transition-colors duration-200"
+                  class="px-4 py-2 bg-gray-100 text-gray-700 rounded-md border border-gray-300 hover:bg-gray-200 transition-colors duration-200 flex items-center"
                 >
+                  <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" />
+                  </svg>
                   Réinitialiser
                 </button>
               </div>
             </div>
 
-            <div v-if="filteredStages.length === 0" class="text-gray-500 italic py-4">
-              Aucun stage correspondant aux critères de recherche.
+            <!-- Résultats vides -->
+            <div v-if="filteredStages.length === 0" class="py-8 text-center bg-gray-50 rounded-lg border border-gray-100">
+              <svg class="w-12 h-12 mx-auto text-gray-300 mb-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2" />
+              </svg>
+              <p class="text-gray-500 mb-1">Aucun stage correspondant aux critères de recherche</p>
+              <p class="text-sm text-gray-400">Modifiez vos filtres ou consultez tous les stages</p>
             </div>
-            <div v-else class="overflow-x-auto">
+            
+            <!-- Tableau des stages -->
+            <div v-else class="overflow-x-auto border border-gray-100 rounded-lg shadow-sm">
               <table class="min-w-full divide-y divide-gray-200">
                 <thead class="bg-gray-50">
                   <tr>
@@ -63,11 +109,20 @@
                     <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Actions</th>
                   </tr>
                 </thead>
-                <tbody class="bg-white divide-y divide-gray-200">
-                  <tr v-for="stage in filteredStages" :key="stage.id" class="hover:bg-gray-50" :class="{ 'bg-gray-100': stage.est_reaffecte }">
+                <tbody>
+                  <tr v-for="(stage, index) in filteredStages" :key="stage.id" 
+                      :class="{ 
+                        'bg-white': index % 2 === 0, 
+                        'bg-gray-50': index % 2 === 1, 
+                        'bg-yellow-50': stage.est_reaffecte 
+                      }" 
+                      class="hover:bg-gray-100 transition-colors duration-150">
                     <td class="px-6 py-4 whitespace-nowrap">
                       <div class="flex items-center">
-                        <div>
+                        <div class="flex-shrink-0 h-10 w-10 rounded-full bg-blue-100 flex items-center justify-center text-blue-600">
+                          {{ getStagiaireInitials(stage) }}
+                        </div>
+                        <div class="ml-4">
                           <div class="text-sm font-medium text-gray-900">
                             <template v-if="stage.stagiaire_info?.nom">
                               {{ stage.stagiaire_info.nom }} {{ stage.stagiaire_info.prenom }}
@@ -79,7 +134,7 @@
                               <span class="italic text-gray-500">Nom non disponible</span>
                             </template>
                           </div>
-                          <div class="text-sm text-gray-500">
+                          <div class="text-xs text-gray-500 truncate max-w-[200px]">
                             <template v-if="stage.stagiaire_info?.email">
                               {{ stage.stagiaire_info.email }}
                             </template>
@@ -94,60 +149,72 @@
                       </div>
                     </td>
                     <td class="px-6 py-4 whitespace-nowrap">
-                      <div class="text-sm text-gray-900">{{ stage.structure?.libelle }}</div>
-                      <div class="text-sm text-gray-500">{{ stage.structure?.sigle }}</div>
+                      <div class="flex flex-col">
+                        <div class="text-sm font-medium text-gray-900">{{ stage.structure?.libelle }}</div>
+                        <div class="text-xs text-gray-500">{{ stage.structure?.sigle }}</div>
 
-                      <!-- Afficher les informations de réaffectation si le stage a été réaffecté -->
-                      <div v-if="stage.est_reaffecte && stage.reaffectation_info" class="mt-2 text-xs bg-yellow-50 p-2 rounded border border-yellow-200">
-                        <p class="font-semibold text-yellow-700">Réaffecté à:</p>
-                        <p class="text-gray-700">{{ stage.reaffectation_info.nouveau_ms_prenom }} {{ stage.reaffectation_info.nouveau_ms_nom }}</p>
-                        <p class="text-gray-600">{{ stage.reaffectation_info.structure_libelle }}</p>
-                        <p class="text-gray-500 text-xs mt-1">Le {{ formatDate(stage.reaffectation_info.date_reaffectation) }}</p>
+                        <!-- Badge de réaffectation -->
+                        <div v-if="stage.est_reaffecte && stage.reaffectation_info" class="mt-2 text-xs inline-flex items-center rounded-md bg-amber-50 px-2 py-1 text-amber-700 border border-amber-200">
+                          <svg class="w-3 h-3 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7h12m0 0l-4-4m4 4l-4 4m0 6H4m0 0l4 4m-4-4l4-4" />
+                          </svg>
+                          Réaffecté
+                        </div>
                       </div>
                     </td>
                     <td class="px-6 py-4 whitespace-nowrap">
-                      <div class="text-sm text-gray-900">
+                      <div class="text-sm text-gray-900 flex items-center">
+                        <svg class="w-4 h-4 text-gray-400 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
+                        </svg>
                         {{ formatDate(stage.date_debut) }} - {{ formatDate(stage.date_fin) }}
                       </div>
-                      <div class="text-sm text-gray-500">
+                      <div class="text-xs text-gray-500 mt-1">
                         {{ calculateDuration(stage.date_debut, stage.date_fin) }}
                       </div>
                     </td>
                     <td class="px-6 py-4 whitespace-nowrap">
-                      <span class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full"
+                      <span class="px-2.5 py-1 inline-flex text-xs leading-5 font-semibold rounded-full"
                         :class="{
-                          'bg-green-100 text-green-800': stage.statut === 'Terminé',
-                          'bg-blue-100 text-blue-800': stage.statut === 'En cours',
-                          'bg-yellow-100 text-yellow-800': stage.statut === 'En attente',
+                          'bg-emerald-100 text-emerald-800 border border-emerald-200': stage.statut === 'Terminé',
+                          'bg-blue-100 text-blue-800 border border-blue-200': stage.statut === 'En cours',
+                          'bg-amber-100 text-amber-800 border border-amber-200': stage.statut === 'En attente',
                         }">
-                        {{ stage.statut }}
-                      </span>
-
-                      <!-- Badge de réaffectation -->
-                      <span v-if="stage.est_reaffecte" class="mt-2 px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-gray-100 text-gray-800">
-                        Réaffecté
+                        <span class="flex items-center">
+                          <span v-if="stage.statut === 'En cours'" class="relative flex mr-1.5">
+                            <span class="animate-ping absolute h-2 w-2 rounded-full opacity-75" 
+                                  :class="{
+                                    'bg-blue-400': stage.statut === 'En cours',
+                                  }"></span>
+                            <span class="relative rounded-full h-2 w-2" 
+                                  :class="{
+                                    'bg-blue-500': stage.statut === 'En cours',
+                                  }"></span>
+                          </span>
+                          {{ stage.statut }}
+                        </span>
                       </span>
                     </td>
                     <td class="px-6 py-4 whitespace-nowrap">
-                      <span v-if="stage.themeStage" class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full"
+                      <span v-if="stage.themeStage" class="px-2.5 py-1 inline-flex text-xs leading-5 font-semibold rounded-full"
                         :class="{
-                          'bg-green-100 text-green-800': stage.themeStage.etat === 'Validé',
-                          'bg-yellow-100 text-yellow-800': stage.themeStage.etat === 'Proposé',
-                          'bg-red-100 text-red-800': stage.themeStage.etat === 'Refusé',
-                          'bg-blue-100 text-blue-800': stage.themeStage.etat === 'Modifié',
+                          'bg-emerald-100 text-emerald-800 border border-emerald-200': stage.themeStage.etat === 'Validé',
+                          'bg-amber-100 text-amber-800 border border-amber-200': stage.themeStage.etat === 'Proposé',
+                          'bg-red-100 text-red-800 border border-red-200': stage.themeStage.etat === 'Refusé',
+                          'bg-blue-100 text-blue-800 border border-blue-200': stage.themeStage.etat === 'Modifié',
                         }">
                         {{ stage.themeStage.etat }}
                       </span>
-                      <span v-else class="text-gray-500 italic">Non défini</span>
+                      <span v-else class="text-gray-500 italic text-sm">Non défini</span>
                     </td>
                     <td class="px-6 py-4 whitespace-nowrap text-sm font-medium">
                       <div class="flex space-x-2">
                         <Link
                           :href="route('agent.ms.stages.show', stage.id)"
-                          class="text-blue-600 hover:text-blue-900 bg-blue-50 hover:bg-blue-100 px-2 py-1 rounded transition-colors duration-200"
+                          class="text-blue-600 hover:text-blue-900 bg-blue-50 hover:bg-blue-100 p-2 rounded-md transition-colors duration-200 flex items-center"
                           title="Voir les détails"
                         >
-                          <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                          <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z" />
                           </svg>
@@ -156,28 +223,24 @@
                         <template v-if="stage.est_actif !== false">
                           <button
                             @click="contactStagiaire(stage)"
-                            class="text-green-600 hover:text-green-900 bg-green-50 hover:bg-green-100 px-2 py-1 rounded transition-colors duration-200"
+                            class="text-blue-600 hover:text-blue-900 bg-blue-50 hover:bg-blue-100 p-2 rounded-md transition-colors duration-200"
                             title="Contacter le stagiaire"
                           >
-                            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                               <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z" />
                             </svg>
                           </button>
                           <button
                             v-if="stage.statut === 'En cours'"
                             @click="updateStageStatus(stage, 'Terminé')"
-                            class="text-purple-600 hover:text-purple-900 bg-purple-50 hover:bg-purple-100 px-2 py-1 rounded transition-colors duration-200"
+                            class="text-blue-600 hover:text-blue-900 bg-blue-50 hover:bg-blue-100 p-2 rounded-md transition-colors duration-200"
                             title="Marquer comme terminé"
                           >
-                            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                               <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
                             </svg>
                           </button>
                         </template>
-                        <!-- Message informatif pour les stages réaffectés -->
-                        <span v-else-if="stage.est_reaffecte" class="text-gray-500 text-xs italic">
-                          Réaffecté
-                        </span>
                       </div>
                     </td>
                   </tr>
@@ -221,54 +284,44 @@ const formatDate = (dateString) => {
   return date.toLocaleDateString('fr-FR');
 };
 
-// Fonction pour calculer la durée entre deux dates
-const calculateDuration = (startDate, endDate) => {
-  if (!startDate || !endDate) return 'N/A';
-
-  const start = new Date(startDate);
-  const end = new Date(endDate);
-  const diffTime = Math.abs(end - start);
-  const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
-
-  if (diffDays < 30) {
-    return `${diffDays} jour${diffDays > 1 ? 's' : ''}`;
+// Fonction pour calculer la durée d'un stage
+const calculateDuration = (dateDebut, dateFin) => {
+  if (!dateDebut || !dateFin) return 'Durée indéterminée';
+  
+  const debut = new Date(dateDebut);
+  const fin = new Date(dateFin);
+  
+  // Calculer la différence en jours
+  const differenceMs = fin - debut;
+  const differenceDays = Math.ceil(differenceMs / (1000 * 60 * 60 * 24));
+  
+  if (differenceDays <= 0) return 'Erreur de date';
+  
+  // Convertir en semaines/mois/jours
+  if (differenceDays < 7) {
+    return `${differenceDays} jour${differenceDays > 1 ? 's' : ''}`;
+  } else if (differenceDays < 31) {
+    const weeks = Math.floor(differenceDays / 7);
+    const remainingDays = differenceDays % 7;
+    return `${weeks} semaine${weeks > 1 ? 's' : ''}${remainingDays > 0 ? ` et ${remainingDays} jour${remainingDays > 1 ? 's' : ''}` : ''}`;
   } else {
-    const months = Math.floor(diffDays / 30);
-    return `${months} mois`;
+    const months = Math.floor(differenceDays / 30);
+    const remainingDays = differenceDays % 30;
+    return `${months} mois${remainingDays > 0 ? ` et ${remainingDays} jour${remainingDays > 1 ? 's' : ''}` : ''}`;
   }
 };
 
-// Filtrer les stages en fonction des critères de recherche
-const filteredStages = computed(() => {
-  if (!props.stages) return [];
+// Fonction pour obtenir les initiales du stagiaire
+const getStagiaireInitials = (stage) => {
+  if (stage.stagiaire_info?.nom) {
+    return (stage.stagiaire_info.nom.charAt(0) + (stage.stagiaire_info.prenom?.charAt(0) || '')).toUpperCase();
+  } else if (stage.demandeStage?.stagiaire?.user?.nom) {
+    return (stage.demandeStage.stagiaire.user.nom.charAt(0) + (stage.demandeStage.stagiaire.user.prenom?.charAt(0) || '')).toUpperCase();
+  }
+  return 'ST';
+};
 
-  return props.stages.filter(stage => {
-    // Filtrer par statut si un statut est sélectionné
-    if (filters.value.statut && stage.statut !== filters.value.statut) {
-      return false;
-    }
-
-    // Filtrer par recherche si une recherche est effectuée
-    if (filters.value.search) {
-      const searchTerm = filters.value.search.toLowerCase();
-      const stagiaireNom = stage.demandeStage?.stagiaire?.user?.nom?.toLowerCase() || '';
-      const stagiairePrenom = stage.demandeStage?.stagiaire?.user?.prenom?.toLowerCase() || '';
-      const stagiaireEmail = stage.demandeStage?.stagiaire?.user?.email?.toLowerCase() || '';
-      const structureLibelle = stage.structure?.libelle?.toLowerCase() || '';
-      const structureSigle = stage.structure?.sigle?.toLowerCase() || '';
-
-      return stagiaireNom.includes(searchTerm) ||
-             stagiairePrenom.includes(searchTerm) ||
-             stagiaireEmail.includes(searchTerm) ||
-             structureLibelle.includes(searchTerm) ||
-             structureSigle.includes(searchTerm);
-    }
-
-    return true;
-  });
-});
-
-// Réinitialiser les filtres
+// Fonction pour réinitialiser les filtres
 const resetFilters = () => {
   filters.value = {
     statut: '',
@@ -276,20 +329,54 @@ const resetFilters = () => {
   };
 };
 
-// Contacter un stagiaire
-const contactStagiaire = (stage) => {
-  // Rediriger vers la page de détails du stage avec l'onglet de contact ouvert
-  router.visit(route('agent.ms.stages.show', stage.id), {
-    data: { openContact: true }
+// Filtrer les stages en fonction des critères
+const filteredStages = computed(() => {
+  if (!props.stages) return [];
+  
+  return props.stages.filter(stage => {
+    // Filtre par statut
+    if (filters.value.statut && stage.statut !== filters.value.statut) {
+      return false;
+    }
+    
+    // Filtre par recherche
+    if (filters.value.search) {
+      const searchTerm = filters.value.search.toLowerCase();
+      const stagiaireNom = stage.stagiaire_info?.nom?.toLowerCase() || stage.demandeStage?.stagiaire?.user?.nom?.toLowerCase() || '';
+      const stagiairePrenom = stage.stagiaire_info?.prenom?.toLowerCase() || stage.demandeStage?.stagiaire?.user?.prenom?.toLowerCase() || '';
+      const stagiaireEmail = stage.stagiaire_info?.email?.toLowerCase() || stage.demandeStage?.stagiaire?.user?.email?.toLowerCase() || '';
+      const structureLibelle = stage.structure?.libelle?.toLowerCase() || '';
+      const structureSigle = stage.structure?.sigle?.toLowerCase() || '';
+      
+      return stagiaireNom.includes(searchTerm) || 
+             stagiairePrenom.includes(searchTerm) || 
+             stagiaireEmail.includes(searchTerm) ||
+             structureLibelle.includes(searchTerm) ||
+             structureSigle.includes(searchTerm);
+    }
+    
+    return true;
   });
+});
+
+// Fonction pour contacter un stagiaire
+const contactStagiaire = (stage) => {
+  const email = stage.stagiaire_info?.email || stage.demandeStage?.stagiaire?.user?.email;
+  if (email) {
+    window.location.href = `mailto:${email}?subject=Stage à ${stage.structure?.libelle || 'notre structure'}`;
+  } else {
+    alert('Aucune adresse email disponible pour ce stagiaire.');
+  }
 };
 
-// Mettre à jour le statut d'un stage
+// Fonction pour mettre à jour le statut d'un stage
 const updateStageStatus = (stage, newStatus) => {
-  if (confirm(`Êtes-vous sûr de vouloir marquer ce stage comme ${newStatus} ?`)) {
-    router.post(route('agent.ms.stages.update-status', stage.id), {
-      statut: newStatus
-    });
-  }
+  router.post(route('agent.ms.stages.updateStatus', stage.id), {
+    statut: newStatus
+  }, {
+    onSuccess: () => {
+      // Le succès sera géré par les messages flash
+    }
+  });
 };
 </script>

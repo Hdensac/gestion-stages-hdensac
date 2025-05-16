@@ -3,181 +3,255 @@
 
   <RSLayout>
     <template #header>
-      <h2 class="text-xl font-semibold text-gray-800">Détails de la demande</h2>
+      <div class="flex items-center gap-4 mb-2">
+        <div class="bg-blue-600 text-white rounded-lg w-14 h-14 flex items-center justify-center shadow-md">
+          <svg class="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
+          </svg>
+        </div>
+        <div>
+          <h1 class="text-2xl font-bold text-gray-800 leading-tight md:text-3xl">Détails de la demande</h1>
+          <p class="text-sm text-gray-500 mt-1">Code de suivi: {{ demande.code_suivi }}</p>
+        </div>
+      </div>
     </template>
 
     <!-- Composant Toast pour les notifications -->
     <Toast ref="toast" />
 
-    <div class="py-12">
-      <div class="mx-auto max-w-7xl sm:px-6 lg:px-8">
-        <div class="overflow-hidden bg-white shadow-sm sm:rounded-lg">
-          <div class="p-6">
-            <div class="mb-6 flex justify-between items-center">
-              <h1 class="text-2xl font-bold text-gray-800">Détails de la demande #{{ demande.code_suivi }}</h1>
-              <Link :href="route('agent.rs.demandes')" class="px-4 py-2 bg-gray-200 text-gray-700 rounded hover:bg-gray-300 transition-colors flex items-center gap-2">
-                <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
-                  <path fill-rule="evenodd" d="M9.707 16.707a1 1 0 01-1.414 0l-6-6a1 1 0 010-1.414l6-6a1 1 0 011.414 1.414L5.414 9H17a1 1 0 110 2H5.414l4.293 4.293a1 1 0 010 1.414z" clip-rule="evenodd" />
+    <div class="py-6">
+      <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <!-- Bouton retour -->
+        <div class="mb-6 flex justify-end">
+          <Link :href="route('agent.rs.demandes')" class="inline-flex items-center gap-2 px-4 py-2 bg-gray-100 text-gray-700 rounded-md border border-gray-300 hover:bg-gray-200 transition-colors font-medium text-sm">
+            <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" viewBox="0 0 20 20" fill="currentColor">
+              <path fill-rule="evenodd" d="M9.707 16.707a1 1 0 01-1.414 0l-6-6a1 1 0 010-1.414l6-6a1 1 0 011.414 1.414L5.414 9H17a1 1 0 110 2H5.414l4.293 4.293a1 1 0 010 1.414z" clip-rule="evenodd" />
+            </svg>
+            Retour à la liste
+          </Link>
+        </div>
+
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+          <!-- Informations sur la demande -->
+          <div class="bg-white rounded-lg shadow-md overflow-hidden">
+            <div class="border-b border-gray-200 bg-gradient-to-r from-blue-600 to-blue-800 py-4 px-6">
+              <h3 class="text-lg font-semibold text-white flex items-center gap-2">
+                <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                  <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path>
+                  <polyline points="14 2 14 8 20 8"></polyline>
+                  <line x1="16" y1="13" x2="8" y2="13"></line>
+                  <line x1="16" y1="17" x2="8" y2="17"></line>
+                  <polyline points="10 9 9 9 8 9"></polyline>
                 </svg>
-                Retour
-              </Link>
+                Informations de la demande
+              </h3>
             </div>
+            <div class="p-6 space-y-4">
+              <div class="flex flex-col md:flex-row md:items-center md:justify-between py-2 border-b border-gray-100">
+                <span class="text-sm font-medium text-gray-500">Statut</span>
+                <span class="px-3 py-1 text-sm font-medium rounded-full mt-1 md:mt-0 inline-flex items-center" :class="getStatusColor(demande.statut)">
+                  <span class="h-1.5 w-1.5 rounded-full mr-1.5" :class="getStatusDotColor(demande.statut)"></span>
+                  {{ demande.statut }}
+                </span>
+              </div>
 
-            <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
-              <!-- Informations sur la demande -->
-              <div class="bg-gray-50 p-6 rounded-lg shadow-sm">
-                <h2 class="text-xl font-semibold mb-4 text-gray-800 border-b pb-2">Informations de la demande</h2>
+              <div class="flex flex-col md:flex-row md:items-center md:justify-between py-2 border-b border-gray-100">
+                <span class="text-sm font-medium text-gray-500">Structure</span>
+                <span class="font-medium text-gray-900">{{ demande.structure ? demande.structure.libelle : 'Non spécifiée' }}</span>
+              </div>
 
+              <div class="flex flex-col md:flex-row md:items-center md:justify-between py-2 border-b border-gray-100">
+                <span class="text-sm font-medium text-gray-500">Type de stage</span>
+                <span class="font-medium text-gray-900">{{ demande.type }}</span>
+              </div>
+
+              <div class="flex flex-col md:flex-row md:items-center md:justify-between py-2 border-b border-gray-100">
+                <span class="text-sm font-medium text-gray-500">Nature</span>
+                <span class="font-medium text-gray-900">{{ demande.nature }}</span>
+              </div>
+
+              <div class="flex flex-col md:flex-row md:items-center md:justify-between py-2 border-b border-gray-100">
+                <span class="text-sm font-medium text-gray-500">Période</span>
+                <span class="font-medium text-gray-900">Du {{ formatDate(demande.date_debut) }} au {{ formatDate(demande.date_fin) }}</span>
+              </div>
+
+              <div class="flex flex-col md:flex-row md:items-center md:justify-between py-2 border-b border-gray-100">
+                <span class="text-sm font-medium text-gray-500">Date de soumission</span>
+                <span class="font-medium text-gray-900">{{ formatDate(demande.created_at) }}</span>
+              </div>
+
+              <div v-if="demande.date_traitement" class="flex flex-col md:flex-row md:items-center md:justify-between py-2 border-b border-gray-100">
+                <span class="text-sm font-medium text-gray-500">Date de traitement</span>
+                <span class="font-medium text-gray-900">{{ formatDate(demande.date_traitement) }}</span>
+              </div>
+
+              <div v-if="demande.motif_rejet" class="mt-4 p-3 bg-red-50 rounded-md border border-red-100">
+                <span class="text-sm font-medium text-red-600 block mb-1">Motif de rejet</span>
+                <span class="text-red-700">{{ demande.motif_rejet }}</span>
+              </div>
+            </div>
+          </div>
+
+          <!-- Informations du stagiaire -->
+          <div class="bg-white rounded-lg shadow-md overflow-hidden">
+            <div class="border-b border-gray-200 bg-gradient-to-r from-blue-600 to-blue-800 py-4 px-6">
+              <h3 class="text-lg font-semibold text-white flex items-center gap-2">
+                <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                  <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path>
+                  <circle cx="12" cy="7" r="4"></circle>
+                </svg>
+                Informations du stagiaire
+              </h3>
+            </div>
+            <div class="p-6">
+              <div class="mb-6 flex items-center">
+                <div class="h-16 w-16 bg-blue-600 text-white rounded-full flex items-center justify-center text-xl font-bold shadow-md mr-4">
+                  {{ getInitials(demande.stagiaire?.user?.nom, demande.stagiaire?.user?.prenom) }}
+                </div>
+                <div>
+                  <h4 class="text-lg font-semibold text-gray-900">{{ demande.stagiaire?.user?.nom }} {{ demande.stagiaire?.user?.prenom }}</h4>
+                  <p class="text-sm text-gray-500">{{ demande.stagiaire?.user?.email }}</p>
+                </div>
+              </div>
+
+              <div class="space-y-4">
+                <div class="flex flex-col md:flex-row md:items-center md:justify-between py-2 border-b border-gray-100">
+                  <span class="text-sm font-medium text-gray-500">Téléphone</span>
+                  <span class="font-medium text-gray-900">{{ demande.stagiaire?.user?.telephone }}</span>
+                </div>
+
+                <div class="flex flex-col md:flex-row md:items-center md:justify-between py-2 border-b border-gray-100">
+                  <span class="text-sm font-medium text-gray-500">Université</span>
+                  <span class="font-medium text-gray-900">{{ demande.stagiaire?.universite }}</span>
+                </div>
+
+                <div class="flex flex-col md:flex-row md:items-center md:justify-between py-2 border-b border-gray-100">
+                  <span class="text-sm font-medium text-gray-500">Filière</span>
+                  <span class="font-medium text-gray-900">{{ demande.stagiaire?.filiere }}</span>
+                </div>
+
+                <div class="flex flex-col md:flex-row md:items-center md:justify-between py-2 border-b border-gray-100">
+                  <span class="text-sm font-medium text-gray-500">Niveau d'étude</span>
+                  <span class="font-medium text-gray-900">{{ demande.stagiaire?.niveau_etude }}</span>
+                </div>
+              </div>
+              
+              <div v-if="demande.nature === 'Groupe' && membres && membres.length > 0" class="mt-8">
+                <h4 class="text-lg font-semibold text-blue-700 mb-4 pb-2 border-b border-blue-100">Autres membres du groupe</h4>
                 <div class="space-y-3">
-                  <div class="flex flex-col">
-                    <span class="text-sm text-gray-500">Statut</span>
-                    <span class="px-3 py-1 text-sm font-semibold rounded-full inline-block w-fit" :class="getStatusColor(demande.statut)">
-                      {{ demande.statut }}
-                    </span>
+                  <div v-for="membre in membres" :key="membre.id" class="bg-blue-50 p-4 rounded-md border border-blue-100">
+                    <div class="flex items-center mb-2">
+                      <div class="h-8 w-8 bg-blue-600 text-white rounded-full flex items-center justify-center text-sm font-medium mr-3">
+                        {{ getInitials(membre.user?.nom, membre.user?.prenom) }}
+                      </div>
+                      <div class="font-semibold text-gray-800">{{ membre.user?.nom }} {{ membre.user?.prenom }}</div>
+                    </div>
+                    <div class="pl-11 grid grid-cols-1 md:grid-cols-2 gap-2 text-sm">
+                      <div class="text-gray-600">Email: <span class="text-gray-900">{{ membre.user?.email }}</span></div>
+                      <div class="text-gray-600">Téléphone: <span class="text-gray-900">{{ membre.user?.telephone }}</span></div>
+                    </div>
                   </div>
-
-                  <div class="flex flex-col">
-                    <span class="text-sm text-gray-500">Structure</span>
-                    <span class="font-medium">{{ demande.structure ? demande.structure.libelle : 'Non spécifiée' }}</span>
-                  </div>
-
-                  <div class="flex flex-col">
-                    <span class="text-sm text-gray-500">Type de stage</span>
-                    <span class="font-medium">{{ demande.type }}</span>
-                  </div>
-
-                  <div class="flex flex-col">
-                    <span class="text-sm text-gray-500">Nature</span>
-                    <span class="font-medium">{{ demande.nature }}</span>
-                  </div>
-
-                  <div class="flex flex-col">
-                    <span class="text-sm text-gray-500">Période</span>
-                    <span class="font-medium">Du {{ formatDate(demande.date_debut) }} au {{ formatDate(demande.date_fin) }}</span>
-                  </div>
-
-                  <div class="flex flex-col">
-                    <span class="text-sm text-gray-500">Date de soumission</span>
-                    <span class="font-medium">{{ formatDate(demande.created_at) }}</span>
-                  </div>
-
-                  <div v-if="demande.date_traitement" class="flex flex-col">
-                    <span class="text-sm text-gray-500">Date de traitement</span>
-                    <span class="font-medium">{{ formatDate(demande.date_traitement) }}</span>
-                  </div>
-
-                  <div v-if="demande.motif_rejet" class="flex flex-col">
-                    <span class="text-sm text-gray-500">Motif de rejet</span>
-                    <span class="font-medium text-red-600">{{ demande.motif_rejet }}</span>
-                  </div>
-                </div>
-              </div>
-
-              <!-- Informations du stagiaire -->
-              <div class="bg-gray-50 p-6 rounded-lg shadow-sm">
-                <h2 class="text-xl font-semibold mb-4 text-gray-800 border-b pb-2">Informations du stagiaire</h2>
-
-                <div class="space-y-3">
-                  <div class="flex flex-col">
-                    <span class="text-sm text-gray-500">Nom complet</span>
-                    <span class="font-medium">{{ demande.stagiaire?.user?.nom }} {{ demande.stagiaire?.user?.prenom }}</span>
-                  </div>
-
-                  <div class="flex flex-col">
-                    <span class="text-sm text-gray-500">Email</span>
-                    <span class="font-medium">{{ demande.stagiaire?.user?.email }}</span>
-                  </div>
-
-                  <div class="flex flex-col">
-                    <span class="text-sm text-gray-500">Téléphone</span>
-                    <span class="font-medium">{{ demande.stagiaire?.user?.telephone }}</span>
-                  </div>
-
-                  <div class="flex flex-col">
-                    <span class="text-sm text-gray-500">Université</span>
-                    <span class="font-medium">{{ demande.stagiaire?.universite }}</span>
-                  </div>
-
-                  <div class="flex flex-col">
-                    <span class="text-sm text-gray-500">Filière</span>
-                    <span class="font-medium">{{ demande.stagiaire?.filiere }}</span>
-                  </div>
-
-                  <div class="flex flex-col">
-                    <span class="text-sm text-gray-500">Niveau d'étude</span>
-                    <span class="font-medium">{{ demande.stagiaire?.niveau_etude }}</span>
-                  </div>
-                </div>
-                <div v-if="demande.nature === 'Groupe' && membres && membres.length > 0" class="mt-8">
-                  <h3 class="text-lg font-semibold text-blue-700 mb-2">Autres membres du groupe</h3>
-                  <ul class="space-y-4">
-                    <li v-for="membre in membres" :key="membre.id" class="p-4 bg-white rounded shadow flex flex-col md:flex-row md:items-center md:gap-8">
-                      <div class="font-bold text-gray-800">{{ membre.user?.nom }} {{ membre.user?.prenom }}</div>
-                      <div class="text-sm text-gray-500">Email : {{ membre.user?.email }}</div>
-                      <div class="text-sm text-gray-500">Téléphone : {{ membre.user?.telephone }}</div>
-                    </li>
-                  </ul>
                 </div>
               </div>
             </div>
+          </div>
+        </div>
 
-            <!-- Documents attachés -->
-            <div class="mt-6 bg-gray-50 p-6 rounded-lg shadow-sm">
-              <h2 class="text-xl font-semibold mb-4 text-gray-800 border-b pb-2">Documents attachés</h2>
+        <!-- Documents attachés -->
+        <div class="mt-6 bg-white rounded-lg shadow-md overflow-hidden">
+          <div class="border-b border-gray-200 bg-gradient-to-r from-blue-600 to-blue-800 py-4 px-6">
+            <h3 class="text-lg font-semibold text-white flex items-center gap-2">
+              <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path>
+                <polyline points="14 2 14 8 20 8"></polyline>
+                <line x1="16" y1="13" x2="8" y2="13"></line>
+                <line x1="16" y1="17" x2="8" y2="17"></line>
+                <polyline points="10 9 9 9 8 9"></polyline>
+              </svg>
+              Documents attachés
+            </h3>
+          </div>
 
-              <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
-                <!-- Document principal (CV ou Lettre de recommandation) -->
-                <div v-if="demande.lettre_cv_path" class="flex flex-col gap-2">
-                  <span class="text-sm text-gray-500">{{ demande.type === 'Académique' ? 'Lettre de recommandation' : 'CV' }}</span>
-                  <a :href="'/storage/' + demande.lettre_cv_path"
-                    target="_blank"
-                    class="flex items-center justify-center gap-2 px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700 transition-colors">
-                    <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
-                      <path fill-rule="evenodd" d="M3 17a1 1 0 011-1h12a1 1 0 110 2H4a1 1 0 01-1-1zm3.293-7.707a1 1 0 011.414 0L9 10.586V3a1 1 0 112 0v7.586l1.293-1.293a1 1 0 111.414 1.414l-3 3a1 1 0 01-1.414 0l-3-3a1 1 0 010-1.414z" clip-rule="evenodd" />
-                    </svg>
-                    Télécharger le {{ demande.type === 'Académique' ? 'document' : 'CV' }}
-                  </a>
-                </div>
-              </div>
-            </div>
-
-            <!-- Actions -->
-            <div v-if="demande.statut === 'En cours' || demande.statut === 'Encours'" class="mt-6 bg-gray-50 p-6 rounded-lg shadow-sm">
-              <h2 class="text-xl font-semibold mb-4 text-gray-800 border-b pb-2">Actions</h2>
-              <div class="flex gap-4">
-                <button
-                  @click="showApproveModal = true"
-                  class="px-4 py-2 bg-green-600 text-white rounded hover:bg-green-700 transition-colors flex items-center gap-2"
-                >
+          <div class="p-6">
+            <div v-if="demande.lettre_cv_path" class="grid grid-cols-1 md:grid-cols-3 gap-4">
+              <div class="bg-blue-50 rounded-lg p-4 border border-blue-100 hover:shadow-md transition-shadow flex flex-col">
+                <span class="text-sm font-medium text-blue-600 mb-2">{{ demande.type === 'Académique' ? 'Lettre de recommandation' : 'CV' }}</span>
+                <a :href="'/storage/' + demande.lettre_cv_path"
+                  target="_blank"
+                  class="mt-auto flex items-center justify-center gap-2 px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 transition-colors text-sm font-medium">
                   <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
-                    <path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd" />
+                    <path fill-rule="evenodd" d="M3 17a1 1 0 011-1h12a1 1 0 110 2H4a1 1 0 01-1-1zm3.293-7.707a1 1 0 011.414 0L9 10.586V3a1 1 0 112 0v7.586l1.293-1.293a1 1 0 111.414 1.414l-3 3a1 1 0 01-1.414 0l-3-3a1 1 0 010-1.414z" clip-rule="evenodd" />
                   </svg>
-                  Acepter la demande
-                </button>
-                <button
-                  @click="showRejectModal = true"
-                  class="px-4 py-2 bg-red-600 text-white rounded hover:bg-red-700 transition-colors flex items-center gap-2"
-                >
-                  <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
-                    <path fill-rule="evenodd" d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z" clip-rule="evenodd" />
-                  </svg>
-                  Rejeter la demande
-                </button>
+                  Télécharger
+                </a>
               </div>
             </div>
-            <div v-if="demande.statut === 'Acceptée'" class="mt-6 bg-gray-50 p-6 rounded-lg shadow-sm">
-              <h2 class="text-xl font-semibold mb-4 text-gray-800 border-b pb-2">Actions</h2>
-              <div class="flex gap-4">
-                <button
-                  @click="openMaitreStageModal"
-                  class="px-4 py-2 bg-indigo-600 text-white rounded hover:bg-indigo-700 transition-colors flex items-center gap-2">
-                  <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4" />
-                  </svg>
-                  Affecter maître de stage
-                </button>
-              </div>
+            <div v-else class="text-center py-6">
+              <svg xmlns="http://www.w3.org/2000/svg" class="mx-auto h-12 w-12 text-gray-300" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1" d="M9 13h6m-3-3v6m5 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
+              </svg>
+              <p class="mt-2 text-sm text-gray-500">Aucun document n'a été joint à cette demande</p>
             </div>
+          </div>
+        </div>
+
+        <!-- Actions -->
+        <div v-if="demande.statut === 'En cours' || demande.statut === 'Encours'" class="mt-6 bg-white rounded-lg shadow-md overflow-hidden">
+          <div class="border-b border-gray-200 bg-gradient-to-r from-blue-600 to-blue-800 py-4 px-6">
+            <h3 class="text-lg font-semibold text-white flex items-center gap-2">
+              <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <circle cx="12" cy="12" r="10"></circle>
+                <line x1="12" y1="8" x2="12" y2="16"></line>
+                <line x1="8" y1="12" x2="16" y2="12"></line>
+              </svg>
+              Actions disponibles
+            </h3>
+          </div>
+          <div class="p-6">
+            <div class="flex flex-col sm:flex-row gap-4">
+              <button
+                @click="showApproveModal = true"
+                class="px-4 py-3 bg-emerald-600 text-white rounded-md hover:bg-emerald-700 transition-colors flex items-center justify-center gap-2 font-medium"
+              >
+                <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
+                  <path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd" />
+                </svg>
+                Accepter la demande
+              </button>
+              <button
+                @click="showRejectModal = true"
+                class="px-4 py-3 bg-red-600 text-white rounded-md hover:bg-red-700 transition-colors flex items-center justify-center gap-2 font-medium"
+              >
+                <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
+                  <path fill-rule="evenodd" d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z" clip-rule="evenodd" />
+                </svg>
+                Rejeter la demande
+              </button>
+            </div>
+          </div>
+        </div>
+        
+        <div v-if="demande.statut === 'Acceptée'" class="mt-6 bg-white rounded-lg shadow-md overflow-hidden">
+          <div class="border-b border-gray-200 bg-gradient-to-r from-blue-600 to-blue-800 py-4 px-6">
+            <h3 class="text-lg font-semibold text-white flex items-center gap-2">
+              <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <circle cx="12" cy="12" r="10"></circle>
+                <line x1="12" y1="8" x2="12" y2="16"></line>
+                <line x1="8" y1="12" x2="16" y2="12"></line>
+              </svg>
+              Actions disponibles
+            </h3>
+          </div>
+          <div class="p-6">
+            <button
+              @click="openMaitreStageModal"
+              class="px-4 py-3 bg-indigo-600 text-white rounded-md hover:bg-indigo-700 transition-colors flex items-center gap-2 font-medium"
+            >
+              <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4" />
+              </svg>
+              Affecter un maître de stage
+            </button>
           </div>
         </div>
       </div>
@@ -186,7 +260,10 @@
     <!-- Modal de rejet -->
     <Modal :show="showRejectModal" @close="closeRejectModal">
       <div class="p-6">
-        <h2 class="text-lg font-medium text-gray-900 mb-4">
+        <h2 class="text-lg font-medium text-gray-900 mb-4 flex items-center gap-2">
+          <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-red-500" viewBox="0 0 20 20" fill="currentColor">
+            <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM8.707 7.293a1 1 0 00-1.414 1.414L8.586 10l-1.293 1.293a1 1 0 101.414 1.414L10 11.414l1.293 1.293a1 1 0 001.414-1.414L11.414 10l1.293-1.293a1 1 0 00-1.414-1.414L10 8.586 8.707 7.293z" clip-rule="evenodd" />
+          </svg>
           Rejeter la demande
         </h2>
         <div class="mb-4">
@@ -196,7 +273,7 @@
           <textarea
             v-model="rejectForm.motif_refus"
             rows="4"
-            class="w-full rounded-md border-gray-300 shadow-sm focus:border-blue-300 focus:ring focus:ring-blue-200 focus:ring-opacity-50"
+            class="w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring focus:ring-blue-500 focus:ring-opacity-20"
             placeholder="Veuillez expliquer le motif du rejet..."
           ></textarea>
           <p v-if="rejectForm.errors.motif_refus" class="mt-2 text-sm text-red-600">
@@ -206,15 +283,19 @@
         <div class="flex justify-end gap-4">
           <button
             @click="closeRejectModal"
-            class="px-4 py-2 bg-gray-100 text-gray-700 rounded hover:bg-gray-200 transition-colors"
+            class="px-4 py-2 bg-gray-100 text-gray-700 rounded-md border border-gray-300 hover:bg-gray-200 transition-colors"
           >
             Annuler
           </button>
           <button
             @click="rejectDemande"
-            class="px-4 py-2 bg-red-600 text-white rounded hover:bg-red-700 transition-colors"
+            class="px-4 py-2 bg-red-600 text-white rounded-md hover:bg-red-700 transition-colors flex items-center gap-2"
             :disabled="rejectForm.processing"
           >
+            <svg v-if="rejectForm.processing" class="animate-spin -ml-1 mr-2 h-4 w-4 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+              <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+              <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+            </svg>
             Confirmer le rejet
           </button>
         </div>
@@ -224,81 +305,33 @@
     <!-- Modal de confirmation d'approbation -->
     <Modal :show="showApproveModal" @close="closeApproveModal">
       <div class="p-6">
-        <h2 class="text-lg font-medium text-gray-900 mb-4">
+        <h2 class="text-lg font-medium text-gray-900 mb-4 flex items-center gap-2">
+          <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-emerald-500" viewBox="0 0 20 20" fill="currentColor">
+            <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd" />
+          </svg>
           Confirmer l'approbation
         </h2>
         <p class="text-sm text-gray-600 mb-4">
-          Êtes-vous sûr de vouloir approuver cette demande de stage ?
+          Êtes-vous sûr de vouloir approuver cette demande de stage ? Cette action enverra une notification au stagiaire.
         </p>
         <div class="flex justify-end gap-4">
           <button
             @click="closeApproveModal"
-            class="px-4 py-2 bg-gray-100 text-gray-700 rounded hover:bg-gray-200 transition-colors"
+            class="px-4 py-2 bg-gray-100 text-gray-700 rounded-md border border-gray-300 hover:bg-gray-200 transition-colors"
           >
             Annuler
           </button>
           <button
             @click="approveDemande"
-            class="px-4 py-2 bg-green-600 text-white rounded hover:bg-green-700 transition-colors"
+            class="px-4 py-2 bg-emerald-600 text-white rounded-md hover:bg-emerald-700 transition-colors flex items-center gap-2"
             :disabled="approveForm.processing"
           >
+            <svg v-if="approveForm.processing" class="animate-spin -ml-1 mr-2 h-4 w-4 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+              <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+              <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+            </svg>
             Confirmer l'approbation
           </button>
-        </div>
-      </div>
-    </Modal>
-
-
-
-    <!-- Modal d'affectation de maître de stage -->
-    <Modal :show="showMaitreStageModal" @close="closeMaitreStageModal">
-      <div class="p-6">
-        <h2 class="text-lg font-medium text-gray-900 mb-4">
-          Affecter un maître de stage
-        </h2>
-        <div class="mb-4">
-          <label class="block text-sm font-medium text-gray-700 mb-2">
-            Sélectionner un agent avec le rôle MS
-          </label>
-          <select
-            v-model="selectedMaitreStageId"
-            class="w-full rounded-md border-gray-300 shadow-sm focus:border-blue-300 focus:ring focus:ring-blue-200 focus:ring-opacity-50"
-          >
-            <option value="" disabled>Sélectionner un maître de stage</option>
-            <option v-for="agent in maitreStageAgents" :key="agent.id" :value="agent.id">
-              {{ agent.user?.nom }} {{ agent.user?.prenom }}
-              {{ agent.structure_responsable ? '- Responsable de: ' + agent.structure_responsable.libelle : '' }}
-            </option>
-          </select>
-          <p v-if="maitreStageForm.errors.maitre_stage_id" class="mt-2 text-sm text-red-600">
-            {{ maitreStageForm.errors.maitre_stage_id }}
-          </p>
-        </div>
-        <div class="flex justify-end gap-4">
-          <button
-            @click="closeMaitreStageModal"
-            class="px-4 py-2 bg-gray-100 text-gray-700 rounded hover:bg-gray-200 transition-colors"
-          >
-            Annuler
-          </button>
-          <button
-            @click="submitMaitreStage"
-            class="px-4 py-2 bg-indigo-600 text-white rounded hover:bg-indigo-700 transition-colors"
-            :disabled="maitreStageForm.processing || !selectedMaitreStageId"
-          >
-            Affecter le maître de stage
-          </button>
-          <button
-            @click="fetchMaitreStageAgents"
-            class="px-4 py-2 bg-yellow-500 text-white rounded hover:bg-yellow-600 transition-colors"
-            type="button"
-          >
-            Rafraîchir la liste
-          </button>
-        </div>
-
-        <div v-if="maitreStageAgents.length === 0" class="mt-4 p-4 bg-yellow-100 text-yellow-800 rounded">
-          Aucun agent avec le rôle MS n'a été trouvé. Veuillez vérifier que des agents avec ce rôle existent dans le système.
         </div>
       </div>
     </Modal>
@@ -306,12 +339,11 @@
 </template>
 
 <script setup>
-import { ref, onMounted } from 'vue';
-import { Head, Link, useForm, router } from '@inertiajs/vue3';
+import { ref } from 'vue';
+import { Head, Link, useForm } from '@inertiajs/vue3';
 import RSLayout from '@/Layouts/RSLayout.vue';
 import Modal from '@/Components/Modal.vue';
 import Toast from '@/Components/Toast.vue';
-import axios from 'axios';
 
 const props = defineProps({
   demande: Object,
@@ -320,9 +352,6 @@ const props = defineProps({
 
 const showRejectModal = ref(false);
 const showApproveModal = ref(false);
-const showMaitreStageModal = ref(false);
-const selectedMaitreStageId = ref('');
-const maitreStageAgents = ref([]);
 const toast = ref(null);
 
 const rejectForm = useForm({
@@ -330,54 +359,6 @@ const rejectForm = useForm({
 });
 
 const approveForm = useForm({});
-
-const maitreStageForm = useForm({
-  maitre_stage_id: '',
-});
-
-function closeRejectModal() {
-  showRejectModal.value = false;
-  rejectForm.reset();
-}
-
-function closeApproveModal() {
-  showApproveModal.value = false;
-  approveForm.reset();
-}
-
-function rejectDemande() {
-  console.log('Soumission du formulaire de rejet pour la demande ID:', props.demande.id);
-
-  rejectForm.post(route('agent.rs.demandes.reject', props.demande.id), {
-    onSuccess: () => {
-      console.log('Demande rejetée avec succès, redirection...');
-      closeRejectModal();
-
-      // Rediriger vers la page des demandes puis revenir pour forcer un rechargement complet
-      window.location.href = route('agent.rs.demandes.show', props.demande.id);
-    },
-    onError: (errors) => {
-      console.error('Erreur lors du rejet de la demande:', errors);
-    }
-  });
-}
-
-function approveDemande() {
-  console.log('Soumission du formulaire d\'approbation pour la demande ID:', props.demande.id);
-
-  approveForm.post(route('agent.rs.demandes.approve', props.demande.id), {
-    onSuccess: () => {
-      console.log('Demande approuvée avec succès, redirection...');
-      closeApproveModal();
-
-      // Rediriger vers la page des demandes puis revenir pour forcer un rechargement complet
-      window.location.href = route('agent.rs.demandes.show', props.demande.id);
-    },
-    onError: (errors) => {
-      console.error('Erreur lors de l\'approbation de la demande:', errors);
-    }
-  });
-}
 
 function formatDate(date) {
   return new Date(date).toLocaleDateString('fr-FR', {
@@ -390,108 +371,107 @@ function formatDate(date) {
 function getStatusColor(status) {
   switch (status) {
     case 'En attente':
-      return 'text-yellow-600 bg-yellow-100';
+      return 'bg-amber-50 text-amber-700';
     case 'En cours':
-      return 'text-blue-600 bg-blue-100';
+    case 'Encours':
+      return 'bg-blue-50 text-blue-700';
     case 'Acceptée':
-      return 'text-green-600 bg-green-100';
+    case 'Approuvée':
+      return 'bg-emerald-50 text-emerald-700';
     case 'Refusée':
-      return 'text-red-600 bg-red-100';
+      return 'bg-red-50 text-red-700';
     default:
-      return 'text-gray-600 bg-gray-100';
+      return 'bg-gray-50 text-gray-700';
   }
 }
 
-
-
-
-
-// Fonction pour ouvrir la modal d'affectation de maître de stage
-function openMaitreStageModal() {
-  // Récupérer les agents avec le rôle MS
-  fetchMaitreStageAgents();
-  showMaitreStageModal.value = true;
-}
-
-// Fonction pour fermer la modal d'affectation de maître de stage
-function closeMaitreStageModal() {
-  showMaitreStageModal.value = false;
-  selectedMaitreStageId.value = '';
-  maitreStageForm.reset();
-}
-
-
-
-// Fonction pour récupérer les agents avec le rôle MS
-async function fetchMaitreStageAgents() {
-  try {
-    console.log('Récupération des maîtres de stage...');
-
-    // Utiliser la même route pour récupérer les agents MS
-    const response = await axios.get(route('agent.rs.responsable-agents'));
-    console.log('Maîtres de stage récupérés:', response.data);
-
-    maitreStageAgents.value = response.data;
-    console.log('maitreStageAgents après affectation:', maitreStageAgents.value);
-  } catch (error) {
-    console.error('Erreur lors de la récupération des maîtres de stage:', error);
-    if (error.response) {
-      console.error('Détails de l\'erreur:', error.response.data);
-    }
+function getStatusDotColor(status) {
+  switch (status) {
+    case 'En attente':
+      return 'bg-amber-500';
+    case 'En cours':
+    case 'Encours':
+      return 'bg-blue-500';
+    case 'Acceptée':
+    case 'Approuvée':
+      return 'bg-emerald-500';
+    case 'Refusée':
+      return 'bg-red-500';
+    default:
+      return 'bg-gray-500';
   }
 }
 
+function getInitials(nom, prenom) {
+  if (!nom || !prenom) return '?';
+  return `${nom.charAt(0)}${prenom.charAt(0)}`.toUpperCase();
+}
 
+function closeRejectModal() {
+  showRejectModal.value = false;
+  rejectForm.reset();
+}
 
-// Fonction pour soumettre l'affectation de maître de stage
-function submitMaitreStage() {
-  if (!selectedMaitreStageId.value) return;
-
-  console.log('ID du maître de stage sélectionné:', selectedMaitreStageId.value);
-
-  // Trouver l'agent sélectionné pour afficher ses détails dans la console
-  const selectedAgent = maitreStageAgents.value.find(agent => agent.id == selectedMaitreStageId.value);
-  console.log('Agent sélectionné:', selectedAgent);
-
-  maitreStageForm.maitre_stage_id = selectedMaitreStageId.value;
-  console.log('Formulaire avant soumission:', maitreStageForm);
-
-  maitreStageForm.post(route('agent.rs.demandes.affecter-maitre', props.demande.id), {
-    onSuccess: (response) => {
-      console.log('Affectation réussie, réponse:', response);
-      closeMaitreStageModal();
-
-      // Afficher un toast de confirmation
+function rejectDemande() {
+  rejectForm.post(route('agent.rs.demandes.reject', props.demande.id), {
+    onSuccess: () => {
+      closeRejectModal();
       if (toast.value) {
-        toast.value.addToast({
+        toast.value.show({
           type: 'success',
-          title: 'Affectation réussie',
-          message: 'Le maître de stage a été affecté avec succès.'
+          title: 'Succès',
+          message: 'La demande a été rejetée avec succès.'
         });
       }
-
-      // Recharger la page pour voir les changements
-      router.reload();
     },
-    onError: (errors) => {
-      console.error('Erreur lors de l\'affectation du maître de stage:', errors);
-
-      // Afficher un toast d'erreur
+    onError: () => {
       if (toast.value) {
-        toast.value.addToast({
+        toast.value.show({
           type: 'error',
           title: 'Erreur',
-          message: 'Une erreur est survenue lors de l\'affectation du maître de stage.'
+          message: 'Une erreur est survenue lors du rejet de la demande.'
         });
       }
     }
   });
 }
 
-// Charger les maîtres de stage au montage du composant
-onMounted(() => {
-  if (props.demande?.statut === 'Acceptée') {
-    fetchMaitreStageAgents();
+function closeApproveModal() {
+  showApproveModal.value = false;
+}
+
+function approveDemande() {
+  approveForm.post(route('agent.rs.demandes.approve', props.demande.id), {
+    onSuccess: () => {
+      closeApproveModal();
+      if (toast.value) {
+        toast.value.show({
+          type: 'success',
+          title: 'Succès',
+          message: 'La demande a été approuvée avec succès.'
+        });
+      }
+    },
+    onError: () => {
+      if (toast.value) {
+        toast.value.show({
+          type: 'error',
+          title: 'Erreur',
+          message: 'Une erreur est survenue lors de l\'approbation de la demande.'
+        });
+      }
+    }
+  });
+}
+
+function openMaitreStageModal() {
+  // Cette fonction sera implémentée plus tard
+  if (toast.value) {
+    toast.value.show({
+      type: 'info',
+      title: 'Information',
+      message: 'La fonctionnalité d\'affectation de maître de stage sera disponible prochainement.'
+    });
   }
-});
+}
 </script>

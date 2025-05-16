@@ -1,82 +1,213 @@
 <template>
   <RSLayout>
-    <div class="flex justify-center items-center min-h-screen bg-gray-50 py-8">
-      <div class="bg-white shadow-xl rounded-2xl w-full max-w-2xl p-8 border border-blue-100">
-        <div class="flex items-center gap-3 mb-6">
-          <svg class="w-8 h-8 text-blue-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>
-          <h1 class="text-2xl sm:text-3xl font-extrabold text-gray-800">Ajouter un agent</h1>
+    <template #header>
+      <div class="flex items-center gap-4 mb-2">
+        <div class="bg-blue-600 text-white rounded-lg w-14 h-14 flex items-center justify-center shadow-md">
+          <UserPlusIcon class="w-7 h-7" />
         </div>
-        <form @submit.prevent="submit" class="space-y-6">
-          <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
-            <div>
-              <label class="block text-sm font-medium text-gray-700 mb-1">Nom</label>
-              <input v-model="form.nom" type="text" class="w-full border rounded-lg p-2 focus:ring-2 focus:ring-blue-500 focus:border-blue-500" required />
-            </div>
-            <div>
-              <label class="block text-sm font-medium text-gray-700 mb-1">Prénom</label>
-              <input v-model="form.prenom" type="text" class="w-full border rounded-lg p-2 focus:ring-2 focus:ring-blue-500 focus:border-blue-500" required />
-            </div>
-            <div>
-              <label class="block text-sm font-medium text-gray-700 mb-1">Email</label>
-              <input v-model="form.email" type="email" class="w-full border rounded-lg p-2 focus:ring-2 focus:ring-blue-500 focus:border-blue-500" required />
-            </div>
-            <div>
-              <label class="block text-sm font-medium text-gray-700 mb-1">Téléphone</label>
-              <input v-model="form.telephone" type="text" class="w-full border rounded-lg p-2 focus:ring-2 focus:ring-blue-500 focus:border-blue-500" required />
-            </div>
-            <div>
-              <label class="block text-sm font-medium text-gray-700 mb-1">Date de naissance</label>
-              <input v-model="form.date_de_naissance" type="date" class="w-full border rounded-lg p-2 focus:ring-2 focus:ring-blue-500 focus:border-blue-500" required />
-            </div>
-            <div>
-              <label class="block text-sm font-medium text-gray-700 mb-1">Sexe</label>
-              <select v-model="form.sexe" class="w-full border rounded-lg p-2 focus:ring-2 focus:ring-blue-500 focus:border-blue-500" required>
-                <option value="">Sélectionner</option>
-                <option value="Homme">Homme</option>
-                <option value="Femme">Femme</option>
-              </select>
-            </div>
-            <div>
-              <label class="block text-sm font-medium text-gray-700 mb-1">Matricule</label>
-              <input v-model="form.matricule" type="text" class="w-full border rounded-lg p-2 focus:ring-2 focus:ring-blue-500 focus:border-blue-500" required />
-            </div>
-            <div>
-              <label class="block text-sm font-medium text-gray-700 mb-1">Fonction</label>
-              <input v-model="form.fonction" type="text" class="w-full border rounded-lg p-2 focus:ring-2 focus:ring-blue-500 focus:border-blue-500" required />
-            </div>
-            <div>
-              <label class="block text-sm font-medium text-gray-700 mb-1">Date d'embauche</label>
-              <input v-model="form.date_embauche" type="date" class="w-full border rounded-lg p-2 focus:ring-2 focus:ring-blue-500 focus:border-blue-500" />
-            </div>
-            <div>
-              <label class="block text-sm font-medium text-gray-700 mb-1">Mot de passe</label>
-              <input v-model="form.password" type="password" class="w-full border rounded-lg p-2 focus:ring-2 focus:ring-blue-500 focus:border-blue-500" required />
-            </div>
-            <div>
-              <label class="block text-sm font-medium text-gray-700 mb-1">Responsable de la structure</label>
-              <select v-model="form.structure_responsable_id" class="w-full border rounded-lg p-2 focus:ring-2 focus:ring-blue-500 focus:border-blue-500">
-                <option :value="null">Aucune structure</option>
-                <option v-for="structure in structures" :key="structure.id" :value="structure.id">
-                  {{ getStructureDisplayName(structure) }}
-                </option>
-              </select>
-              <p class="text-xs text-gray-500 mt-1">
-                Sélectionnez la structure dont cet agent sera responsable. Un agent ne peut être responsable que d'une seule structure à la fois.
-              </p>
-            </div>
+        <div>
+          <h1 class="text-2xl font-bold text-gray-800 leading-tight md:text-3xl">Ajouter un agent</h1>
+          <p class="text-sm text-gray-500 mt-1">Créez un nouvel agent pour votre structure</p>
+        </div>
+      </div>
+    </template>
+
+    <div class="py-6">
+      <div class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
+        <div class="bg-white rounded-lg shadow-md overflow-hidden">
+          <div class="border-b border-gray-200 bg-gradient-to-r from-blue-600 to-blue-800 py-4 px-6 flex items-center gap-2">
+            <UserPlusIcon class="h-5 w-5 text-white" />
+            <h2 class="font-medium text-white text-lg">Formulaire d'ajout</h2>
           </div>
-          <div class="flex justify-end gap-2 mt-6">
-            <Link :href="route('agent.rs.agents.index')" class="btn">Annuler</Link>
-            <button type="submit" class="px-6 py-2 bg-blue-600 text-white rounded-lg shadow hover:bg-blue-700 font-semibold">Ajouter</button>
+
+          <div class="p-6">
+            <form @submit.prevent="submit" class="space-y-6">
+              <!-- Informations personnelles -->
+              <div>
+                <h3 class="text-lg font-medium text-gray-800 mb-3 border-b pb-2">Informations personnelles</h3>
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                  <div>
+                    <label class="block text-sm font-medium text-gray-700 mb-1">Nom <span class="text-red-500">*</span></label>
+                    <input 
+                      v-model="form.nom" 
+                      type="text" 
+                      class="w-full border rounded-md p-2 shadow-sm focus:ring-2 focus:ring-blue-500 focus:border-blue-500" 
+                      required 
+                    />
+                  </div>
+                  <div>
+                    <label class="block text-sm font-medium text-gray-700 mb-1">Prénom <span class="text-red-500">*</span></label>
+                    <input 
+                      v-model="form.prenom" 
+                      type="text" 
+                      class="w-full border rounded-md p-2 shadow-sm focus:ring-2 focus:ring-blue-500 focus:border-blue-500" 
+                      required 
+                    />
+                  </div>
+                  <div>
+                    <label class="block text-sm font-medium text-gray-700 mb-1">Email <span class="text-red-500">*</span></label>
+                    <div class="relative">
+                      <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                        <EnvelopeIcon class="h-4 w-4 text-gray-400" />
+                      </div>
+                      <input 
+                        v-model="form.email" 
+                        type="email" 
+                        class="w-full border rounded-md pl-10 p-2 shadow-sm focus:ring-2 focus:ring-blue-500 focus:border-blue-500" 
+                        required 
+                      />
+                    </div>
+                  </div>
+                  <div>
+                    <label class="block text-sm font-medium text-gray-700 mb-1">Téléphone <span class="text-red-500">*</span></label>
+                    <div class="relative">
+                      <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                        <PhoneIcon class="h-4 w-4 text-gray-400" />
+                      </div>
+                      <input 
+                        v-model="form.telephone" 
+                        type="text" 
+                        class="w-full border rounded-md pl-10 p-2 shadow-sm focus:ring-2 focus:ring-blue-500 focus:border-blue-500" 
+                        required 
+                      />
+                    </div>
+                  </div>
+                  <div>
+                    <label class="block text-sm font-medium text-gray-700 mb-1">Date de naissance <span class="text-red-500">*</span></label>
+                    <div class="relative">
+                      <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                        <CalendarIcon class="h-4 w-4 text-gray-400" />
+                      </div>
+                      <input 
+                        v-model="form.date_de_naissance" 
+                        type="date" 
+                        class="w-full border rounded-md pl-10 p-2 shadow-sm focus:ring-2 focus:ring-blue-500 focus:border-blue-500" 
+                        required 
+                      />
+                    </div>
+                  </div>
+                  <div>
+                    <label class="block text-sm font-medium text-gray-700 mb-1">Sexe <span class="text-red-500">*</span></label>
+                    <select 
+                      v-model="form.sexe" 
+                      class="w-full border rounded-md p-2 shadow-sm focus:ring-2 focus:ring-blue-500 focus:border-blue-500" 
+                      required
+                    >
+                      <option value="">Sélectionner</option>
+                      <option value="Homme">Homme</option>
+                      <option value="Femme">Femme</option>
+                    </select>
+                  </div>
+                </div>
+              </div>
+
+              <!-- Informations professionnelles -->
+              <div>
+                <h3 class="text-lg font-medium text-gray-800 mb-3 border-b pb-2">Informations professionnelles</h3>
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                  <div>
+                    <label class="block text-sm font-medium text-gray-700 mb-1">Matricule <span class="text-red-500">*</span></label>
+                    <input 
+                      v-model="form.matricule" 
+                      type="text" 
+                      class="w-full border rounded-md p-2 shadow-sm focus:ring-2 focus:ring-blue-500 focus:border-blue-500" 
+                      required 
+                    />
+                  </div>
+                  <div>
+                    <label class="block text-sm font-medium text-gray-700 mb-1">Fonction <span class="text-red-500">*</span></label>
+                    <input 
+                      v-model="form.fonction" 
+                      type="text" 
+                      class="w-full border rounded-md p-2 shadow-sm focus:ring-2 focus:ring-blue-500 focus:border-blue-500" 
+                      required 
+                    />
+                  </div>
+                  <div>
+                    <label class="block text-sm font-medium text-gray-700 mb-1">Date d'embauche</label>
+                    <div class="relative">
+                      <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                        <CalendarIcon class="h-4 w-4 text-gray-400" />
+                      </div>
+                      <input 
+                        v-model="form.date_embauche" 
+                        type="date" 
+                        class="w-full border rounded-md pl-10 p-2 shadow-sm focus:ring-2 focus:ring-blue-500 focus:border-blue-500" 
+                      />
+                    </div>
+                  </div>
+                  <div>
+                    <label class="block text-sm font-medium text-gray-700 mb-1">Mot de passe <span class="text-red-500">*</span></label>
+                    <div class="relative">
+                      <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                        <KeyIcon class="h-4 w-4 text-gray-400" />
+                      </div>
+                      <input 
+                        v-model="form.password" 
+                        type="password" 
+                        class="w-full border rounded-md pl-10 p-2 shadow-sm focus:ring-2 focus:ring-blue-500 focus:border-blue-500" 
+                        required 
+                      />
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              <!-- Attribution de responsabilité -->
+              <div>
+                <h3 class="text-lg font-medium text-gray-800 mb-3 border-b pb-2">Attribution de responsabilité</h3>
+                <div>
+                  <label class="block text-sm font-medium text-gray-700 mb-1">Responsable de la structure</label>
+                  <select 
+                    v-model="form.structure_responsable_id" 
+                    class="w-full border rounded-md p-2 shadow-sm focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                  >
+                    <option :value="null">Aucune structure</option>
+                    <option v-for="structure in structures" :key="structure.id" :value="structure.id">
+                      {{ getStructureDisplayName(structure) }}
+                    </option>
+                  </select>
+                  <p class="text-sm text-gray-500 mt-2 bg-blue-50 p-3 rounded-md border-l-4 border-blue-500">
+                    Sélectionnez la structure dont cet agent sera responsable. Un agent ne peut être responsable que d'une seule structure à la fois.
+                  </p>
+                </div>
+              </div>
+
+              <div class="flex justify-end space-x-3 pt-4 border-t">
+                <Link 
+                  :href="route('agent.rs.agents.index')" 
+                  class="px-5 py-2 bg-white border border-gray-300 text-gray-700 rounded-md hover:bg-gray-50 transition-colors font-medium flex items-center gap-2"
+                >
+                  <ArrowLeftIcon class="w-4 h-4" />
+                  Retour
+                </Link>
+                <button 
+                  type="submit" 
+                  class="px-5 py-2 bg-gradient-to-r from-blue-600 to-blue-700 hover:from-blue-700 hover:to-blue-800 text-white rounded-md shadow-sm transition-all duration-200 font-medium flex items-center gap-2"
+                >
+                  <UserPlusIcon class="w-4 h-4" />
+                  Ajouter l'agent
+                </button>
+              </div>
+            </form>
           </div>
-        </form>
+        </div>
       </div>
     </div>
   </RSLayout>
 </template>
+
 <script setup>
 import { Link, useForm } from '@inertiajs/vue3';
 import RSLayout from '@/Layouts/RSLayout.vue';
+import { 
+  UserPlusIcon, 
+  EnvelopeIcon, 
+  PhoneIcon, 
+  CalendarIcon, 
+  KeyIcon, 
+  ArrowLeftIcon 
+} from '@heroicons/vue/24/outline';
 
 const props = defineProps({
   structures: Array
@@ -95,6 +226,7 @@ const form = useForm({
   date_embauche: '',
   structure_responsable_id: null,
 });
+
 function submit() {
   form.post(route('agent.rs.agents.store'));
 }

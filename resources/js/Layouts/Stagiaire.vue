@@ -47,6 +47,12 @@ const user = usePage().props.auth?.user;
                                 >
                                     Mes Demandes
                                 </NavLink>
+                                <NavLink
+                                    :href="route('stagiaire.stages')"
+                                    :active="route().current('stagiaire.stages') || route().current('stagiaire.stages.show')"
+                                >
+                                    Mes Stages
+                                </NavLink>
                                 <!-- <NavLink
                                     :href="route('recherche.code')"
                                     :active="route().current('recherche.code')"
@@ -171,6 +177,12 @@ const user = usePage().props.auth?.user;
                             :active="route().current('mes.demandes')"
                         >
                             Mes Demandes
+                        </ResponsiveNavLink>
+                        <ResponsiveNavLink
+                            :href="route('stagiaire.stages')"
+                            :active="route().current('stagiaire.stages') || route().current('stagiaire.stages.show')"
+                        >
+                            Mes Stages
                         </ResponsiveNavLink>
                         <ResponsiveNavLink
                             :href="route('recherche.code')"

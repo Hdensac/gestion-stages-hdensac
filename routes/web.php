@@ -228,6 +228,9 @@ Route::get('/dashboard', function () {
         Route::get('/dashboard', [App\Http\Controllers\Stagiaire\DashboardController::class, 'index'])->name('dashboard');
         Route::get('/demandes', [App\Http\Controllers\Stagiaire\DemandeController::class, 'index'])->name('demandes');
         Route::get('/demandes/{demande}', [App\Http\Controllers\Stagiaire\DemandeController::class, 'show'])->name('demandes.show');
+        // Routes pour les stages
+        Route::get('/stages', [App\Http\Controllers\Stagiaire\StageController::class, 'index'])->name('stages');
+        Route::get('/stages/{stage}', [App\Http\Controllers\Stagiaire\StageController::class, 'show'])->name('stages.show');
     });
 
     // Route pour télécharger le rapport mensuel
