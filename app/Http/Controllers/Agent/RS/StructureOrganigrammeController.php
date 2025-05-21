@@ -6,6 +6,7 @@ use App\Http\Controllers\Controller;
 use App\Models\Structure;
 use Illuminate\Http\Request;
 use Inertia\Inertia;
+use Illuminate\Support\Facades\Auth;
 
 class StructureOrganigrammeController extends Controller
 {
@@ -163,5 +164,42 @@ class StructureOrganigrammeController extends Controller
         ]);
 
         return redirect()->back()->with('success', $messageSuccess);
+    }
+
+    // Retourne toutes les sous-structures du RS connecté (liste plate)
+    public function sousStructures()
+    {
+        $user = Auth::user();
+        $agent = $user->agent;
+        $structure = \App\Models\Structure::where('responsable_id', $agent->id)->first();
+
+        if (!$structure) {
+            \Log::warning('Aucune structure principale trouvée pour l\'agent RS', ['agent_id' => $agent->id]);
+            return response()->json([]);
+        }
+
+        $structure->load('children.children.children');
+        $getAllChildren = function ($structure) use (&$getAllChildren) {
+            $result = [];
+            foreach ($structure->children as $child) {
+                $result[] = [
+                    'id' => $child->id,
+                    'libelle' => $child->libelle,
+                    'sigle' => $child->sigle,
+                    // Ajoute d'autres champs si besoin
+                ];
+                $result = array_merge($result, $getAllChildren($child));
+            }
+            return $result;
+        };
+
+        $sousStructures = $getAllChildren($structure);
+
+        return response()->json($sousStructures);
+    }
+
+    public function show($id)
+    {
+        return response()->json(['message' => 'Not implemented'], 404);
     }
 }

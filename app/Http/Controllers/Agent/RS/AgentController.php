@@ -21,15 +21,25 @@ class AgentController extends Controller
         $structure = \App\Models\Structure::where('responsable_id', $rs->id)->first();
         $agents = [];
         if ($structure) {
-            // Récupérer les agents MS de la structure avec leurs relations
+            // Récupérer tous les IDs de la structure principale et de ses sous-structures
+            $getAllSubStructureIds = function($parentId) use (&$getAllSubStructureIds) {
+                $ids = [$parentId];
+                $children = \App\Models\Structure::where('parent_id', $parentId)->pluck('id');
+                foreach ($children as $childId) {
+                    $ids = array_merge($ids, $getAllSubStructureIds($childId));
+                }
+                return $ids;
+            };
+            $allStructureIds = $getAllSubStructureIds($structure->id);
+
+            // Récupérer les agents de toutes ces structures
             $agents = \App\Models\Agent::with(['user', 'structuresResponsable'])
                 ->where('role_agent', 'MS')
-                ->where('structure_id', $structure->id)
+                ->whereIn('structure_id', $allStructureIds)
                 ->get();
 
             // Transformer les données pour inclure le nom de la structure dont l'agent est responsable
             $agents->transform(function ($agent) {
-                // Vérifier si l'agent est responsable d'une structure
                 if ($agent->structuresResponsable && $agent->structuresResponsable->count() > 0) {
                     $agent->structure_responsable = $agent->structuresResponsable->first()->libelle;
                 } else {
@@ -97,6 +107,7 @@ class AgentController extends Controller
             'matricule'              => 'required|string|unique:agents',
             'fonction'               => 'required|string',
             'date_embauche'          => 'nullable|date',
+            'structure_id'           => 'required|exists:structures,id',
             'structure_responsable_id' => 'nullable|exists:structures,id',
         ]);
 
@@ -124,7 +135,7 @@ class AgentController extends Controller
         $agent = Agent::create([
             'user_id'       => $newUser->id, // Utiliser l'ID du nouvel utilisateur créé
             'role_agent'    => 'MS',
-            'structure_id'  => $structureId,
+            'structure_id'  => $validated['structure_id'],
             'matricule'     => $validated['matricule'],
             'fonction'      => $validated['fonction'],
             'date_embauche' => $validated['date_embauche'] ?? null,
@@ -221,6 +232,7 @@ class AgentController extends Controller
             'matricule'              => 'required|string|unique:agents,matricule,' . $agent->id,
             'fonction'               => 'required|string',
             'date_embauche'          => 'nullable|date',
+            'structure_id'           => 'required|exists:structures,id',
             'structure_responsable_id' => 'nullable|exists:structures,id',
         ]);
 
@@ -237,6 +249,7 @@ class AgentController extends Controller
             'matricule'     => $validated['matricule'],
             'fonction'      => $validated['fonction'],
             'date_embauche' => $validated['date_embauche'] ?? null,
+            'structure_id'  => $validated['structure_id'],
         ]);
 
         // Gérer la structure dont l'agent est responsable

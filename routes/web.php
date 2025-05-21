@@ -201,6 +201,10 @@ Route::get('/dashboard', function () {
             Route::get('/stages/{stage}', [App\Http\Controllers\Agent\RS\StageController::class, 'show'])->name('stages.show');
             // CRUD agents sans rôle
             Route::resource('agents', App\Http\Controllers\Agent\RS\AgentController::class);
+            // ROUTE PERSONNALISÉE D'ABORD
+            Route::get('organigramme/sous-structures', [App\Http\Controllers\Agent\RS\StructureOrganigrammeController::class, 'sousStructures'])
+                ->name('organigramme.sous-structures');
+            // PUIS LA RESSOURCE
             Route::resource('organigramme', App\Http\Controllers\Agent\RS\StructureOrganigrammeController::class)
                 ->parameters(['organigramme' => 'structure']);
             Route::post('organigramme/{structure}/assign-agent', [App\Http\Controllers\Agent\RS\StructureOrganigrammeController::class, 'assignAgent'])->name('organigramme.assign-agent');

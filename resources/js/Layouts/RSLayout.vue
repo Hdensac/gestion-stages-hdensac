@@ -221,8 +221,8 @@ const isDpafResponsable = ref(usePage().props.isDpafResponsable || false);
 
 .group:hover .group-hover\:block {
     animation: fadeIn 0.3s ease-in-out forwards;
-}
-
+    }
+    
 @keyframes fadeIn {
     from {
         opacity: 0;

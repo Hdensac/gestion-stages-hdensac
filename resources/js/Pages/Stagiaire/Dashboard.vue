@@ -291,8 +291,10 @@ const validateStep = () => {
     return baseValidation;
   }
   if (step.value === 3) {
-    // Pour l'étape 3, on avertit simplement mais on permet de continuer
-    checkMemberDocuments();
+    return true;
+  }
+  if (step.value === 4) {
+    // Pour l'étape 4, on avertit simplement mais on permet de continuer
     return true;
   }
   return true;
@@ -347,6 +349,13 @@ const nextStep = () => {
       type: 'info',
       title: 'Documents enregistrés',
       message: 'Vérifiez les informations avant la soumission finale',
+      duration: 3000
+    });
+  } else if (step.value === 4) {
+    addToast({
+      type: 'info',
+      title: 'Confirmation',
+      message: 'Vérifiez les informations avant de soumettre la demande',
       duration: 3000
     });
   }
@@ -421,6 +430,12 @@ watch(() => form.membres, (newMembers, oldMembers) => {
 
 // Soumission
 const submitRequest = () => {
+  // Vérifier que tous les documents sont présents AVANT de soumettre
+  if (!checkMemberDocuments()) {
+    // Si des documents manquent, on arrête la soumission
+    return;
+  }
+
   // Vérifier la validité du formulaire avant soumission
   if (!validateForm()) {
     return;

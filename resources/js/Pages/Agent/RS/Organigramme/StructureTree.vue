@@ -235,6 +235,7 @@
 // Note: Assurez-vous d'inclure les imports nécessaires
 import { ref, computed, defineProps, defineExpose } from 'vue';
 import { BuildingOfficeIcon, UserGroupIcon, UserIcon, PlusIcon, XMarkIcon, CheckIcon } from '@heroicons/vue/24/outline';
+import axios from 'axios';
 
 const props = defineProps({
   structure: {
@@ -291,15 +292,41 @@ function fillForm(structure = null) {
 
 function confirmDelete() {
   if (!props.structure.parent_id || hasChildren.value) return;
-  // Logique de confirmation et suppression
+  if (!confirm("Voulez-vous vraiment supprimer cette structure ?")) return;
+  axios.post(`/agent/rs/organigramme/${props.structure.id}`, {
+    _method: 'DELETE'
+  })
+    .then(() => {
+      window.location.reload();
+    })
+    .catch(e => {
+      alert("Erreur lors de la suppression : " + (e.response?.data?.message || e.message));
+    });
 }
 
 function submit() {
-  // Logique d'ajout
+  axios.post('/agent/rs/organigramme', form.value)
+    .then(() => {
+      showForm.value = false;
+      window.location.reload();
+    })
+    .catch(e => {
+      alert("Erreur lors de l'ajout : " + (e.response?.data?.message || e.message));
+    });
 }
 
 function submitEdit() {
-  // Logique de modification
+  axios.post(`/agent/rs/organigramme/${props.structure.id}`, {
+    ...form.value,
+    _method: 'PUT'
+  })
+    .then(() => {
+      showForm.value = false;
+      window.location.reload();
+    })
+    .catch(e => {
+      alert("Erreur lors de la modification : " + (e.response?.data?.message || e.message));
+    });
 }
 
 // Fonctions exposées pour le comportement d'expansion/collapsion

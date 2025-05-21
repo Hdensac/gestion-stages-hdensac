@@ -6,8 +6,12 @@
           <UserPlusIcon class="w-7 h-7" />
         </div>
         <div>
-          <h1 class="text-2xl font-bold text-gray-800 leading-tight md:text-3xl">Ajouter un agent</h1>
-          <p class="text-sm text-gray-500 mt-1">Créez un nouvel agent pour votre structure</p>
+          <h1 class="text-2xl font-bold text-gray-800 leading-tight md:text-3xl">
+            {{ props.agent ? 'Modifier un agent' : 'Ajouter un agent' }}
+          </h1>
+          <p class="text-sm text-gray-500 mt-1">
+            {{ props.agent ? 'Modifiez les informations de l\'agent' : 'Créez un nouvel agent pour votre structure' }}
+          </p>
         </div>
       </div>
     </template>
@@ -136,7 +140,7 @@
                       />
                     </div>
                   </div>
-                  <div>
+                  <div v-if="!props.agent">
                     <label class="block text-sm font-medium text-gray-700 mb-1">Mot de passe <span class="text-red-500">*</span></label>
                     <div class="relative">
                       <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
@@ -149,6 +153,19 @@
                         required 
                       />
                     </div>
+                  </div>
+                  <div>
+                    <label class="block text-sm font-medium text-gray-700 mb-1">Sous-structure <span class="text-red-500">*</span></label>
+                    <select
+                      v-model="form.structure_id"
+                      class="w-full border rounded-md p-2 shadow-sm focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                      required
+                    >
+                      <option value="">Sélectionner une sous-structure</option>
+                      <option v-for="s in sousStructures" :key="s.id" :value="s.id">
+                        {{ s.libelle }}
+                      </option>
+                    </select>
                   </div>
                 </div>
               </div>
@@ -186,7 +203,7 @@
                   class="px-5 py-2 bg-gradient-to-r from-blue-600 to-blue-700 hover:from-blue-700 hover:to-blue-800 text-white rounded-md shadow-sm transition-all duration-200 font-medium flex items-center gap-2"
                 >
                   <UserPlusIcon class="w-4 h-4" />
-                  Ajouter l'agent
+                  {{ props.agent ? 'Mettre à jour' : 'Ajouter l\'agent' }}
                 </button>
               </div>
             </form>
@@ -208,27 +225,45 @@ import {
   KeyIcon, 
   ArrowLeftIcon 
 } from '@heroicons/vue/24/outline';
+import { ref, onMounted } from 'vue';
+import axios from 'axios';
 
 const props = defineProps({
+  agent: Object,
   structures: Array
 });
 
 const form = useForm({
-  nom: '',
-  prenom: '',
-  email: '',
+  nom: props.agent?.user?.nom ?? '',
+  prenom: props.agent?.user?.prenom ?? '',
+  email: props.agent?.user?.email ?? '',
   password: '',
-  telephone: '',
-  date_de_naissance: '',
-  sexe: '',
-  matricule: '',
-  fonction: '',
-  date_embauche: '',
-  structure_responsable_id: null,
+  telephone: props.agent?.user?.telephone ?? '',
+  date_de_naissance: props.agent?.user?.date_de_naissance ?? '',
+  sexe: props.agent?.user?.sexe ?? '',
+  matricule: props.agent?.matricule ?? '',
+  fonction: props.agent?.fonction ?? '',
+  date_embauche: props.agent?.date_embauche ?? '',
+  structure_responsable_id: props.agent?.structure_responsable_id ?? null,
+  structure_id: props.agent?.structure_id ?? '',
+});
+
+const sousStructures = ref([]);
+onMounted(async () => {
+  try {
+    const res = await axios.get('/agent/rs/organigramme/sous-structures');
+    sousStructures.value = res.data;
+  } catch (e) {
+    sousStructures.value = [];
+  }
 });
 
 function submit() {
-  form.post(route('agent.rs.agents.store'));
+  if (props.agent) {
+    form.put(route('agent.rs.agents.update', props.agent.id));
+  } else {
+    form.post(route('agent.rs.agents.store'));
+  }
 }
 
 // Fonction pour afficher le nom de la structure avec indication de la hiérarchie

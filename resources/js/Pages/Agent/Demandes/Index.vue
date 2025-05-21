@@ -297,6 +297,7 @@ import {
   XMarkIcon,
   InboxIcon
 } from '@heroicons/vue/24/outline';
+import debounce from 'lodash/debounce';
 
 const props = defineProps({
   demandes: Object,

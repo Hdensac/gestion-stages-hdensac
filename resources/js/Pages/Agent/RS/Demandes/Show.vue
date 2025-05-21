@@ -335,15 +335,83 @@
         </div>
       </div>
     </Modal>
+
+    <!-- Modal d'affectation de maître de stage -->
+    <Modal :show="showMaitreStageModal" @close="closeMaitreStageModal">
+      <div class="p-6">
+        <h2 class="text-lg font-medium text-gray-900 mb-4 flex items-center gap-2">
+          <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-indigo-500" viewBox="0 0 20 20" fill="currentColor">
+            <path d="M13 6a3 3 0 11-6 0 3 3 0 016 0zM18 8a2 2 0 11-4 0 2 2 0 014 0zM14 15a4 4 0 00-8 0v3h8v-3zM6 8a2 2 0 11-4 0 2 2 0 014 0zM16 18v-3a5.972 5.972 0 00-.75-2.906A3.005 3.005 0 0119 15v3h-3zM4.75 12.094A5.973 5.973 0 004 15v3H1v-3a3 3 0 013.75-2.906z" />
+          </svg>
+          Affecter un maître de stage
+        </h2>
+        <div class="mb-4">
+          <label class="block text-sm font-medium text-gray-700 mb-2">
+            Sélectionner un agent avec le rôle MS
+          </label>
+          <select
+            v-model="selectedMaitreStageId"
+            class="w-full rounded-md border-gray-300 shadow-sm focus:border-blue-300 focus:ring focus:ring-blue-200 focus:ring-opacity-50"
+          >
+            <option value="" disabled>Sélectionner un maître de stage</option>
+            <option v-for="agent in maitreStageAgents" :key="agent.id" :value="agent.id">
+              {{ agent.user?.nom }} {{ agent.user?.prenom }}
+              {{ agent.structure_responsable ? '- Responsable de: ' + agent.structure_responsable.libelle : '' }}
+            </option>
+          </select>
+          <p v-if="maitreStageForm.errors.maitre_stage_id" class="mt-2 text-sm text-red-600">
+            {{ maitreStageForm.errors.maitre_stage_id }}
+          </p>
+        </div>
+        <div class="flex justify-end gap-4">
+          <button
+            @click="closeMaitreStageModal"
+            class="px-4 py-2 bg-gray-100 text-gray-700 rounded-md border border-gray-300 hover:bg-gray-200 transition-colors"
+          >
+            Annuler
+          </button>
+          <button
+            @click="submitMaitreStage"
+            class="px-4 py-2 bg-indigo-600 text-white rounded-md hover:bg-indigo-700 transition-colors flex items-center gap-2"
+            :disabled="maitreStageForm.processing || !selectedMaitreStageId"
+          >
+            <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
+              <path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd" />
+            </svg>
+            Affecter le maître de stage
+          </button>
+          <button
+            @click="fetchMaitreStageAgents"
+            class="px-4 py-2 bg-yellow-500 text-white rounded-md hover:bg-yellow-600 transition-colors flex items-center gap-2"
+            type="button"
+          >
+            <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
+              <path fill-rule="evenodd" d="M4 2a1 1 0 011 1v2.101a7.002 7.002 0 0111.601 2.566 1 1 0 11-1.885.666A5.002 5.002 0 005.999 7H9a1 1 0 010 2H4a1 1 0 01-1-1zm.008 9.057a1 1 0 011.276.61A5.002 5.002 0 0014.001 13H11a1 1 0 110-2h5a1 1 0 011 1v5a1 1 0 11-2 0v-2.101a7.002 7.002 0 01-11.601-2.566 1 1 0 01.61-1.276z" clip-rule="evenodd" />
+            </svg>
+            Rafraîchir la liste
+          </button>
+        </div>
+
+        <div v-if="maitreStageAgents.length === 0" class="mt-4 p-4 bg-yellow-50 border border-yellow-200 rounded-md text-yellow-800">
+          <div class="flex items-center gap-2">
+            <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-yellow-500" viewBox="0 0 20 20" fill="currentColor">
+              <path fill-rule="evenodd" d="M8.257 3.099c.765-1.36 2.722-1.36 3.486 0l5.58 9.92c.75 1.334-.213 2.98-1.742 2.98H4.42c-1.53 0-2.493-1.646-1.743-2.98l5.58-9.92zM11 13a1 1 0 11-2 0 1 1 0 012 0zm-1-8a1 1 0 00-1 1v3a1 1 0 002 0V6a1 1 0 00-1-1z" clip-rule="evenodd" />
+            </svg>
+            <span>Aucun agent avec le rôle MS n'a été trouvé. Veuillez vérifier que des agents avec ce rôle existent dans le système.</span>
+          </div>
+        </div>
+      </div>
+    </Modal>
   </RSLayout>
 </template>
 
 <script setup>
-import { ref } from 'vue';
+import { ref, onMounted } from 'vue';
 import { Head, Link, useForm } from '@inertiajs/vue3';
 import RSLayout from '@/Layouts/RSLayout.vue';
 import Modal from '@/Components/Modal.vue';
 import Toast from '@/Components/Toast.vue';
+import axios from 'axios';
 
 const props = defineProps({
   demande: Object,
@@ -353,12 +421,19 @@ const props = defineProps({
 const showRejectModal = ref(false);
 const showApproveModal = ref(false);
 const toast = ref(null);
+const showMaitreStageModal = ref(false);
+const selectedMaitreStageId = ref(null);
+const maitresStage = ref([]);
+const maitreStageAgents = ref([]);
 
 const rejectForm = useForm({
   motif_refus: '',
 });
 
 const approveForm = useForm({});
+const maitreStageForm = useForm({
+  maitre_stage_id: '',
+});
 
 function formatDate(date) {
   return new Date(date).toLocaleDateString('fr-FR', {
@@ -465,13 +540,44 @@ function approveDemande() {
 }
 
 function openMaitreStageModal() {
-  // Cette fonction sera implémentée plus tard
-  if (toast.value) {
-    toast.value.show({
-      type: 'info',
-      title: 'Information',
-      message: 'La fonctionnalité d\'affectation de maître de stage sera disponible prochainement.'
-    });
+  fetchMaitreStageAgents();
+  showMaitreStageModal.value = true;
+}
+
+function closeMaitreStageModal() {
+  showMaitreStageModal.value = false;
+  selectedMaitreStageId.value = '';
+  maitreStageForm.reset();
+}
+
+async function fetchMaitreStageAgents() {
+  try {
+    const response = await axios.get(route('agent.rs.responsable-agents'));
+    maitreStageAgents.value = response.data;
+  } catch (error) {
+    console.error('Erreur lors de la récupération des maîtres de stage:', error);
   }
 }
+
+function submitMaitreStage() {
+  if (!selectedMaitreStageId.value) return;
+
+  maitreStageForm.maitre_stage_id = selectedMaitreStageId.value;
+
+  maitreStageForm.post(route('agent.rs.demandes.affecter-maitre', props.demande.id), {
+    onSuccess: () => {
+      closeMaitreStageModal();
+      router.reload();
+    },
+    onError: (errors) => {
+      console.error('Erreur lors de l\'affectation du maître de stage:', errors);
+    }
+  });
+}
+
+onMounted(() => {
+  if (props.demande?.statut === 'Acceptée') {
+    fetchMaitreStageAgents();
+  }
+});
 </script>

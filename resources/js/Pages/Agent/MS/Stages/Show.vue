@@ -260,13 +260,13 @@
                       <div class="flex justify-between items-center">
                         <span class="text-sm font-medium text-gray-500">Statut</span>
                         <span class="px-2.5 py-1 inline-flex text-xs leading-5 font-semibold rounded-full"
-                          :class="{
+                        :class="{
                             'bg-emerald-100 text-emerald-800 border border-emerald-200': stage.statut === 'Terminé',
                             'bg-blue-100 text-blue-800 border border-blue-200': stage.statut === 'En cours',
                             'bg-amber-100 text-amber-800 border border-amber-200': stage.statut === 'En attente',
-                          }">
-                          {{ stage.statut }}
-                        </span>
+                        }">
+                        {{ stage.statut }}
+                      </span>
                       </div>
                     </div>
                   </div>
@@ -617,7 +617,7 @@
                   </div>
                 </form>
               </div>
-            </div>
+                </div>
             
             <!-- Contacter le stagiaire -->
             <div v-if="activeTab === 'contacter'" class="space-y-6">
@@ -652,25 +652,25 @@
                       class="w-full rounded-md border-gray-300 shadow-sm focus:ring-blue-500 focus:border-blue-500"
                       placeholder="Rédigez votre message..."
                     ></textarea>
-                  </div>
+                </div>
                   
                   <div class="flex justify-end space-x-3 pt-2">
-                    <button
+                  <button
                       type="button"
                       @click="activeTab = 'infos'"
                       class="inline-flex items-center px-4 py-2 border border-gray-300 shadow-sm text-sm font-medium rounded-md text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500"
-                    >
+                  >
                       Annuler
-                    </button>
-                    <button
+                  </button>
+                  <button
                       @click="onContactSubmit"
                       class="inline-flex items-center px-4 py-2 border border-transparent shadow-sm text-sm font-medium rounded-md text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500"
-                    >
-                      <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  >
+                    <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z" />
-                      </svg>
+                    </svg>
                       Envoyer le message
-                    </button>
+                  </button>
                   </div>
                 </div>
               </div>
@@ -686,7 +686,7 @@
                 <h3 class="text-lg font-semibold mb-4 flex items-center">
                   <svg class="w-5 h-5 mr-2 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7h12m0 0l-4-4m4 4l-4 4m0 6H4m0 0l4 4m-4-4l4-4" />
-                  </svg>
+                </svg>
                   Réaffecter le stage
                 </h3>
                 
@@ -777,15 +777,15 @@
                       >
                         Annuler
                       </button>
-                      <button
+                <button
                         type="submit"
                         class="inline-flex items-center px-4 py-2 border border-transparent shadow-sm text-sm font-medium rounded-md text-white bg-red-600 hover:bg-red-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-red-500"
-                      >
-                        <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                >
+                  <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                           <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7h12m0 0l-4-4m4 4l-4 4m0 6H4m0 0l4 4m-4-4l4-4" />
-                        </svg>
+                  </svg>
                         Réaffecter le stage
-                      </button>
+                </button>
                     </div>
                   </div>
                 </form>

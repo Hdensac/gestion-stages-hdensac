@@ -150,6 +150,19 @@
                       />
                     </div>
                   </div>
+                  <div>
+                    <label class="block text-sm font-medium text-gray-700 mb-1">Sous-structure <span class="text-red-500">*</span></label>
+                    <select
+                      v-model="form.structure_id"
+                      class="w-full border rounded-md p-2 shadow-sm focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                      required
+                    >
+                      <option value="">Sélectionner une sous-structure</option>
+                      <option v-for="s in sousStructures" :key="s.id" :value="s.id">
+                        {{ s.libelle }}
+                      </option>
+                    </select>
+                  </div>
                 </div>
               </div>
 
@@ -208,6 +221,8 @@ import {
   KeyIcon, 
   ArrowLeftIcon 
 } from '@heroicons/vue/24/outline';
+import { ref, onMounted } from 'vue';
+import axios from 'axios';
 
 const props = defineProps({
   structures: Array
@@ -225,6 +240,17 @@ const form = useForm({
   fonction: '',
   date_embauche: '',
   structure_responsable_id: null,
+  structure_id: '',
+});
+
+const sousStructures = ref([]);
+onMounted(async () => {
+  try {
+    const res = await axios.get('/agent/rs/organigramme/sous-structures');
+    sousStructures.value = res.data;
+  } catch (e) {
+    sousStructures.value = [];
+  }
 });
 
 function submit() {
