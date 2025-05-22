@@ -1,19 +1,35 @@
 <template>
     <div class="flex h-screen bg-gray-100">
-        <!-- SIDEBAR -->
+        <!-- SIDEBAR STATIC avec bouton toggle -->
         <aside 
-            class="fixed inset-y-0 left-0 z-40 bg-gradient-to-b from-blue-600 to-blue-800 border-r border-blue-700 shadow-lg lg:sticky w-20 hover:w-64 transition-all duration-300 ease-in-out group"
+            :class="[
+                'fixed inset-y-0 left-0 z-40 bg-gradient-to-b from-blue-600 to-blue-800 border-r border-blue-700 shadow-lg lg:sticky transition-all duration-300 ease-in-out',
+                expanded ? 'w-64' : 'w-20'
+            ]"
         >
+            <!-- Bouton Toggle Modern -->
+            <button 
+                @click="toggleSidebar" 
+                class="absolute -right-3 top-20 bg-white rounded-full p-1.5 shadow-md border border-gray-200 z-50 hover:bg-blue-50 transition-colors duration-200 hover:shadow-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-opacity-50"
+            >
+                <svg v-if="expanded" class="w-4 h-4 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7" />
+                </svg>
+                <svg v-else class="w-4 h-4 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7" />
+                </svg>
+            </button>
+
             <!-- Logo Section -->
             <div class="flex items-center h-16 px-4 border-b border-blue-700">
                 <Link :href="route('dashboard')" class="flex items-center">
                     <div class="flex-shrink-0 w-10 h-10 bg-white rounded-lg shadow-md flex items-center justify-center text-blue-600 font-extrabold">
                         GS
-                </div>
-                    <h1 class="ml-3 text-xl font-bold text-white whitespace-nowrap hidden group-hover:block transition-all duration-300">
+                    </div>
+                    <h1 v-if="expanded" class="ml-3 text-xl font-bold text-white whitespace-nowrap transition-all duration-300">
                         GestionStages
                     </h1>
-              </Link>
+                </Link>
             </div>
 
             <!-- Menu Items -->
@@ -30,7 +46,7 @@
                     <svg xmlns="http://www.w3.org/2000/svg" class="w-6 h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6" />
                     </svg>
-                    <span class="ml-3 hidden group-hover:block">Tableau de bord</span>
+                    <span v-if="expanded" class="ml-3">Tableau de bord</span>
                 </Link>
 
                 <Link 
@@ -45,7 +61,7 @@
                     <svg xmlns="http://www.w3.org/2000/svg" class="w-6 h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2" />
                     </svg>
-                    <span class="ml-3 hidden group-hover:block">Demandes</span>
+                    <span v-if="expanded" class="ml-3">Demandes</span>
                 </Link>
 
                 <!-- <Link 
@@ -60,7 +76,7 @@
                     <svg xmlns="http://www.w3.org/2000/svg" class="w-6 h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z" />
                     </svg>
-                    <span class="ml-3 hidden group-hover:block">Affectations</span>
+                    <span v-if="expanded" class="ml-3">Affectations</span>
                 </Link>
 
                 <Link 
@@ -75,7 +91,7 @@
                     <svg xmlns="http://www.w3.org/2000/svg" class="w-6 h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4" />
                     </svg>
-                    <span class="ml-3 hidden group-hover:block">Structures</span>
+                    <span v-if="expanded" class="ml-3">Structures</span>
                 </Link>
 
                 <Link 
@@ -90,7 +106,7 @@
                     <svg xmlns="http://www.w3.org/2000/svg" class="w-6 h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z" />
                     </svg>
-                    <span class="ml-3 hidden group-hover:block">Statistiques</span>
+                    <span v-if="expanded" class="ml-3">Statistiques</span>
                 </Link> -->
 
                 <Link 
@@ -106,7 +122,7 @@
                     <svg xmlns="http://www.w3.org/2000/svg" class="w-6 h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197M13 7a4 4 0 11-8 0 4 4 0 018 0z" />
                     </svg>
-                    <span class="ml-3 hidden group-hover:block">Espace RS</span>
+                    <span v-if="expanded" class="ml-3">Espace RS</span>
                 </Link>
             </nav>
 
@@ -127,7 +143,7 @@
                             </svg>
                         </div>
                     </div>
-                    <div class="flex-1 min-w-0 hidden group-hover:block">
+                    <div v-if="expanded" class="flex-1 min-w-0">
                         <p class="text-sm font-medium text-white truncate">
                             {{ $page.props.auth.user?.nom }}
                         </p>
@@ -145,7 +161,7 @@
         </aside>
 
         <!-- MAIN CONTENT AREA -->
-        <div class="flex flex-col flex-1 w-full lg:pl-20">
+        <div :class="['flex flex-col flex-1 w-full transition-all duration-300', expanded ? 'lg:pl-64' : 'lg:pl-20']">
             <!-- Top Nav -->
             <nav class="sticky top-0 z-30 bg-white border-b border-gray-200 shadow-sm">
                 <div class="px-4 py-3 sm:px-6 lg:px-8">
@@ -155,7 +171,7 @@
                             <svg xmlns="http://www.w3.org/2000/svg" class="w-6 h-6 text-gray-500" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16" />
                             </svg>
-            </button>
+                        </button>
                         
                         <!-- Page title or search bar can go here -->
                         <div class="text-lg font-bold text-gray-800 lg:hidden">
@@ -167,23 +183,23 @@
                             <span v-else-if="route().current('agent.statistiques')">Statistiques</span> -->
                             <span v-else-if="route().current('agent.rs.*')">Espace RS</span>
                             <span v-else>DPAF</span>
-          </div>
-        </div>
-      </div>
-    </nav>
+                        </div>
+                    </div>
+                </div>
+            </nav>
 
             <!-- En-tête de la page -->
             <header v-if="$slots.header" class="bg-white shadow-sm">
                 <div class="px-4 py-5 mx-auto max-w-7xl sm:px-6 lg:px-8">
                     <slot name="header" />
-        </div>
-      </header>
+                </div>
+            </header>
 
             <!-- Contenu principal -->
             <main class="flex-1 p-4 sm:p-6 lg:p-8 overflow-auto">
-        <AdminToast ref="toast" />
+                <AdminToast ref="toast" />
                 <slot />
-      </main>
+            </main>
 
             <!-- Pied de page -->
             <footer class="py-4 bg-white border-t border-gray-200">
@@ -193,8 +209,8 @@
                     </div>
                 </div>
             </footer>
+        </div>
     </div>
-  </div>
 </template>
 
 <script setup>
@@ -203,24 +219,28 @@ import { Link, usePage } from '@inertiajs/vue3';
 import AdminToast from '@/Components/AdminToast.vue';
 
 const sidebarOpen = ref(false);
+const expanded = ref(true);
 const isRSAgent = computed(() => usePage().props.isRSAgent || false);
 const toast = ref(null);
+
+const toggleSidebar = () => {
+  expanded.value = !expanded.value;
+};
 </script>
 
 <style scoped>
 @media (min-width: 1024px) {
-    .lg\:ml-20 {
-        margin-left: 5rem;
+    .lg\:pl-64 {
+        padding-left: 16rem;
+    }
+    .lg\:pl-20 {
+        padding-left: 5rem;
     }
 }
 
-/* Animation fluide pour le hover */
+/* Transitions fluides */
 aside {
     transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-}
-
-.group:hover .group-hover\:block {
-    animation: fadeIn 0.3s ease-in-out forwards;
 }
 
 @keyframes fadeIn {

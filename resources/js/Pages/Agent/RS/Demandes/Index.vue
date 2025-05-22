@@ -62,8 +62,9 @@
                 <div class="relative">
                   <select v-model="filters.status" class="w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring focus:ring-blue-500 focus:ring-opacity-20 text-gray-700">
                     <option value="">Tous les statuts</option>
+                    <option value="En cours">En cours</option>
                     <option value="En attente">En attente</option>
-                    <option value="Approuvée">Approuvée</option>
+                    <option value="Acceptée">Acceptée</option>
                     <option value="Refusée">Refusée</option>
                   </select>
                   <div class="pointer-events-none absolute inset-y-0 right-0 flex items-center px-2 text-gray-700">

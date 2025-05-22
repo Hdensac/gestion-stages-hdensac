@@ -1,16 +1,32 @@
 <template>
     <div class="flex h-screen bg-gray-100">
-        <!-- SIDEBAR -->
+        <!-- SIDEBAR STATIC avec bouton toggle -->
         <aside 
-            class="fixed inset-y-0 left-0 z-40 bg-gradient-to-b from-blue-600 to-blue-800 border-r border-blue-700 shadow-lg lg:sticky w-20 hover:w-64 transition-all duration-300 ease-in-out group"
+            :class="[
+                'fixed inset-y-0 left-0 z-40 bg-gradient-to-b from-blue-600 to-blue-800 border-r border-blue-700 shadow-lg lg:sticky transition-all duration-300 ease-in-out',
+                expanded ? 'w-64' : 'w-20'
+            ]"
         >
+            <!-- Bouton Toggle Modern -->
+            <button 
+                @click="toggleSidebar" 
+                class="absolute -right-3 top-20 bg-white rounded-full p-1.5 shadow-md border border-gray-200 z-50 hover:bg-blue-50 transition-colors duration-200 hover:shadow-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-opacity-50"
+            >
+                <svg v-if="expanded" class="w-4 h-4 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7" />
+                </svg>
+                <svg v-else class="w-4 h-4 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7" />
+                </svg>
+            </button>
+
             <!-- Logo Section -->
             <div class="flex items-center h-16 px-4 border-b border-blue-700">
                 <Link :href="route('dashboard')" class="flex items-center">
                     <div class="flex-shrink-0 w-10 h-10 bg-white rounded-lg shadow-md flex items-center justify-center text-blue-600 font-extrabold">
                         GS
                     </div>
-                    <h1 class="ml-3 text-xl font-bold text-white whitespace-nowrap hidden group-hover:block transition-all duration-300">
+                    <h1 v-if="expanded" class="ml-3 text-xl font-bold text-white whitespace-nowrap transition-all duration-300">
                         GestionStages
                     </h1>
                 </Link>
@@ -30,7 +46,7 @@
                     <svg xmlns="http://www.w3.org/2000/svg" class="w-6 h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6" />
                     </svg>
-                    <span class="ml-3 hidden group-hover:block">Tableau de bord</span>
+                    <span v-if="expanded" class="ml-3">Tableau de bord</span>
                 </Link>
 
                 <Link 
@@ -45,7 +61,7 @@
                     <svg xmlns="http://www.w3.org/2000/svg" class="w-6 h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2" />
                     </svg>
-                    <span class="ml-3 hidden group-hover:block">Mes Stages</span>
+                    <span v-if="expanded" class="ml-3">Mes Stages</span>
                 </Link>
 
                <!--  <Link 
@@ -60,7 +76,7 @@
                     <svg xmlns="http://www.w3.org/2000/svg" class="w-6 h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
                     </svg>
-                    <span class="ml-3 hidden group-hover:block">Évaluations</span>
+                    <span v-if="expanded" class="ml-3">Évaluations</span>
                 </Link>
 
                 <Link 
@@ -75,7 +91,7 @@
                     <svg xmlns="http://www.w3.org/2000/svg" class="w-6 h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0z" />
                     </svg>
-                    <span class="ml-3 hidden group-hover:block">Stagiaires</span>
+                    <span v-if="expanded" class="ml-3">Stagiaires</span>
                 </Link> -->
             </nav>
 
@@ -96,7 +112,7 @@
                             </svg>
                         </div>
                     </div>
-                    <div class="flex-1 min-w-0 hidden group-hover:block">
+                    <div v-if="expanded" class="flex-1 min-w-0">
                         <p class="text-sm font-medium text-white truncate">
                             {{ getUserName() }}
                         </p>
@@ -114,7 +130,7 @@
         </aside>
 
         <!-- MAIN CONTENT AREA -->
-        <div class="flex flex-col flex-1 w-full lg:pl-20">
+        <div :class="['flex flex-col flex-1 w-full transition-all duration-300', expanded ? 'lg:pl-64' : 'lg:pl-20']">
             <!-- Top Nav -->
             <nav class="sticky top-0 z-30 bg-white border-b border-gray-200 shadow-sm">
                 <div class="px-4 py-3 sm:px-6 lg:px-8">
@@ -197,6 +213,7 @@ import Dropdown from '@/Components/Dropdown.vue';
 import DropdownLink from '@/Components/DropdownLink.vue';
 
 const sidebarOpen = ref(false);
+const expanded = ref(true);
 
 // Fonction pour récupérer le nom de l'utilisateur
 function getUserName() {
@@ -208,22 +225,25 @@ function getUserName() {
     
     return `${user.prenom} ${user.nom}`;
 }
+
+const toggleSidebar = () => {
+  expanded.value = !expanded.value;
+};
 </script>
 
 <style scoped>
 @media (min-width: 1024px) {
-    .lg\:ml-20 {
-        margin-left: 5rem;
+    .lg\:pl-64 {
+        padding-left: 16rem;
+    }
+    .lg\:pl-20 {
+        padding-left: 5rem;
     }
 }
 
-/* Animation fluide pour le hover */
+/* Transitions fluides */
 aside {
     transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-}
-
-.group:hover .group-hover\:block {
-    animation: fadeIn 0.3s ease-in-out forwards;
 }
 
 @keyframes fadeIn {

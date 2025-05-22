@@ -54,7 +54,15 @@ class DemandeController extends Controller
 
             // Filtre par statut
             if ($request->filled('status')) {
-                $query->where('statut', $request->status);
+                $status = $request->status;
+                $statusVariants = [$status];
+                if ($status === 'En cours') {
+                    $statusVariants[] = 'Encours';
+                    $statusVariants[] = 'en cours';
+                    $statusVariants[] = 'en_cours';
+                    $statusVariants[] = 'EN COURS';
+                }
+                $query->whereIn('statut', $statusVariants);
             }
 
             // Filtre par recherche
