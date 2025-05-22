@@ -8,6 +8,7 @@ import ResponsiveNavLink from '@/Components/ResponsiveNavLink.vue';
 
 const showingNavigationDropdown = ref(false);
 const user = usePage().props.auth?.user;
+const logoUrl = '/images/logoministere.png';
 </script>
 
 <template>
@@ -24,7 +25,7 @@ const user = usePage().props.auth?.user;
                             <div class="flex shrink-0 items-center">
                                 <Link :href="route('dashboard')">
                                     <img
-                                        src="/images/logoministere.png"
+                                        :src="logoUrl"
                                         alt="Logo du Ministère"
                                         class="h-12 w-auto transition-transform duration-300 hover:scale-105"
                                     />

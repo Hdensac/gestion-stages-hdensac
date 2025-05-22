@@ -25,6 +25,7 @@ const form = useForm({
 
 const passwordVisible = ref(false);
 const isLoading = ref(false);
+const logoUrl = '/images/logoministere.png';
 
 const togglePasswordVisibility = () => {
     passwordVisible.value = !passwordVisible.value;
@@ -49,7 +50,7 @@ const submit = () => {
         <!-- Logo et titre -->
         <div class="mb-6 text-center">
             <div class="flex justify-center mb-3">
-                <img src="/images/logoministere.png" alt="MINISTERE DE L'ECONOMIE ET DES FINANCES" class="h-20 w-auto transition-transform duration-300 hover:scale-105" />
+                <img :src="logoUrl" alt="MINISTERE DE L'ECONOMIE ET DES FINANCES" class="h-20 w-auto transition-transform duration-300 hover:scale-105" />
             </div>
             <h1 class="text-2xl font-bold text-gray-900">Bienvenue sur votre espace</h1>
             <p class="text-gray-600 mt-1">Programme d'étapes - Ministère des Finances</p>

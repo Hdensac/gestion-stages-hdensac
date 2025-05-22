@@ -24,6 +24,7 @@ const actionType = ref('');
 const fadeIn = ref(false);
 const headerVisible = ref(false);
 const contentVisible = ref(false);
+const logoUrl = '/images/logoministere.png';
 
 const openModal = (action) => {
     actionType.value = action;
@@ -65,7 +66,7 @@ onMounted(() => {
                     <div class="flex items-center justify-between py-3 px-4 md:px-6 lg:px-8">
                         <div class="flex items-center">
                             <!-- Logo plus grand sans texte à côté -->
-                            <img src="/images/logoministere.png" alt="Logo du Ministère" class="h-20 w-auto transition-transform duration-300 hover:scale-105" />
+                            <img :src="logoUrl" alt="Logo du Ministère" class="h-20 w-auto transition-transform duration-300 hover:scale-105" />
                         </div>
                         
                         <nav v-if="canLogin" class="flex items-center space-x-4">
@@ -370,7 +371,7 @@ onMounted(() => {
                     <div class="w-full mx-auto px-4 md:px-6 lg:px-8">
                         <div class="grid grid-cols-1 md:grid-cols-4 gap-8">
                             <div class="md:col-span-1">
-                                <img src="/images/logoministere.png" alt="Logo du Ministère" class="h-14 w-auto mb-4 brightness-0 invert" />
+                                <img :src="logoUrl" alt="Logo du Ministère" class="h-14 w-auto mb-4 brightness-0 invert" />
                                 <p class="text-gray-400 text-sm">
                                     Le Ministère de l'Économie et des Finances s'engage pour l'avenir des jeunes talents.
                                 </p>

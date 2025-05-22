@@ -2,7 +2,9 @@
 import { ref } from 'vue';
 import InputError from '@/Components/InputError.vue';
 import TextInput from '@/Components/TextInput.vue';
-import { Head, useForm } from '@inertiajs/vue3';
+import { Head, useForm, Link } from '@inertiajs/vue3';
+
+const logoUrl = '/images/logoministere.png';
 
 const form = useForm({
     password: '',
@@ -34,7 +36,7 @@ const submit = () => {
             <!-- Logo et titre -->
             <div class="mb-6 text-center">
                 <div class="flex justify-center mb-3">
-                    <img src="/images/logoministere.png" alt="MINISTERE DE L'ECONOMIE ET DES FINANCES" class="h-20 w-auto transition-transform duration-300 hover:scale-105" />
+                    <img :src="logoUrl" alt="MINISTERE DE L'ECONOMIE ET DES FINANCES" class="h-20 w-auto transition-transform duration-300 hover:scale-105" />
                 </div>
                 <h1 class="text-2xl font-bold text-gray-900">Confirmation de sécurité</h1>
                 <p class="text-gray-600 mt-1">Programme de Stages - Ministère des Finances</p>

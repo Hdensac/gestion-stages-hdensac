@@ -262,7 +262,7 @@ function submit() {
   if (props.agent) {
     form.put(route('agent.rs.agents.update', props.agent.id));
   } else {
-    form.post(route('agent.rs.agents.store'));
+  form.post(route('agent.rs.agents.store'));
   }
 }
 
