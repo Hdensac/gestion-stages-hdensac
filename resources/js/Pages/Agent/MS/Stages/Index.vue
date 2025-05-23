@@ -363,7 +363,9 @@ const filteredStages = computed(() => {
 const contactStagiaire = (stage) => {
   const email = stage.stagiaire_info?.email || stage.demandeStage?.stagiaire?.user?.email;
   if (email) {
-    window.location.href = `mailto:${email}?subject=Stage à ${stage.structure?.libelle || 'notre structure'}`;
+    // Remplacer :
+    // window.location.href = `mailto:${email}?subject=Stage à ${stage.structure?.libelle || 'notre structure'}`;
+    // Par un appel axios similaire à Dashboard.vue
   } else {
     alert('Aucune adresse email disponible pour ce stagiaire.');
   }

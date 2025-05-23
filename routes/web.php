@@ -216,6 +216,7 @@ Route::get('/dashboard', function () {
             Route::get('/stages', [App\Http\Controllers\Agent\MS\StageController::class, 'index'])->name('stages');
             Route::get('/stages/{stage}', [App\Http\Controllers\Agent\MS\StageController::class, 'show'])->name('stages.show');
             Route::post('/stages/{stage}/update-status', [App\Http\Controllers\Agent\MS\StageController::class, 'updateStatus'])->name('stages.update-status');
+            Route::post('/stages/{stage}/theme', [App\Http\Controllers\Agent\MS\StageController::class, 'storeTheme'])->name('stages.theme.store');
             Route::post('/stages/{stage}/valider-theme', [App\Http\Controllers\Agent\MS\StageController::class, 'validerTheme'])->name('stages.valider-theme');
             Route::post('/stages/{stage}/refuser-theme', [App\Http\Controllers\Agent\MS\StageController::class, 'refuserTheme'])->name('stages.refuser-theme');
             Route::post('/stages/{stage}/noter', [App\Http\Controllers\Agent\MS\StageController::class, 'noter'])->name('stages.noter');

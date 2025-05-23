@@ -78,5 +78,15 @@ class Stage extends Model
             ->whereIn('statut', ['En cours', 'Acceptée']);
     }
 
+    public function evaluation()
+    {
+        return $this->hasOne(Evaluation::class);
+    }
+
+    public function evaluations()
+    {
+        return $this->hasMany(Evaluation::class);
+    }
+
     // Définir d'autres relations Eloquent ici ultérieurement
 }

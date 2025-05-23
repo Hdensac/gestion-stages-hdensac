@@ -5,6 +5,11 @@ namespace App\Http\Controllers\Agent\MS;
 use App\Http\Controllers\Controller;
 use App\Models\Stage;
 use App\Models\AffectationMaitreStage;
+use App\Models\ThemeStage;
+use App\Models\Evaluation;
+use App\Mail\ThemeProposeMail;
+use App\Mail\EvaluationNotifieeMail;
+use Illuminate\Support\Facades\Mail;
 
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
@@ -210,7 +215,8 @@ class StageController extends Controller
             $stage->load([
                 'demandeStage.stagiaire.user',
                 'structure',
-                'themeStage'
+                'themeStage',
+                'evaluation'
             ]);
 
             // Forcer le chargement des relations si elles ne sont pas déjà chargées
@@ -314,6 +320,151 @@ class StageController extends Controller
 
             return redirect()->back()->with('error', 'Une erreur est survenue lors de la mise à jour du statut du stage.');
         }
+    }
+
+    /**
+     * Créer ou modifier le thème d'un stage
+     */
+    public function storeTheme(Request $request, Stage $stage)
+    {
+        $this->checkMSRole();
+        $user = Auth::user();
+        $agent = $user->agent;
+
+        try {
+            // Vérifier que l'utilisateur est bien le maître de stage assigné à ce stage
+            $affectation = AffectationMaitreStage::where('stage_id', $stage->id)
+                ->where('maitre_stage_id', $user->id)
+                ->whereIn('statut', ['En cours', 'Acceptée'])
+                ->first();
+
+            if (!$affectation) {
+                return redirect()->back()->with('error', 'Vous n\'êtes pas autorisé à modifier ce stage.');
+            }
+
+            // Validation des données
+            $validated = $request->validate([
+                'titre' => 'required|string|max:255',
+                'description' => 'required|string|max:2000',
+                'etat' => 'required|in:Proposé,Modifié,Validé,Refusé',
+                'commentaire' => 'nullable|string|max:1000'
+            ]);
+
+            // Préparer les mots-clés à partir du titre et de la description
+            $motsCles = $this->generateMotsCles($validated['titre'], $validated['description']);
+
+            // Rafraîchir la relation themeStage sur le modèle stage
+            $stage->load('themeStage');
+            $theme = $stage->themeStage;
+
+            if ($stage->themeStage) {
+                // Mettre à jour le thème existant
+                $stage->themeStage->update([
+                    'intitule' => $validated['titre'],
+                    'description' => $validated['description'],
+                    'etat' => $validated['etat'],
+                    'mots_cles' => $motsCles,
+                ]);
+
+                // Envoyer un mail au stagiaire si le thème est proposé ou modifié
+                if (in_array($validated['etat'], ['Proposé', 'Modifié'])) {
+                    try {
+                        if ($stage->stagiaire_info && $stage->stagiaire_info->email) {
+                            Mail::to($stage->stagiaire_info->email)
+                                ->send(new ThemeProposeMail($stage->stagiaire_info, $stage, $theme));
+                        } elseif ($stage->demandeStage && $stage->demandeStage->stagiaire && $stage->demandeStage->stagiaire->user) {
+                            Mail::to($stage->demandeStage->stagiaire->user->email)
+                                ->send(new ThemeProposeMail($stage->demandeStage->stagiaire, $stage, $theme));
+                        }
+                    } catch (\Exception $e) {
+                        Log::error('Erreur lors de l\'envoi du mail de notification du thème', [
+                            'error' => $e->getMessage(),
+                            'stage_id' => $stage->id
+                        ]);
+                    }
+                }
+
+                Log::info('Thème du stage mis à jour', [
+                    'stage_id' => $stage->id,
+                    'theme_id' => $theme->id,
+                    'agent_id' => $agent->id
+                ]);
+
+                return redirect()->back()->with('success', 'Le thème du stage a été mis à jour avec succès.');
+            } else {
+                // Créer un nouveau thème
+                $theme = ThemeStage::create([
+                    'intitule' => $validated['titre'],
+                    'description' => $validated['description'],
+                    'etat' => $validated['etat'],
+                    'mots_cles' => $motsCles,
+                ]);
+
+                // Associer le thème au stage
+                $stage->update([
+                    'theme_stage_id' => $theme->id
+                ]);
+
+                // Envoyer un mail au stagiaire si le thème est proposé
+                if ($validated['etat'] === 'Proposé') {
+                    try {
+                        if ($stage->stagiaire_info && $stage->stagiaire_info->email) {
+                            Mail::to($stage->stagiaire_info->email)
+                                ->send(new ThemeProposeMail($stage->stagiaire_info, $stage, $theme));
+                        } elseif ($stage->demandeStage && $stage->demandeStage->stagiaire && $stage->demandeStage->stagiaire->user) {
+                            Mail::to($stage->demandeStage->stagiaire->user->email)
+                                ->send(new ThemeProposeMail($stage->demandeStage->stagiaire, $stage, $theme));
+                        }
+                    } catch (\Exception $e) {
+                        Log::error('Erreur lors de l\'envoi du mail de notification du thème', [
+                            'error' => $e->getMessage(),
+                            'stage_id' => $stage->id
+                        ]);
+                    }
+                }
+
+                Log::info('Nouveau thème créé pour le stage', [
+                    'stage_id' => $stage->id,
+                    'theme_id' => $theme->id,
+                    'agent_id' => $agent->id
+                ]);
+
+                return redirect()->back()->with('success', 'Le thème du stage a été créé avec succès.');
+            }
+
+        } catch (\Exception $e) {
+            Log::error('Erreur lors de la création/modification du thème du stage', [
+                'error' => $e->getMessage(),
+                'stage_id' => $stage->id,
+                'agent_id' => $agent->id
+            ]);
+
+            return redirect()->back()->with('error', 'Une erreur est survenue lors de l\'enregistrement du thème.');
+        }
+    }
+
+    /**
+     * Générer des mots-clés à partir du titre et de la description
+     */
+    private function generateMotsCles($titre, $description)
+    {
+        // Mots vides à exclure
+        $motsVides = ['le', 'la', 'les', 'un', 'une', 'des', 'du', 'de', 'et', 'ou', 'avec', 'pour', 'dans', 'sur', 'par', 'à', 'au', 'aux'];
+
+        // Combiner titre et description
+        $texte = strtolower($titre . ' ' . $description);
+
+        // Nettoyer et extraire les mots
+        $mots = preg_split('/[^a-zA-ZÀ-ÿ0-9]+/', $texte);
+        $mots = array_filter($mots, function($mot) use ($motsVides) {
+            return strlen($mot) > 2 && !in_array(strtolower($mot), $motsVides);
+        });
+
+        // Prendre les mots les plus fréquents (max 10)
+        $motsCles = array_unique($mots);
+        $motsCles = array_slice($motsCles, 0, 10);
+
+        return implode(', ', $motsCles);
     }
 
     /**
@@ -446,34 +597,73 @@ class StageController extends Controller
                 return redirect()->back()->with('error', 'Vous ne pouvez noter que les stages terminés.');
             }
 
-            // Valider la note
+            // Vérifier si une évaluation existe déjà pour ce stage et cet agent
+            $evaluationExistante = Evaluation::where('stage_id', $stage->id)
+                ->where('agent_id', $agent->id)
+                ->first();
+            if ($evaluationExistante) {
+                return redirect()->back()->with('error', 'Vous avez déjà saisi une évaluation pour ce stage. La modification n\'est pas autorisée.');
+            }
+
+            // Valider tous les critères d'évaluation
             $validated = $request->validate([
-                'note' => 'required|numeric|min:0|max:20',
-                'commentaire' => 'nullable|string|max:1000'
+                'ponctualite' => 'required|numeric|min:0|max:2',
+                'motivation' => 'required|numeric|min:0|max:2',
+                'capacite_apprendre' => 'required|numeric|min:0|max:2',
+                'qualite_travail' => 'required|numeric|min:0|max:2',
+                'rapidite_execution' => 'required|numeric|min:0|max:2',
+                'jugement' => 'required|numeric|min:0|max:2',
+                'esprit_motivation' => 'required|numeric|min:0|max:2',
+                'esprit_collaboration' => 'required|numeric|min:0|max:2',
+                'sens_responsabilite' => 'required|numeric|min:0|max:2',
+                'communication' => 'required|numeric|min:0|max:2',
+                'note_totale' => 'required|numeric|min:0|max:20',
+                'commentaire_general' => 'nullable|string|max:1000',
             ]);
 
-            // Mettre à jour la note du stage
-            $stage->update([
-                'note' => $validated['note'],
-                'commentaire_evaluation' => $validated['commentaire']
-            ]);
+            // Créer ou mettre à jour l'évaluation pour ce stage et cet agent
+            $evaluation = Evaluation::updateOrCreate(
+                [
+                    'stage_id' => $stage->id,
+                    'agent_id' => $agent->id
+                ],
+                array_merge($validated, [
+                    'date_evaluation' => now()
+                ])
+            );
 
-            Log::info('Stage noté', [
+            // Envoyer un mail au stagiaire
+            try {
+                if ($stage->stagiaire_info && $stage->stagiaire_info->email) {
+                    Mail::to($stage->stagiaire_info->email)
+                        ->send(new EvaluationNotifieeMail($stage->stagiaire_info, $stage, $evaluation));
+                } elseif ($stage->demandeStage && $stage->demandeStage->stagiaire && $stage->demandeStage->stagiaire->user) {
+                    Mail::to($stage->demandeStage->stagiaire->user->email)
+                        ->send(new EvaluationNotifieeMail($stage->demandeStage->stagiaire, $stage, $evaluation));
+                }
+            } catch (\Exception $e) {
+                Log::error('Erreur lors de l\'envoi du mail de notification de l\'évaluation', [
+                    'error' => $e->getMessage(),
+                    'stage_id' => $stage->id
+                ]);
+            }
+
+            Log::info('Évaluation enregistrée', [
                 'stage_id' => $stage->id,
-                'note' => $validated['note'],
+                'evaluation_id' => $evaluation->id,
                 'agent_id' => $agent->id
             ]);
 
-            return redirect()->back()->with('success', 'Le stage a été noté avec succès.');
+            return redirect()->back()->with('success', 'L\'évaluation a été enregistrée avec succès.');
 
         } catch (\Exception $e) {
-            Log::error('Erreur lors de la notation du stage', [
+            Log::error('Erreur lors de l\'enregistrement de l\'évaluation', [
                 'error' => $e->getMessage(),
                 'stage_id' => $stage->id,
                 'agent_id' => $agent->id
             ]);
 
-            return redirect()->back()->with('error', 'Une erreur est survenue lors de la notation du stage.');
+            return redirect()->back()->with('error', 'Une erreur est survenue lors de l\'enregistrement de l\'évaluation.');
         }
     }
 

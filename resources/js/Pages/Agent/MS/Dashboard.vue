@@ -133,7 +133,7 @@
                   </tr>
                 </thead>
                 <tbody class="bg-white divide-y divide-gray-200">
-                  <tr v-for="stage in filteredStages" :key="stage.id" class="hover:bg-gray-50" :class="{ 'bg-gray-100': stage.est_reaffecte }">
+                  <tr v-for="stage in top3StagesEnCours" :key="stage.id" class="hover:bg-gray-50" :class="{ 'bg-gray-100': stage.est_reaffecte }">
                     <td class="px-6 py-4 whitespace-nowrap">
                       <div class="flex items-center">
                         <div>
@@ -673,6 +673,11 @@ const filteredStages = computed(() => {
     
     return true;
   });
+});
+
+// Computed pour n'afficher que les 3 premiers stages en cours
+const top3StagesEnCours = computed(() => {
+  return filteredStages.value.filter(stage => stage.statut === 'En cours').slice(0, 3);
 });
 
 // Réinitialiser les filtres

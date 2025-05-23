@@ -79,7 +79,7 @@ const submit = () => {
               </p>
               <p class="mt-2 text-sm text-gray-600">
                 Si vous avez perdu votre code de suivi, veuillez contacter le service des stages à l'adresse suivante : 
-                <a href="mailto:stages@example.com" class="text-indigo-600 hover:text-indigo-500">stages@example.com</a>
+                <span class="text-indigo-600">stages@example.com</span>
               </p>
             </div>
           </div>

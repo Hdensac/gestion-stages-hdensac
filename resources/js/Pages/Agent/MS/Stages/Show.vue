@@ -208,7 +208,7 @@
                         </svg>
                         <span>{{ stage.structure?.sigle || 'Sigle non disponible' }}</span>
                       </div>
-                      
+
                       <div v-if="stage.structure?.adresse" class="flex items-start space-x-2 text-sm">
                         <svg class="w-4 h-4 text-gray-400 mt-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                           <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z" />
@@ -216,14 +216,14 @@
                         </svg>
                         <span>{{ stage.structure.adresse }}</span>
                       </div>
-                      
+
                       <div v-if="stage.structure?.telephone" class="flex items-center space-x-2 text-sm">
                         <svg class="w-4 h-4 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                           <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 5a2 2 0 012-2h3.28a1 1 0 01.948.684l1.498 4.493a1 1 0 01-.502 1.21l-2.257 1.13a11.042 11.042 0 005.516 5.516l1.13-2.257a1 1 0 011.21-.502l4.493 1.498a1 1 0 01.684.949V19a2 2 0 01-2 2h-1C9.716 21 3 14.284 3 6V5z" />
                         </svg>
                         <span>{{ stage.structure.telephone }}</span>
                       </div>
-                      
+
                       <div v-if="stage.structure?.email" class="flex items-center space-x-2 text-sm">
                         <svg class="w-4 h-4 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                           <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 12a4 4 0 10-8 0 4 4 0 008 0zm0 0v1.5a2.5 2.5 0 005 0V12a9 9 0 10-9 9m4.5-1.206a8.959 8.959 0 01-4.5 1.207" />
@@ -308,7 +308,7 @@
                       </svg>
                       <p class="text-sm text-gray-500">Aucun thème défini pour ce stage</p>
                       <div v-if="!stage.est_reaffecte" class="mt-4">
-                        <button 
+                        <button
                           @click="activeTab = 'theme'"
                           class="inline-flex items-center px-3 py-2 border border-blue-300 shadow-sm text-sm leading-4 font-medium rounded-md text-blue-700 bg-white hover:bg-blue-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500"
                         >
@@ -329,7 +329,7 @@
               <div v-if="stage.est_reaffecte" class="bg-amber-50 p-4 rounded-md border border-amber-200 mb-4">
                 <p class="text-amber-700 text-sm">Ce stage a été réaffecté. Vous ne pouvez pas modifier le thème.</p>
               </div>
-              
+
               <div v-else>
                 <h3 class="text-lg font-semibold mb-4 flex items-center">
                   <svg class="w-5 h-5 mr-2 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -340,64 +340,119 @@
 
                 <form @submit.prevent="onThemeSubmit" class="bg-white p-6 rounded-lg shadow-sm border border-gray-200">
                   <div class="grid grid-cols-1 gap-6">
+                    <!-- Titre du thème -->
                     <div>
-                      <label for="titre" class="block text-sm font-medium text-gray-700 mb-1">Titre du thème <span class="text-red-500">*</span></label>
+                      <label for="titre" class="block text-sm font-medium text-gray-700 mb-1">
+                        Titre du thème <span class="text-red-500">*</span>
+                      </label>
                       <input
                         id="titre"
                         v-model="themeForm.titre"
                         type="text"
                         required
+                        maxlength="255"
                         class="w-full rounded-md border-gray-300 shadow-sm focus:ring-blue-500 focus:border-blue-500"
-                        placeholder="Saisir le titre du thème"
+                        placeholder="Ex: Développement d'une application web de gestion"
                       />
+                      <p class="mt-1 text-sm text-gray-500">{{ themeForm.titre.length }}/255 caractères</p>
                     </div>
+
+                    <!-- Description détaillée -->
                     <div>
-                      <label for="description" class="block text-sm font-medium text-gray-700 mb-1">Description <span class="text-red-500">*</span></label>
+                      <label for="description" class="block text-sm font-medium text-gray-700 mb-1">
+                        Description détaillée <span class="text-red-500">*</span>
+                      </label>
                       <textarea
                         id="description"
                         v-model="themeForm.description"
-                        rows="5"
+                        rows="6"
                         required
+                        maxlength="2000"
                         class="w-full rounded-md border-gray-300 shadow-sm focus:ring-blue-500 focus:border-blue-500"
-                        placeholder="Décrivez le thème en détail..."
+                        placeholder="Décrivez en détail les objectifs, les tâches à accomplir, les technologies utilisées, les livrables attendus..."
                       ></textarea>
+                      <p class="mt-1 text-sm text-gray-500">{{ themeForm.description.length }}/2000 caractères</p>
                     </div>
+
+                    <!-- Suggestions d'amélioration -->
+                    <div v-if="stage.themeStage && stage.themeStage.etat === 'Refusé'" class="bg-red-50 p-4 rounded-md border border-red-200">
+                      <h4 class="text-sm font-medium text-red-800 mb-2">Motif de refus précédent :</h4>
+                      <p class="text-sm text-red-700">{{ stage.themeStage.motif_refus || 'Aucun motif spécifié' }}</p>
+                    </div>
+
+                    <!-- État du thème -->
                     <div>
-                      <label for="etat" class="block text-sm font-medium text-gray-700 mb-1">État</label>
+                      <label for="etat" class="block text-sm font-medium text-gray-700 mb-1">État du thème</label>
                       <select
                         id="etat"
                         v-model="themeForm.etat"
                         class="w-full rounded-md border-gray-300 shadow-sm focus:ring-blue-500 focus:border-blue-500"
                       >
-                        <option value="Proposé">Proposé</option>
-                        <option value="Modifié">Modifié</option>
-                        <option value="Validé">Validé</option>
-                        <option value="Refusé">Refusé</option>
+                        <option value="Proposé">Proposé (en attente de validation)</option>
+                        <option value="Modifié">Modifié (suite à des commentaires)</option>
+                        <option value="Validé">Validé (approuvé définitivement)</option>
                       </select>
+                      <p class="mt-1 text-sm text-gray-500">
+                        <span v-if="themeForm.etat === 'Proposé'">Le thème sera soumis pour validation</span>
+                        <span v-else-if="themeForm.etat === 'Modifié'">Le thème a été modifié suite à des retours</span>
+                        <span v-else-if="themeForm.etat === 'Validé'">Le thème est définitivement approuvé</span>
+                      </p>
                     </div>
+
+                    <!-- Commentaire optionnel -->
                     <div>
-                      <label for="commentaire" class="block text-sm font-medium text-gray-700 mb-1">Commentaire</label>
+                      <label for="commentaire" class="block text-sm font-medium text-gray-700 mb-1">
+                        Notes et commentaires
+                      </label>
                       <textarea
                         id="commentaire"
                         v-model="themeForm.commentaire"
                         rows="3"
+                        maxlength="1000"
                         class="w-full rounded-md border-gray-300 shadow-sm focus:ring-blue-500 focus:border-blue-500"
-                        placeholder="Commentaire optionnel sur le thème..."
+                        placeholder="Ajoutez des notes sur le contexte, les contraintes, les ressources disponibles..."
                       ></textarea>
+                      <p class="mt-1 text-sm text-gray-500">{{ (themeForm.commentaire || '').length }}/1000 caractères</p>
                     </div>
-                    <div class="flex justify-end space-x-3 pt-2">
+
+                    <!-- Aperçu des mots-clés générés automatiquement -->
+                    <div v-if="themeForm.titre || themeForm.description" class="bg-blue-50 p-4 rounded-md border border-blue-200">
+                      <h4 class="text-sm font-medium text-blue-800 mb-2">
+                        <svg class="w-4 h-4 inline mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 7h.01M7 3h5c.512 0 1.024.195 1.414.586l7 7a2 2 0 010 2.828l-7 7a2 2 0 01-2.828 0l-7-7A1.994 1.994 0 013 12V7a4 4 0 014-4z" />
+                        </svg>
+                        Mots-clés qui seront générés automatiquement :
+                      </h4>
+                      <div class="flex flex-wrap gap-2">
+                        <span v-for="motCle in generatePreviewMotsCles()" :key="motCle"
+                          class="px-2 py-1 bg-blue-100 text-blue-700 rounded-full text-xs">
+                          {{ motCle }}
+                        </span>
+                      </div>
+                      <p class="text-xs text-blue-600 mt-2">Ces mots-clés faciliteront la recherche et la catégorisation du thème</p>
+                    </div>
+
+                    <!-- Boutons d'action -->
+                    <div class="flex justify-end space-x-3 pt-4 border-t border-gray-200">
                       <button
                         type="button"
                         @click="activeTab = 'infos'"
                         class="inline-flex items-center px-4 py-2 border border-gray-300 shadow-sm text-sm font-medium rounded-md text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500"
                       >
+                        <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
+                        </svg>
                         Annuler
                       </button>
                       <button
                         type="submit"
-                        class="inline-flex items-center px-4 py-2 border border-transparent shadow-sm text-sm font-medium rounded-md text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500"
+                        :disabled="!themeForm.titre || !themeForm.description"
+                        class="inline-flex items-center px-4 py-2 border border-transparent shadow-sm text-sm font-medium rounded-md text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 disabled:opacity-50 disabled:cursor-not-allowed"
                       >
-                        {{ stage.themeStage ? 'Mettre à jour' : 'Enregistrer' }}
+                        <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7" />
+                        </svg>
+                        {{ stage.themeStage ? 'Mettre à jour le thème' : 'Enregistrer le thème' }}
                       </button>
                     </div>
                   </div>
@@ -405,88 +460,53 @@
               </div>
             </div>
 
-            <!-- Evaluation -->
+            <!-- Evaluation avancée -->
             <div v-if="activeTab === 'evaluation'" class="space-y-6">
               <div v-if="stage.est_reaffecte" class="bg-amber-50 p-4 rounded-md border border-amber-200 mb-4">
                 <p class="text-amber-700 text-sm">Ce stage a été réaffecté. Vous ne pouvez pas modifier l'évaluation.</p>
               </div>
-              
+
+              <!-- Affichage lecture seule si une évaluation existe -->
               <div v-else-if="stage.evaluation">
-                <h3 class="text-lg font-semibold mb-4 flex items-center">
-                  <svg class="w-5 h-5 mr-2 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" />
-                  </svg>
-                  Évaluation du stagiaire
-                </h3>
-                
+                <div class="bg-blue-50 p-4 rounded-md border border-blue-200 mb-4">
+                  <span class="text-blue-800 font-medium">Vous avez déjà évalué ce stage. Voici votre évaluation :</span>
+                </div>
                 <div class="bg-white p-6 rounded-lg shadow-sm border border-gray-200">
                   <div class="grid grid-cols-1 gap-6">
-                    <div class="flex justify-between items-center border-b border-gray-200 pb-4">
-                      <span class="font-medium">Date d'évaluation</span>
-                      <span>{{ formatDate(stage.evaluation.date_evaluation) }}</span>
+                    <div v-for="(label, key, idx) in {
+                      ponctualite: 'Ponctualité / Présences',
+                      motivation: 'Motivation / Initiative',
+                      capacite_apprendre: 'Capacités d\'apprendre',
+                      qualite_travail: 'Qualité du travail',
+                      rapidite_execution: 'Rapidité d\'exécution',
+                      jugement: 'Jugement',
+                      esprit_motivation: 'Esprit de motivation',
+                      esprit_collaboration: 'Esprit de collaboration',
+                      sens_responsabilite: 'Sens de responsabilité',
+                      communication: 'Communication'
+                    }" :key="key">
+                      <div class="flex justify-between items-center">
+                        <span class="font-medium">{{ idx+1 }}. {{ label }}</span>
+                        <span class="text-base font-semibold text-blue-800">{{ stage.evaluation[key] }}/2</span>
                     </div>
-                    
-                    <div>
-                      <h4 class="font-medium text-gray-800 mb-2">Compétences techniques</h4>
-                      <div class="bg-gray-50 p-4 rounded-md">
-                        <div class="flex items-center mb-2">
-                          <div class="relative w-full bg-gray-200 rounded-full h-2">
-                            <div class="absolute h-2 rounded-full bg-blue-600" :style="`width: ${stage.evaluation.competences_techniques * 20}%`"></div>
                           </div>
-                          <span class="ml-3 text-sm font-semibold">{{ stage.evaluation.competences_techniques }}/5</span>
+                    <div class="bg-blue-50 p-4 rounded-md border border-blue-100">
+                      <h4 class="font-medium text-blue-800 mb-2">Note totale</h4>
+                      <div class="flex items-center">
+                        <span class="text-base font-semibold text-blue-800">{{ stage.evaluation.note_totale }}/20</span>
                         </div>
-                        <p class="text-sm text-gray-600">{{ stage.evaluation.commentaire_technique || 'Aucun commentaire' }}</p>
                       </div>
-                    </div>
-                    
-                    <div>
-                      <h4 class="font-medium text-gray-800 mb-2">Compétences humaines</h4>
-                      <div class="bg-gray-50 p-4 rounded-md">
-                        <div class="flex items-center mb-2">
-                          <div class="relative w-full bg-gray-200 rounded-full h-2">
-                            <div class="absolute h-2 rounded-full bg-blue-600" :style="`width: ${stage.evaluation.competences_humaines * 20}%`"></div>
-                          </div>
-                          <span class="ml-3 text-sm font-semibold">{{ stage.evaluation.competences_humaines }}/5</span>
-                        </div>
-                        <p class="text-sm text-gray-600">{{ stage.evaluation.commentaire_humain || 'Aucun commentaire' }}</p>
-                      </div>
-                    </div>
-                    
-                    <div>
-                      <h4 class="font-medium text-gray-800 mb-2">Objectifs atteints</h4>
-                      <div class="bg-gray-50 p-4 rounded-md">
-                        <div class="flex items-center mb-2">
-                          <div class="relative w-full bg-gray-200 rounded-full h-2">
-                            <div class="absolute h-2 rounded-full bg-blue-600" :style="`width: ${stage.evaluation.objectifs_atteints * 20}%`"></div>
-                          </div>
-                          <span class="ml-3 text-sm font-semibold">{{ stage.evaluation.objectifs_atteints }}/5</span>
-                        </div>
-                        <p class="text-sm text-gray-600">{{ stage.evaluation.commentaire_objectifs || 'Aucun commentaire' }}</p>
-                      </div>
-                    </div>
-                    
                     <div>
                       <h4 class="font-medium text-gray-800 mb-2">Commentaire général</h4>
                       <div class="bg-gray-50 p-4 rounded-md">
                         <p class="text-sm text-gray-600">{{ stage.evaluation.commentaire_general || 'Aucun commentaire général' }}</p>
                       </div>
                     </div>
-                    
-                    <div class="flex justify-end pt-2">
-                      <button
-                        @click="editEvaluation"
-                        class="inline-flex items-center px-4 py-2 border border-transparent shadow-sm text-sm font-medium rounded-md text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500"
-                      >
-                        <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" />
-                        </svg>
-                        Modifier l'évaluation
-                      </button>
-                    </div>
                   </div>
                 </div>
               </div>
-              
+
+              <!-- Formulaire de saisie si pas d'évaluation -->
               <div v-else>
                 <h3 class="text-lg font-semibold mb-4 flex items-center">
                   <svg class="w-5 h-5 mr-2 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -494,99 +514,47 @@
                   </svg>
                   Saisir une évaluation
                 </h3>
-                
                 <div v-if="stage.statut === 'En attente'" class="bg-yellow-50 p-4 rounded-md border border-yellow-200 mb-4">
                   <p class="text-yellow-700 text-sm">Le stage n'a pas encore commencé. Vous pourrez évaluer le stagiaire une fois le stage en cours.</p>
                 </div>
-                
                 <form v-else @submit.prevent="onEvaluationSubmit" class="bg-white p-6 rounded-lg shadow-sm border border-gray-200">
                   <div class="grid grid-cols-1 gap-6">
-                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-                      <div>
-                        <label for="competences_techniques" class="block text-sm font-medium text-gray-700 mb-1">Compétences techniques <span class="text-red-500">*</span></label>
-                        <div class="flex items-center">
+                    <div v-for="(label, key, idx) in {
+                      ponctualite: 'Ponctualité / Présences',
+                      motivation: 'Motivation / Initiative',
+                      capacite_apprendre: 'Capacités d\'apprendre',
+                      qualite_travail: 'Qualité du travail',
+                      rapidite_execution: 'Rapidité d\'exécution',
+                      jugement: 'Jugement',
+                      esprit_motivation: 'Esprit de motivation',
+                      esprit_collaboration: 'Esprit de collaboration',
+                      sens_responsabilite: 'Sens de responsabilité',
+                      communication: 'Communication'
+                    }" :key="key">
+                      <label :for="key" class="block text-sm font-medium text-gray-700 mb-1">{{ idx+1 }}. {{ label }} <span class="text-red-500">*</span></label>
+                      <div class="flex items-center gap-2">
                           <input
-                            id="competences_techniques"
-                            v-model="evaluationForm.competences_techniques"
+                          :id="key"
+                          v-model="evaluationForm[key]"
                             type="range"
-                            min="1"
-                            max="5"
-                            step="1"
+                          min="0"
+                          max="2"
+                          step="0.5"
                             required
                             class="w-full h-2 bg-gray-200 rounded-lg appearance-none cursor-pointer"
                           />
-                          <span class="ml-3 text-sm font-medium">{{ evaluationForm.competences_techniques }}/5</span>
+                        <span class="ml-3 text-sm font-medium w-16">{{ evaluationForm[key] }}/2</span>
                         </div>
                       </div>
-                      
-                      <div>
-                        <label for="competences_humaines" class="block text-sm font-medium text-gray-700 mb-1">Compétences humaines <span class="text-red-500">*</span></label>
+                    <div class="bg-blue-50 p-4 rounded-md">
+                      <h4 class="font-medium text-blue-800 mb-2">Note totale</h4>
                         <div class="flex items-center">
-                          <input
-                            id="competences_humaines"
-                            v-model="evaluationForm.competences_humaines"
-                            type="range"
-                            min="1"
-                            max="5"
-                            step="1"
-                            required
-                            class="w-full h-2 bg-gray-200 rounded-lg appearance-none cursor-pointer"
-                          />
-                          <span class="ml-3 text-sm font-medium">{{ evaluationForm.competences_humaines }}/5</span>
+                        <div class="relative w-full bg-blue-200 rounded-full h-3">
+                          <div class="absolute h-3 rounded-full bg-blue-600" :style="`width: ${(getTotal() / 20) * 100}%`"></div>
                         </div>
+                        <span class="ml-3 text-base font-semibold text-blue-800">{{ getTotal() }}/20</span>
                       </div>
                     </div>
-                    
-                    <div>
-                      <label for="objectifs_atteints" class="block text-sm font-medium text-gray-700 mb-1">Objectifs atteints <span class="text-red-500">*</span></label>
-                      <div class="flex items-center">
-                        <input
-                          id="objectifs_atteints"
-                          v-model="evaluationForm.objectifs_atteints"
-                          type="range"
-                          min="1"
-                          max="5"
-                          step="1"
-                          required
-                          class="w-full h-2 bg-gray-200 rounded-lg appearance-none cursor-pointer"
-                        />
-                        <span class="ml-3 text-sm font-medium">{{ evaluationForm.objectifs_atteints }}/5</span>
-                      </div>
-                    </div>
-                    
-                    <div>
-                      <label for="commentaire_technique" class="block text-sm font-medium text-gray-700 mb-1">Commentaire sur les compétences techniques</label>
-                      <textarea
-                        id="commentaire_technique"
-                        v-model="evaluationForm.commentaire_technique"
-                        rows="3"
-                        class="w-full rounded-md border-gray-300 shadow-sm focus:ring-blue-500 focus:border-blue-500"
-                        placeholder="Commentaire sur les compétences techniques du stagiaire..."
-                      ></textarea>
-                    </div>
-                    
-                    <div>
-                      <label for="commentaire_humain" class="block text-sm font-medium text-gray-700 mb-1">Commentaire sur les compétences humaines</label>
-                      <textarea
-                        id="commentaire_humain"
-                        v-model="evaluationForm.commentaire_humain"
-                        rows="3"
-                        class="w-full rounded-md border-gray-300 shadow-sm focus:ring-blue-500 focus:border-blue-500"
-                        placeholder="Commentaire sur les compétences humaines du stagiaire..."
-                      ></textarea>
-                    </div>
-                    
-                    <div>
-                      <label for="commentaire_objectifs" class="block text-sm font-medium text-gray-700 mb-1">Commentaire sur les objectifs</label>
-                      <textarea
-                        id="commentaire_objectifs"
-                        v-model="evaluationForm.commentaire_objectifs"
-                        rows="3"
-                        class="w-full rounded-md border-gray-300 shadow-sm focus:ring-blue-500 focus:border-blue-500"
-                        placeholder="Commentaire sur l'atteinte des objectifs..."
-                      ></textarea>
-                    </div>
-                    
                     <div>
                       <label for="commentaire_general" class="block text-sm font-medium text-gray-700 mb-1">Commentaire général <span class="text-red-500">*</span></label>
                       <textarea
@@ -598,7 +566,6 @@
                         placeholder="Commentaire général sur le stagiaire et son stage..."
                       ></textarea>
                     </div>
-                    
                     <div class="flex justify-end space-x-3 pt-2">
                       <button
                         type="button"
@@ -618,7 +585,7 @@
                 </form>
               </div>
                 </div>
-            
+
             <!-- Contacter le stagiaire -->
             <div v-if="activeTab === 'contacter'" class="space-y-6">
               <h3 class="text-lg font-semibold mb-4 flex items-center">
@@ -627,7 +594,7 @@
                 </svg>
                 Contacter le stagiaire
               </h3>
-              
+
               <div class="bg-white p-6 rounded-lg shadow-sm border border-gray-200">
                 <div class="grid grid-cols-1 gap-6">
                   <div>
@@ -641,7 +608,7 @@
                       placeholder="Saisir le sujet de votre message"
                     />
                   </div>
-                  
+
                   <div>
                     <label for="contact_message" class="block text-sm font-medium text-gray-700 mb-1">Message <span class="text-red-500">*</span></label>
                     <textarea
@@ -653,7 +620,7 @@
                       placeholder="Rédigez votre message..."
                     ></textarea>
                 </div>
-                  
+
                   <div class="flex justify-end space-x-3 pt-2">
                   <button
                       type="button"
@@ -675,13 +642,13 @@
                 </div>
               </div>
             </div>
-            
+
             <!-- Réaffecter le stage -->
             <div v-if="activeTab === 'reaffecter'" class="space-y-6">
               <div v-if="stage.est_reaffecte" class="bg-amber-50 p-4 rounded-md border border-amber-200 mb-4">
                 <p class="text-amber-700 text-sm">Ce stage a déjà été réaffecté. Vous ne pouvez pas le réaffecter à nouveau.</p>
               </div>
-              
+
               <div v-else>
                 <h3 class="text-lg font-semibold mb-4 flex items-center">
                   <svg class="w-5 h-5 mr-2 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -689,7 +656,7 @@
                 </svg>
                   Réaffecter le stage
                 </h3>
-                
+
                 <div class="bg-red-50 p-4 mb-6 rounded-lg border border-red-200">
                   <div class="flex">
                     <div class="flex-shrink-0">
@@ -727,7 +694,7 @@
                           </option>
                         </select>
                       </div>
-                      
+
                       <div>
                         <label for="date_reaffectation" class="block text-sm font-medium text-gray-700 mb-1">Date de réaffectation <span class="text-red-500">*</span></label>
                         <input
@@ -740,7 +707,7 @@
                         />
                       </div>
                     </div>
-                    
+
                     <div>
                       <label for="motif" class="block text-sm font-medium text-gray-700 mb-1">Motif de la réaffectation <span class="text-red-500">*</span></label>
                       <textarea
@@ -752,7 +719,7 @@
                         placeholder="Expliquez le motif de cette réaffectation..."
                       ></textarea>
                     </div>
-                    
+
                     <div class="flex items-start">
                       <div class="flex items-center h-5">
                         <input
@@ -768,7 +735,7 @@
                         <p class="text-gray-500">Je comprends que cette action est irréversible et que je n'aurai plus qu'un accès en lecture à ce stage après la réaffectation.</p>
                       </div>
                     </div>
-                    
+
                     <div class="flex justify-end space-x-3 pt-2">
                       <button
                         type="button"
@@ -799,11 +766,12 @@
 </template>
 
 <script setup>
-import { Head, Link, router } from '@inertiajs/vue3';
+import { Head, Link, router, usePage } from '@inertiajs/vue3';
 import MSLayout from '@/Layouts/MSLayout.vue';
 import AdminToast from '@/Components/AdminToast.vue';
 import StageTimeline from '@/Components/StageTimeline.vue';
-import { ref, computed, onMounted } from 'vue';
+import { ref, computed, onMounted, watch } from 'vue';
+import axios from 'axios'; // Ajout si pas déjà présent
 
 const props = defineProps({
   stage: Object,
@@ -851,20 +819,24 @@ const tabs = [
 
 // Gestion des formulaires
 const themeForm = ref({
-  titre: props.stage.themeStage?.titre || '',
+  titre: props.stage.themeStage?.intitule || '',
   description: props.stage.themeStage?.description || '',
   etat: props.stage.themeStage?.etat || 'Proposé',
   commentaire: props.stage.themeStage?.commentaire || ''
 });
 
 const evaluationForm = ref({
-  competences_techniques: props.stage.evaluation?.competences_techniques || 3,
-  competences_humaines: props.stage.evaluation?.competences_humaines || 3,
-  objectifs_atteints: props.stage.evaluation?.objectifs_atteints || 3,
-  commentaire_technique: props.stage.evaluation?.commentaire_technique || '',
-  commentaire_humain: props.stage.evaluation?.commentaire_humain || '',
-  commentaire_objectifs: props.stage.evaluation?.commentaire_objectifs || '',
-  commentaire_general: props.stage.evaluation?.commentaire_general || ''
+  ponctualite: 1,
+  motivation: 1,
+  capacite_apprendre: 1,
+  qualite_travail: 1,
+  rapidite_execution: 1,
+  jugement: 1,
+  esprit_motivation: 1,
+  esprit_collaboration: 1,
+  sens_responsabilite: 1,
+  communication: 1,
+  commentaire_general: ''
 });
 
 const contactForm = ref({
@@ -914,16 +886,16 @@ const formatDate = (dateString) => {
 // Fonction pour calculer la durée d'un stage
 const calculateDuration = (dateDebut, dateFin) => {
   if (!dateDebut || !dateFin) return 'Durée indéterminée';
-  
+
   const debut = new Date(dateDebut);
   const fin = new Date(dateFin);
-  
+
   // Calculer la différence en jours
   const differenceMs = fin - debut;
   const differenceDays = Math.ceil(differenceMs / (1000 * 60 * 60 * 24));
-  
+
   if (differenceDays <= 0) return 'Erreur de date';
-  
+
   // Convertir en semaines/mois/jours
   if (differenceDays < 7) {
     return `${differenceDays} jour${differenceDays > 1 ? 's' : ''}`;
@@ -954,7 +926,7 @@ const getStageEvents = () => {
       status: props.stage.statut === 'Terminé' ? 'done' : 'pending'
     }
   ];
-  
+
   // Ajouter l'événement de réaffectation si applicable
   if (props.stage.est_reaffecte && props.stage.reaffectation_info) {
     events.push({
@@ -964,7 +936,7 @@ const getStageEvents = () => {
       status: 'done'
     });
   }
-  
+
   // Ajouter l'événement d'évaluation si applicable
   if (props.stage.evaluation?.date_evaluation) {
     events.push({
@@ -974,40 +946,53 @@ const getStageEvents = () => {
       status: 'done'
     });
   }
-  
+
   // Ajouter les événements de thème si applicable
   if (props.stage.themeStage?.created_at) {
     events.push({
       date: props.stage.themeStage.created_at,
       title: 'Proposition de thème',
-      description: `Thème "${props.stage.themeStage.titre}" proposé`,
+      description: `Thème "${props.stage.themeStage.intitule}" proposé`,
       status: 'done'
     });
   }
-  
+
   if (props.stage.themeStage?.updated_at && props.stage.themeStage.etat === 'Validé') {
     events.push({
       date: props.stage.themeStage.updated_at,
       title: 'Validation du thème',
-      description: `Thème "${props.stage.themeStage.titre}" validé`,
+      description: `Thème "${props.stage.themeStage.intitule}" validé`,
       status: 'done'
     });
   }
-  
+
   return events.sort((a, b) => new Date(a.date) - new Date(b.date));
+};
+
+// Fonction pour générer un aperçu des mots-clés
+const generatePreviewMotsCles = () => {
+  const motsVides = ['le', 'la', 'les', 'un', 'une', 'des', 'du', 'de', 'et', 'ou', 'avec', 'pour', 'dans', 'sur', 'par', 'à', 'au', 'aux'];
+
+  // Combiner titre et description
+  const texte = (themeForm.value.titre + ' ' + themeForm.value.description).toLowerCase();
+
+  // Nettoyer et extraire les mots
+  const mots = texte.split(/[^a-zA-ZÀ-ÿ0-9]+/)
+    .filter(mot => mot.length > 2 && !motsVides.includes(mot.toLowerCase()))
+    .slice(0, 8); // Limiter à 8 mots-clés pour l'aperçu
+
+  return [...new Set(mots)]; // Supprimer les doublons
 };
 
 // Soumission du formulaire de thème
 const onThemeSubmit = () => {
   router.post(route('agent.ms.stages.theme.store', props.stage.id), themeForm.value, {
     onSuccess: () => {
-      activeTab.value = 'infos';
-      if (toast.value) {
-        toast.value.show({
-          type: 'success',
-          message: props.stage.themeStage ? 'Thème mis à jour avec succès' : 'Thème créé avec succès'
-        });
-      }
+      router.visit(route('agent.ms.stages'), {
+        only: ['success'],
+        preserveState: false,
+        preserveScroll: true,
+      });
     },
     onError: (errors) => {
       if (toast.value) {
@@ -1016,54 +1001,88 @@ const onThemeSubmit = () => {
           message: 'Erreur lors de l\'enregistrement du thème'
         });
       }
-      console.error(errors);
+      console.log(errors); // Pour voir le détail dans la console
     }
   });
 };
 
 // Fonction pour éditer l'évaluation
 const editEvaluation = () => {
-  // Remplir le formulaire avec les données existantes
+  if (stage.evaluation) {
   evaluationForm.value = {
-    competences_techniques: props.stage.evaluation.competences_techniques,
-    competences_humaines: props.stage.evaluation.competences_humaines,
-    objectifs_atteints: props.stage.evaluation.objectifs_atteints,
-    commentaire_technique: props.stage.evaluation.commentaire_technique || '',
-    commentaire_humain: props.stage.evaluation.commentaire_humain || '',
-    commentaire_objectifs: props.stage.evaluation.commentaire_objectifs || '',
-    commentaire_general: props.stage.evaluation.commentaire_general || ''
+      ponctualite: stage.evaluation.ponctualite || 1,
+      motivation: stage.evaluation.motivation || 1,
+      capacite_apprendre: stage.evaluation.capacite_apprendre || 1,
+      qualite_travail: stage.evaluation.qualite_travail || 1,
+      rapidite_execution: stage.evaluation.rapidite_execution || 1,
+      jugement: stage.evaluation.jugement || 1,
+      esprit_motivation: stage.evaluation.esprit_motivation || 1,
+      esprit_collaboration: stage.evaluation.esprit_collaboration || 1,
+      sens_responsabilite: stage.evaluation.sens_responsabilite || 1,
+      communication: stage.evaluation.communication || 1,
+      commentaire_general: stage.evaluation.commentaire_general || ''
   };
-  
-  // Basculer vers l'onglet d'évaluation
-  activeTab.value = 'evaluation';
+  }
+};
+
+const getTotal = () => {
+  return parseFloat((
+    parseFloat(evaluationForm.value.ponctualite) +
+    parseFloat(evaluationForm.value.motivation) +
+    parseFloat(evaluationForm.value.capacite_apprendre) +
+    parseFloat(evaluationForm.value.qualite_travail) +
+    parseFloat(evaluationForm.value.rapidite_execution) +
+    parseFloat(evaluationForm.value.jugement) +
+    parseFloat(evaluationForm.value.esprit_motivation) +
+    parseFloat(evaluationForm.value.esprit_collaboration) +
+    parseFloat(evaluationForm.value.sens_responsabilite) +
+    parseFloat(evaluationForm.value.communication)
+  ).toFixed(1));
 };
 
 // Soumission du formulaire d'évaluation
+const evaluationErrors = ref({});
+
 const onEvaluationSubmit = () => {
-  router.post(route('agent.ms.stages.evaluation.store', props.stage.id), evaluationForm.value, {
+  evaluationErrors.value = {};
+  router.post(route('agent.ms.stages.noter', props.stage.id), {
+    ponctualite: evaluationForm.value.ponctualite,
+    motivation: evaluationForm.value.motivation,
+    capacite_apprendre: evaluationForm.value.capacite_apprendre,
+    qualite_travail: evaluationForm.value.qualite_travail,
+    rapidite_execution: evaluationForm.value.rapidite_execution,
+    jugement: evaluationForm.value.jugement,
+    esprit_motivation: evaluationForm.value.esprit_motivation,
+    esprit_collaboration: evaluationForm.value.esprit_collaboration,
+    sens_responsabilite: evaluationForm.value.sens_responsabilite,
+    communication: evaluationForm.value.communication,
+    note_totale: getTotal(),
+    commentaire_general: evaluationForm.value.commentaire_general
+  }, {
     onSuccess: () => {
       activeTab.value = 'infos';
       if (toast.value) {
         toast.value.show({
           type: 'success',
-          message: props.stage.evaluation ? 'Évaluation mise à jour avec succès' : 'Évaluation créée avec succès'
+          message: 'Évaluation enregistrée avec succès'
         });
       }
     },
     onError: (errors) => {
+      evaluationErrors.value = errors;
       if (toast.value) {
         toast.value.show({
           type: 'error',
           message: 'Erreur lors de l\'enregistrement de l\'évaluation'
         });
       }
-      console.error(errors);
+      console.log(errors);
     }
   });
 };
 
 // Soumission du formulaire de contact
-const onContactSubmit = () => {
+const onContactSubmit = async () => {
   // Vérifier que les champs requis sont remplis
   if (!contactForm.value.subject || !contactForm.value.message) {
     if (toast.value) {
@@ -1074,10 +1093,10 @@ const onContactSubmit = () => {
     }
     return;
   }
-  
+
   // Obtenir l'email du stagiaire
   const stagiaireEmail = props.stage.stagiaire_info?.email || props.stage.demandeStage?.stagiaire?.user?.email;
-  
+
   if (!stagiaireEmail) {
     if (toast.value) {
       toast.value.show({
@@ -1087,23 +1106,35 @@ const onContactSubmit = () => {
     }
     return;
   }
-  
-  // Ouvrir le client de messagerie de l'utilisateur
-  window.location.href = `mailto:${stagiaireEmail}?subject=${encodeURIComponent(contactForm.value.subject)}&body=${encodeURIComponent(contactForm.value.message)}`;
-  
-  // Réinitialiser le formulaire et revenir à l'onglet d'informations
-  contactForm.value = {
-    subject: '',
-    message: ''
-  };
-  
-  activeTab.value = 'infos';
-  
+
+  try {
+    // Appel API pour envoyer le mail (adapte la route si besoin)
+    const response = await axios.post(route('agent.ms.stages.send-message'), {
+      stage_id: props.stage.id,
+      subject: contactForm.value.subject,
+      message: contactForm.value.message
+    });
+
+    if (response.data.success) {
   if (toast.value) {
     toast.value.show({
       type: 'success',
-      message: 'Email préparé avec succès'
-    });
+          message: `Message envoyé à ${stagiaireEmail} avec succès !`
+        });
+      }
+      // Réinitialiser le formulaire et revenir à l'onglet infos
+      contactForm.value = { subject: '', message: '' };
+      activeTab.value = 'infos';
+    } else {
+      throw new Error(response.data.message || 'Erreur lors de l\'envoi du message.');
+    }
+  } catch (error) {
+    if (toast.value) {
+      toast.value.show({
+        type: 'error',
+        message: error.response?.data?.message || error.message || 'Erreur lors de l\'envoi du message.'
+      });
+    }
   }
 };
 
@@ -1180,7 +1211,7 @@ onMounted(() => {
       message: props.success
     });
   }
-  
+
   if (props.error && toast.value) {
     toast.value.show({
       type: 'error',
@@ -1188,4 +1219,30 @@ onMounted(() => {
     });
   }
 });
+
+const page = usePage();
+
+watch(
+  () => page.props.success,
+  (newSuccess) => {
+    if (newSuccess && toast.value) {
+      toast.value.show({
+        type: 'success',
+        message: newSuccess
+      });
+    }
+  }
+);
+
+watch(
+  () => page.props.error,
+  (newError) => {
+    if (newError && toast.value) {
+      toast.value.show({
+        type: 'error',
+        message: newError
+      });
+    }
+  }
+);
 </script>

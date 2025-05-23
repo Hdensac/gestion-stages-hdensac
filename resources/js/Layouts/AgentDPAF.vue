@@ -25,11 +25,11 @@
                 <Link :href="route('dashboard')" class="flex items-center">
                     <div class="flex-shrink-0 w-10 h-10 bg-white rounded-lg shadow-md flex items-center justify-center text-blue-600 font-extrabold">
                         GS
-                    </div>
+                </div>
                     <h1 v-if="expanded" class="ml-3 text-xl font-bold text-white whitespace-nowrap transition-all duration-300">
                         GestionStages
                     </h1>
-                </Link>
+              </Link>
             </div>
 
             <!-- Menu Items -->
@@ -171,7 +171,7 @@
                             <svg xmlns="http://www.w3.org/2000/svg" class="w-6 h-6 text-gray-500" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16" />
                             </svg>
-                        </button>
+            </button>
                         
                         <!-- Page title or search bar can go here -->
                         <div class="text-lg font-bold text-gray-800 lg:hidden">
@@ -183,23 +183,23 @@
                             <span v-else-if="route().current('agent.statistiques')">Statistiques</span> -->
                             <span v-else-if="route().current('agent.rs.*')">Espace RS</span>
                             <span v-else>DPAF</span>
-                        </div>
-                    </div>
-                </div>
-            </nav>
+          </div>
+        </div>
+      </div>
+    </nav>
 
             <!-- En-tête de la page -->
             <header v-if="$slots.header" class="bg-white shadow-sm">
                 <div class="px-4 py-5 mx-auto max-w-7xl sm:px-6 lg:px-8">
                     <slot name="header" />
-                </div>
-            </header>
+        </div>
+      </header>
 
             <!-- Contenu principal -->
             <main class="flex-1 p-4 sm:p-6 lg:p-8 overflow-auto">
-                <AdminToast ref="toast" />
+        <AdminToast ref="toast" />
                 <slot />
-            </main>
+      </main>
 
             <!-- Pied de page -->
             <footer class="py-4 bg-white border-t border-gray-200">
@@ -210,7 +210,7 @@
                 </div>
             </footer>
         </div>
-    </div>
+  </div>
 </template>
 
 <script setup>
