@@ -58,11 +58,11 @@
                   </div>
                   <span class="px-2 py-1 text-xs font-medium rounded-full"
                     :class="{
-                      'bg-green-100 text-green-800': stage.statut === 'Terminé',
-                      'bg-blue-100 text-blue-800': stage.statut === 'En cours',
-                      'bg-yellow-100 text-yellow-800': stage.statut === 'En attente',
+                      'bg-green-100 text-green-800': stage.statut_calculé === 'Terminé',
+                      'bg-blue-100 text-blue-800': stage.statut_calculé === 'En cours',
+                      'bg-yellow-100 text-yellow-800': stage.statut_calculé === 'À venir',
                     }">
-                    {{ stage.statut }}
+                    {{ stage.statut_calculé }}
                   </span>
                 </div>
               </div>

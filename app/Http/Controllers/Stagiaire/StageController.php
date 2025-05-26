@@ -36,7 +36,7 @@ class StageController extends Controller
             
             // Récupérer les demandes de stage du stagiaire
             $demandeIds = DemandeStage::where('stagiaire_id', $stagiaire->id_stagiaire)
-                ->where('statut', 'Approuvée')
+                ->whereIn('statut', ['Acceptée', 'Approuvée'])
                 ->pluck('id');
             
             // Récupérer les stages associés à ces demandes
@@ -54,14 +54,20 @@ class StageController extends Controller
             
             // Ajouter des informations supplémentaires pour chaque stage
             $stages = $stages->map(function ($stage) {
-                // Déterminer si le stage est actif (en cours)
-                $stage->est_actif = $stage->statut === 'En cours';
+                // Calcul dynamique du statut selon les dates
+                $aujourdhui = now()->toDateString();
+                if ($stage->date_debut > $aujourdhui) {
+                    $stage->statut_calculé = 'À venir';
+                } elseif ($stage->date_debut <= $aujourdhui && $stage->date_fin >= $aujourdhui) {
+                    $stage->statut_calculé = 'En cours';
+                } else {
+                    $stage->statut_calculé = 'Terminé';
+                }
                 
                 // Déterminer le maître de stage actuel
                 $activeAffectation = $stage->affectationsMaitreStage
                     ->where('statut', 'En cours')
                     ->first();
-                
                 if ($activeAffectation) {
                     $stage->maitre_stage_actuel = [
                         'id' => $activeAffectation->maitreStage->id,
@@ -70,7 +76,6 @@ class StageController extends Controller
                         'email' => $activeAffectation->maitreStage->email,
                     ];
                 }
-                
                 return $stage;
             });
             
@@ -125,6 +130,23 @@ class StageController extends Controller
                 },
                 'affectationsMaitreStage.maitreStage',
             ]);
+
+            // Injecter le même champ maitre_stage_actuel que dans la liste
+            $activeAffectation = $stage->affectationsMaitreStage
+                ->where('statut', 'En cours')
+                ->first();
+            if (!$activeAffectation) {
+                // Prendre la dernière affectation avec maitreStage si aucune n'est "En cours"
+                $activeAffectation = $stage->affectationsMaitreStage->filter(function($aff) { return $aff->maitreStage; })->sortByDesc('date_affectation')->first();
+            }
+            if ($activeAffectation && $activeAffectation->maitreStage) {
+                $stage->maitre_stage_actuel = [
+                    'id' => $activeAffectation->maitreStage->id,
+                    'nom' => $activeAffectation->maitreStage->nom,
+                    'prenom' => $activeAffectation->maitreStage->prenom,
+                    'email' => $activeAffectation->maitreStage->email,
+                ];
+            }
             
             return Inertia::render('Stagiaire/ShowStage', [
                 'stage' => $stage,

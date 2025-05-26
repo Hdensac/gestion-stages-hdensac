@@ -10,10 +10,10 @@ use App\Models\Evaluation;
 use App\Mail\ThemeProposeMail;
 use App\Mail\EvaluationNotifieeMail;
 use Illuminate\Support\Facades\Mail;
+use Illuminate\Support\Facades\Log;
 
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
-use Illuminate\Support\Facades\Log;
 use Inertia\Inertia;
 
 class StageController extends Controller
@@ -798,7 +798,7 @@ class StageController extends Controller
             }
 
             // Créer une nouvelle affectation
-            AffectationMaitreStage::create([
+            $nouvelleAffectation = AffectationMaitreStage::create([
                 'stage_id' => $stage->id,
                 'maitre_stage_id' => $validated['nouveau_maitre_stage_id'],
                 'agent_affectant_id' => $agent->id,
@@ -810,6 +810,35 @@ class StageController extends Controller
             $affectation->update([
                 'statut' => 'Réaffectée'
             ]);
+
+            // Envoi du mail au stagiaire
+            try {
+                $stagiaire = $stage->demandeStage ? $stage->demandeStage->stagiaire : null;
+                $nouveauMS = \App\Models\User::find($validated['nouveau_maitre_stage_id']);
+                if ($stagiaire && $stagiaire->user && $stagiaire->user->email && $nouveauMS) {
+                    \Mail::to($stagiaire->user->email)
+                        ->send(new \App\Mail\AffectationMaitreStageMail($stagiaire, $stage, $nouveauMS, true));
+                }
+                // Envoi aux membres du groupe si besoin
+                $demande = $stage->demandeStage;
+                if ($demande && $demande->nature === 'Groupe' && $demande->membres) {
+                    foreach ($demande->membres as $membre) {
+                        if (
+                            $membre->user &&
+                            $membre->user->email &&
+                            $stagiaire && $stagiaire->user->email !== $membre->user->email
+                        ) {
+                            \Mail::to($membre->user->email)
+                                ->send(new \App\Mail\AffectationMaitreStageMail($membre, $stage, $nouveauMS, true));
+                        }
+                    }
+                }
+            } catch (\Exception $e) {
+                \Log::error('Erreur lors de l\'envoi du mail de réaffectation MS', [
+                    'error' => $e->getMessage(),
+                    'stage_id' => $stage->id
+                ]);
+            }
 
             Log::info('Stage réaffecté', [
                 'stage_id' => $stage->id,

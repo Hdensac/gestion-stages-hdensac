@@ -681,16 +681,16 @@
                   <div class="grid grid-cols-1 gap-6">
                     <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
                       <div>
-                        <label for="nouveau_ms_id" class="block text-sm font-medium text-gray-700 mb-1">Nouveau maître de stage <span class="text-red-500">*</span></label>
+                        <label for="nouveau_maitre_stage_id" class="block text-sm font-medium text-gray-700 mb-1">Nouveau maître de stage <span class="text-red-500">*</span></label>
                         <select
-                          id="nouveau_ms_id"
-                          v-model="reaffectationForm.nouveau_ms_id"
+                          id="nouveau_maitre_stage_id"
+                          v-model="reaffectationForm.nouveau_maitre_stage_id"
                           required
                           class="w-full rounded-md border-gray-300 shadow-sm focus:ring-blue-500 focus:border-blue-500"
                         >
                           <option value="">Sélectionner un maître de stage</option>
                           <option v-for="ms in maitresDeStage" :key="ms.id" :value="ms.id">
-                            {{ ms.nom }} {{ ms.prenom }} ({{ ms.structure_sigle }})
+                            {{ ms.nom }} {{ ms.prenom }} ({{ ms.structure.sigle }})
                           </option>
                         </select>
                       </div>
@@ -777,11 +777,41 @@ const props = defineProps({
   stage: Object,
   error: String,
   success: String,
-  maitresDeStage: Array
+  // On ne dépend plus de la prop maitresDeStage
 });
 
 const toast = ref(null);
 const activeTab = ref('infos');
+
+// Ajout : liste dynamique des maîtres de stage
+const maitresDeStage = ref([]);
+const loadingMaitres = ref(false);
+const errorMaitres = ref('');
+
+const loadMaitresStage = async () => {
+  loadingMaitres.value = true;
+  errorMaitres.value = '';
+  maitresDeStage.value = [];
+  try {
+    const response = await axios.get(route('agent.ms.stages.maitres-stage-substructures', props.stage.id));
+    if (response.data.success) {
+      maitresDeStage.value = response.data.maitresStage;
+    } else {
+      errorMaitres.value = response.data.message || 'Erreur lors du chargement des maîtres de stage.';
+    }
+  } catch (error) {
+    errorMaitres.value = error.response?.data?.message || 'Erreur lors du chargement des maîtres de stage.';
+  } finally {
+    loadingMaitres.value = false;
+  }
+};
+
+// Charger la liste quand on passe sur l'onglet réaffecter
+watch(activeTab, (newTab) => {
+  if (newTab === 'reaffecter' && !props.stage.est_reaffecte) {
+    loadMaitresStage();
+  }
+});
 
 // Onglets disponibles
 const tabs = [
@@ -845,7 +875,7 @@ const contactForm = ref({
 });
 
 const reaffectationForm = ref({
-  nouveau_ms_id: '',
+  nouveau_maitre_stage_id: '', // nom attendu par le backend
   date_reaffectation: new Date().toISOString().split('T')[0],
   motif: '',
   confirmation: false

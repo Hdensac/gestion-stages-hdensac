@@ -114,14 +114,31 @@
                 <div>
                   <h3 class="text-lg font-semibold mb-4 text-indigo-800">Maître de stage</h3>
                   <div class="bg-indigo-50 p-4 rounded-lg">
-                    <div v-if="getMaitreStageActuel()">
+                    <div v-if="stage.maitre_stage_actuel || getMaitreStageActuel()">
                       <div class="flex items-center mb-4">
                         <div class="bg-indigo-100 text-indigo-700 rounded-full w-12 h-12 flex items-center justify-center text-xl font-bold shadow mr-4">
                           {{ getMaitreStageInitials() }}
                         </div>
                         <div>
-                          <p class="font-bold text-lg">{{ getMaitreStageActuel().prenom }} {{ getMaitreStageActuel().nom }}</p>
-                          <p class="text-gray-600">{{ getMaitreStageActuel().email }}</p>
+                          <p class="font-bold text-lg">
+                            <template v-if="stage.maitre_stage_actuel">
+                              {{ stage.maitre_stage_actuel.prenom }} {{ stage.maitre_stage_actuel.nom }}
+                            </template>
+                            <template v-else-if="getMaitreStageActuel().prenom || getMaitreStageActuel().nom">
+                              {{ getMaitreStageActuel().prenom }} {{ getMaitreStageActuel().nom }}
+                            </template>
+                            <template v-else>
+                              {{ getMaitreStageActuel().nom }}
+                            </template>
+                          </p>
+                          <p class="text-gray-600">
+                            <template v-if="stage.maitre_stage_actuel">
+                              {{ stage.maitre_stage_actuel.email }}
+                            </template>
+                            <template v-else>
+                              {{ getMaitreStageActuel().email }}
+                            </template>
+                          </p>
                         </div>
                       </div>
                       <p><span class="font-medium">Date d'affectation :</span> {{ formatDate(getAffectationActuelle()?.date_affectation) }}</p>
@@ -202,6 +219,8 @@ const props = defineProps({
   success: String
 });
 
+console.log('STAGE DETAIL:', props.stage);
+
 // État pour les onglets
 const activeTab = ref('infos');
 
@@ -244,12 +263,20 @@ const getMaitreStageActuel = () => {
   if (!props.stage.affectationsMaitreStage || props.stage.affectationsMaitreStage.length === 0) {
     return null;
   }
-  
-  const activeAffectation = props.stage.affectationsMaitreStage.find(aff => aff.statut === 'En cours');
+  // Priorité à l'affectation 'En cours' avec relation
+  let activeAffectation = props.stage.affectationsMaitreStage.find(aff => aff.statut === 'En cours' && aff.maitreStage);
+  if (!activeAffectation) {
+    // Sinon, prendre la dernière affectation existante avec relation
+    activeAffectation = [...props.stage.affectationsMaitreStage].filter(aff => aff.maitreStage).sort((a, b) => new Date(b.date_affectation) - new Date(a.date_affectation))[0];
+  }
   if (activeAffectation && activeAffectation.maitreStage) {
     return activeAffectation.maitreStage;
   }
-  
+  // Affichage de secours : prendre la dernière affectation même sans relation
+  const lastAffect = [...props.stage.affectationsMaitreStage].sort((a, b) => new Date(b.date_affectation) - new Date(a.date_affectation))[0];
+  if (lastAffect && lastAffect.maitre_stage_id) {
+    return { nom: '(ID: ' + lastAffect.maitre_stage_id + ')', prenom: '', email: '' };
+  }
   return null;
 };
 

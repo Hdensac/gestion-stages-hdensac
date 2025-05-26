@@ -3,246 +3,270 @@ import { ref } from 'vue';
 import { Link, usePage } from '@inertiajs/vue3';
 import Dropdown from '@/Components/Dropdown.vue';
 import DropdownLink from '@/Components/DropdownLink.vue';
-import NavLink from '@/Components/NavLink.vue';
-import ResponsiveNavLink from '@/Components/ResponsiveNavLink.vue';
 
-const showingNavigationDropdown = ref(false);
+const sidebarExpanded = ref(true);
+const showUserMenu = ref(false);
 const user = usePage().props.auth?.user;
 const logoUrl = '/images/logoministere.png';
+
+const toggleSidebar = () => {
+    sidebarExpanded.value = !sidebarExpanded.value;
+};
+
+const toggleUserMenu = () => {
+    showUserMenu.value = !showUserMenu.value;
+};
+
+const closeUserMenu = () => {
+    showUserMenu.value = false;
+};
+
+const menuItems = [
+    {
+        name: 'Tableau de bord',
+        route: 'stagiaire.dashboard',
+        icon: 'M3 7v10a2 2 0 002 2h14a2 2 0 002-2V9a2 2 0 00-2-2H5a2 2 0 00-2-2z',
+        active: ['stagiaire.dashboard']
+    },
+    {
+        name: 'Mes Demandes',
+        route: 'mes.demandes',
+        icon: 'M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z',
+        active: ['mes.demandes']
+    },
+    {
+        name: 'Mes Stages',
+        route: 'stagiaire.stages',
+        icon: 'M21 13.255A23.931 23.931 0 0112 15c-3.183 0-6.22-.62-9-1.745M16 6V4a2 2 0 00-2-2h-4a2 2 0 00-2-2v2m8 0V6a2 2 0 012 2v6a2 2 0 01-2 2H6a2 2 0 01-2-2V8a2 2 0 012-2z',
+        active: ['stagiaire.stages', 'stagiaire.stages.show']
+    },
+    {
+        name: 'Recherche par code',
+        route: 'recherche.code',
+        icon: 'M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z',
+        active: ['recherche.code']
+    }
+];
+
+const isActive = (routeNames) => {
+    return routeNames.some(routeName => route().current(routeName));
+};
 </script>
 
 <template>
-    <div>
-        <div class="min-h-screen bg-gray-50 dark:bg-white dark:text-black/70">
-            <nav
-                class="border-b border-indigo-200 bg-white shadow-md"
-            >
-                <!-- Primary Navigation Menu -->
-                <div class="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
-                    <div class="flex h-16 justify-between">
-                        <div class="flex">
-                            <!-- Logo -->
-                            <div class="flex shrink-0 items-center">
-                                <Link :href="route('dashboard')">
-                                    <img
-                                        :src="logoUrl"
-                                        alt="Logo du Ministère"
-                                        class="h-12 w-auto transition-transform duration-300 hover:scale-105"
-                                    />
-                                </Link>
-                            </div>
-
-                            <!-- Navigation Links -->
-                            <div
-                                class="hidden space-x-8 sm:-my-px sm:ms-10 sm:flex"
-                            >
-                                <NavLink
-                                    :href="route('stagiaire.dashboard')"
-                                    :active="route().current('stagiaire.dashboard')"
-                                >
-                                    Tableau de bord
-                                </NavLink>
-                                <NavLink
-                                    :href="route('mes.demandes')"
-                                    :active="route().current('mes.demandes')"
-                                >
-                                    Mes Demandes
-                                </NavLink>
-                                <NavLink
-                                    :href="route('stagiaire.stages')"
-                                    :active="route().current('stagiaire.stages') || route().current('stagiaire.stages.show')"
-                                >
-                                    Mes Stages
-                                </NavLink>
-                                <!-- <NavLink
-                                    :href="route('recherche.code')"
-                                    :active="route().current('recherche.code')"
-                                >
-                                    Recherche par code
-                                </NavLink> -->
-                            </div>
+    <div class="flex h-screen bg-gray-100">
+        <!-- SIDEBAR -->
+        <aside 
+            :class="[
+                'bg-gradient-to-b from-blue-600 to-blue-700 text-white transition-all duration-300 ease-in-out flex flex-col shadow-lg z-30',
+                sidebarExpanded ? 'w-64' : 'w-20'
+            ]"
+        >
+            <!-- Header du Sidebar -->
+            <div class="p-4 border-b border-blue-500/30">
+                <div class="flex items-center justify-between">
+                    <Link :href="route('dashboard')" class="flex items-center space-x-3">
+                        <div class="w-10 h-10 bg-white rounded-lg flex items-center justify-center shadow-md">
+                            <span class="text-blue-600 font-bold text-lg">GS</span>
                         </div>
-
-                        <div class="hidden sm:ms-6 sm:flex sm:items-center">
-                            <!-- Settings Dropdown -->
-                            <div class="relative ms-3">
-                                <Dropdown align="right" width="48">
-                                    <template #trigger>
-                                        <span class="inline-flex rounded-md">
-                                            <button
-                                                type="button"
-                                                class="inline-flex items-center rounded-md border border-transparent bg-white px-3 py-2 text-sm font-medium leading-4 text-gray-500 transition duration-150 ease-in-out hover:text-gray-700 focus:outline-none"
-                                            >
-                                                <img
-                                                    v-if="user && user.avatar"
-                                                    :src="'/storage/' + user.avatar"
-                                                    alt="Photo de profil"
-                                                    class="w-9 h-9 rounded-full object-cover mr-2 border border-gray-300"
-                                                />
-                                                {{ $page.props.auth.user.nom }}
-
-                                                <svg
-                                                    class="-me-0.5 ms-2 h-4 w-4"
-                                                    xmlns="http://www.w3.org/2000/svg"
-                                                    viewBox="0 0 20 20"
-                                                    fill="currentColor"
-                                                >
-                                                    <path
-                                                        fill-rule="evenodd"
-                                                        d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z"
-                                                        clip-rule="evenodd"
-                                                    />
-                                                </svg>
-                                            </button>
-                                        </span>
-                                    </template>
-
-                                    <template #content>
-                                        <DropdownLink
-                                            :href="route('profile.edit')"
-                                        >
-                                            Profile
-                                        </DropdownLink>
-                                        <DropdownLink
-                                            :href="route('logout')"
-                                            method="post"
-                                            as="button"
-                                        >
-                                            Log Out
-                                        </DropdownLink>
-                                    </template>
-                                </Dropdown>
-                            </div>
-                        </div>
-
-                        <!-- Hamburger -->
-                        <div class="-me-2 flex items-center sm:hidden">
-                            <button
-                                @click="
-                                    showingNavigationDropdown =
-                                        !showingNavigationDropdown
-                                "
-                                class="inline-flex items-center justify-center rounded-md p-2 text-gray-400 transition duration-150 ease-in-out hover:bg-gray-100 hover:text-gray-500 focus:bg-gray-100 focus:text-gray-500 focus:outline-none"
-                            >
-                                <svg
-                                    class="h-6 w-6"
-                                    stroke="currentColor"
-                                    fill="none"
-                                    viewBox="0 0 24 24"
-                                >
-                                    <path
-                                        :class="{
-                                            hidden: showingNavigationDropdown,
-                                            'inline-flex':
-                                                !showingNavigationDropdown,
-                                        }"
-                                        stroke-linecap="round"
-                                        stroke-linejoin="round"
-                                        stroke-width="2"
-                                        d="M4 6h16M4 12h16M4 18h16"
-                                    />
-                                    <path
-                                        :class="{
-                                            hidden: !showingNavigationDropdown,
-                                            'inline-flex':
-                                                showingNavigationDropdown,
-                                        }"
-                                        stroke-linecap="round"
-                                        stroke-linejoin="round"
-                                        stroke-width="2"
-                                        d="M6 18L18 6M6 6l12 12"
-                                    />
-                                </svg>
-                            </button>
-                        </div>
-                    </div>
-                </div>
-
-                <!-- Responsive Navigation Menu -->
-                <div
-                    :class="{
-                        block: showingNavigationDropdown,
-                        hidden: !showingNavigationDropdown,
-                    }"
-                    class="sm:hidden"
-                >
-                    <div class="space-y-1 pb-3 pt-2">
-                        <ResponsiveNavLink
-                            :href="route('stagiaire.dashboard')"
-                            :active="route().current('stagiaire.dashboard')"
-                        >
-                            Tableau de bord
-                        </ResponsiveNavLink>
-                        <ResponsiveNavLink
-                            :href="route('mes.demandes')"
-                            :active="route().current('mes.demandes')"
-                        >
-                            Mes Demandes
-                        </ResponsiveNavLink>
-                        <ResponsiveNavLink
-                            :href="route('stagiaire.stages')"
-                            :active="route().current('stagiaire.stages') || route().current('stagiaire.stages.show')"
-                        >
-                            Mes Stages
-                        </ResponsiveNavLink>
-                        <ResponsiveNavLink
-                            :href="route('recherche.code')"
-                            :active="route().current('recherche.code')"
-                        >
-                            Recherche par code
-                        </ResponsiveNavLink>
-                    </div>
-
-                    <!-- Responsive Settings Options -->
-                    <div
-                        class="border-t border-gray-200 pb-1 pt-4"
+                        <transition name='fade' mode='out-in'>
+                          <div v-if="sidebarExpanded" key="logo-text" class="transition-all duration-300">
+                              <h1 class="text-sm font-bold text-white">GestionStages</h1>
+                              <p class="text-xs text-blue-200">Espace Stagiaire</p>
+                          </div>
+                        </transition>
+                    </Link>
+                    <button 
+                        @click="toggleSidebar"
+                        class="p-2 rounded-lg hover:bg-blue-500/30 transition-colors duration-200"
                     >
-                        <div class="px-4">
-                            <div
-                                class="text-base font-medium text-gray-800"
-                            >
-                                {{ $page.props.auth.user.name }}
-                            </div>
-                            <div class="text-sm font-medium text-gray-500">
-                                {{ $page.props.auth.user.email }}
-                            </div>
-                        </div>
-
-                        <div class="mt-3 space-y-1">
-                            <ResponsiveNavLink :href="route('profile.edit')">
-                                Profile
-                            </ResponsiveNavLink>
-                            <ResponsiveNavLink
-                                :href="route('logout')"
-                                method="post"
-                                as="button"
-                            >
-                                Log Out
-                            </ResponsiveNavLink>
-                        </div>
-                    </div>
+                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16" />
+                        </svg>
+                    </button>
                 </div>
+            </div>
+
+            <!-- Navigation Menu -->
+            <nav class="flex-1 p-4 space-y-1">
+                <div v-if="sidebarExpanded" class="text-xs font-semibold text-blue-200 uppercase tracking-wider mb-3 px-3">
+                    Navigation
+                </div>
+                
+                <Link
+                    v-for="item in menuItems"
+                    :key="item.route"
+                    :href="route(item.route)"
+                    :class="[
+                        'flex items-center rounded-lg text-sm font-medium transition-all duration-200 group',
+                        sidebarExpanded ? 'px-3 py-3' : 'justify-center py-3',
+                        isActive(item.active)
+                            ? 'bg-blue-500 text-white shadow-md'
+                            : 'text-blue-100 hover:bg-blue-500/30 hover:text-white'
+                    ]"
+                >
+                    <svg class="w-5 h-5 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" :d="item.icon" />
+                    </svg>
+                    <transition name='fade' mode='out-in'>
+                      <span 
+                          v-if="sidebarExpanded" 
+                          class="ml-3 transition-all duration-300"
+                          :key="`label-${item.route}`"
+                      >
+                          {{ item.name }}
+                      </span>
+                    </transition>
+                    <div 
+                        v-if="isActive(item.active) && sidebarExpanded"
+                        class="ml-auto w-2 h-2 bg-white rounded-full"
+                    ></div>
+                </Link>
             </nav>
 
-            <!-- Page Heading -->
+            <!-- User Profile Section avec menu personnalisé -->
+            <div class="p-4 border-t border-blue-500/30 relative">
+                <div class="relative">
+                    <!-- Bouton du profil utilisateur -->
+                    <button 
+                        @click="toggleUserMenu"
+                        :class="[
+                            'w-full flex items-center rounded-lg text-sm font-medium text-blue-100 bg-blue-500/20 transition-colors hover:bg-blue-500/30',
+                            sidebarExpanded ? 'px-3 py-3' : 'justify-center py-3'
+                        ]"
+                    >
+                        <div class="relative flex-shrink-0">
+                            <img
+                                v-if="user && user.avatar"
+                                :src="'/storage/' + user.avatar"
+                                alt="Photo de profil"
+                                class="w-8 h-8 rounded-full object-cover border-2 border-blue-300"
+                            />
+                            <div v-else class="w-8 h-8 rounded-full bg-blue-500 flex items-center justify-center text-white text-sm font-semibold border-2 border-blue-300">
+                                {{ user?.nom?.charAt(0) || 'U' }}
+                            </div>
+                            <div class="absolute -bottom-1 -right-1 w-3 h-3 bg-green-400 border-2 border-blue-600 rounded-full"></div>
+                        </div>
+                        <transition name='fade' mode='out-in'>
+                          <div v-if="sidebarExpanded" class="ml-3 text-left flex-1" key="user-info">
+                              <div class="font-medium text-white text-sm">{{ user?.nom || 'Utilisateur' }}</div>
+                              <div class="text-xs text-blue-200 truncate">Stagiaire</div>
+                          </div>
+                        </transition>
+                        <transition name='fade' mode='out-in'>
+                          <svg v-if="sidebarExpanded" class="w-4 h-4 text-blue-200 ml-2 transition-transform" :class="{ 'rotate-180': showUserMenu }" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 15l7-7 7 7" />
+                          </svg>
+                        </transition>
+                    </button>
+
+                    <!-- Menu contextuel personnalisé -->
+                    <transition name="menu-fade">
+                        <div 
+                            v-if="showUserMenu" 
+                            class="absolute bottom-full left-0 right-0 mb-2 bg-white rounded-lg shadow-lg border border-gray-200 py-2 z-50"
+                        >
+                            <!-- Info utilisateur -->
+                            <div class="px-4 py-3 border-b border-gray-100">
+                                <div class="font-medium text-base text-gray-800">{{ user?.nom || 'Utilisateur' }}</div>
+                                <div class="font-medium text-sm text-gray-500">{{ user?.email || 'Email non disponible' }}</div>
+                            </div>
+                            
+                            <!-- Options du menu -->
+                            <div class="py-1">
+                                <Link
+                                    :href="route('profile.edit')"
+                                    @click="closeUserMenu"
+                                    class="flex items-center px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 transition-colors"
+                                >
+                                    <svg class="w-4 h-4 mr-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
+                                    </svg>
+                                    Mon Profil
+                                </Link>
+                                <Link
+                                    :href="route('logout')"
+                                    method="post"
+                                    as="button"
+                                    @click="closeUserMenu"
+                                    class="flex items-center w-full px-4 py-2 text-sm text-red-600 hover:bg-red-50 transition-colors"
+                                >
+                                    <svg class="w-4 h-4 mr-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1" />
+                                    </svg>
+                                    Se Déconnecter
+                                </Link>
+                            </div>
+                        </div>
+                    </transition>
+
+                    <!-- Overlay pour fermer le menu en cliquant ailleurs -->
+                    <div 
+                        v-if="showUserMenu" 
+                        @click="closeUserMenu"
+                        class="fixed inset-0 z-40"
+                    ></div>
+                </div>
+            </div>
+        </aside>
+
+        <!-- MAIN CONTENT -->
+        <div class="flex-1 flex flex-col overflow-hidden bg-white">
+            <!-- Top Header simplifié -->
+            <header class="bg-white shadow-sm border-b border-gray-200 z-20">
+                <div class="flex items-center justify-between px-6 py-4">
+                    <div class="flex items-center space-x-4">
+                        <img
+                            :src="logoUrl"
+                            alt="Logo du Ministère"
+                            class="h-12 w-auto object-contain"
+                        />
+                        <div class="hidden md:block">
+                            <h1 class="text-xl font-semibold text-gray-800">
+                                Programme de Stages
+                            </h1>
+                            <p class="text-sm text-gray-500">Ministère des Finances</p>
+                        </div>
+                    </div>
+                    
+                    <!-- Badge pour mobile uniquement -->
+                    <div class="md:hidden bg-blue-600 text-white px-3 py-1 rounded-full text-xs font-medium">
+                        Espace Stagiaire
+                    </div>
+                </div>
+            </header>
+
+            <!-- Page Heading (si présent) -->
             <header
-                class="bg-gradient-to-r from-indigo-50 to-blue-50 shadow-sm border-b border-indigo-100"
                 v-if="$slots.header"
+                class="bg-white border-b border-gray-200"
             >
-                <div class="mx-auto max-w-7xl px-4 py-6 sm:px-6 lg:px-8">
+                <div class="px-6 py-6">
                     <slot name="header" />
                 </div>
             </header>
 
-            <!-- Bannière indiquant la section stagiaire -->
-            <div class="bg-indigo-600 text-white text-center py-1 text-sm font-medium">
-                Espace Stagiaire - Programme de Stages du Ministère des Finances
-            </div>
-
             <!-- Page Content -->
-            <main>
+            <main class="flex-1 overflow-auto bg-gray-50 p-6">
                 <slot />
             </main>
         </div>
     </div>
 </template>
+
+<style>
+.fade-enter-active, .fade-leave-active {
+  transition: opacity 0.3s;
+}
+.fade-enter-from, .fade-leave-to {
+  opacity: 0;
+}
+
+.menu-fade-enter-active, .menu-fade-leave-active {
+  transition: all 0.2s ease;
+}
+.menu-fade-enter-from, .menu-fade-leave-to {
+  opacity: 0;
+  transform: translateY(10px);
+}
+</style>

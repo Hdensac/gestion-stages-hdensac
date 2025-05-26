@@ -840,6 +840,33 @@ class DemandeController extends Controller
                 ]
             );
 
+            // Envoi du mail au stagiaire
+            try {
+                $stagiaire = $demande->stagiaire;
+                if ($stagiaire && $stagiaire->user && $stagiaire->user->email) {
+                    \Mail::to($stagiaire->user->email)
+                        ->send(new \App\Mail\AffectationMaitreStageMail($stagiaire, $stage, $maitreStage->user, false));
+                }
+                // Envoi aux membres du groupe si besoin
+                if ($demande->nature === 'Groupe' && $demande->membres) {
+                    foreach ($demande->membres as $membre) {
+                        if (
+                            $membre->user &&
+                            $membre->user->email &&
+                            $stagiaire->user->email !== $membre->user->email
+                        ) {
+                            \Mail::to($membre->user->email)
+                                ->send(new \App\Mail\AffectationMaitreStageMail($membre, $stage, $maitreStage->user, false));
+                        }
+                    }
+                }
+            } catch (\Exception $e) {
+                \Log::error('Erreur lors de l\'envoi du mail d\'affectation MS', [
+                    'error' => $e->getMessage(),
+                    'stage_id' => $stage->id
+                ]);
+            }
+
             // Journaliser les détails de l'affectation pour le débogage
             Log::info('Affectation du maître de stage créée', [
                 'stage_id' => $stage->id,
