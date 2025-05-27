@@ -86,9 +86,9 @@ const props = defineProps({
                         </div>
                         <transition name='fade' mode='out-in'>
                           <div v-if="sidebarExpanded" key="logo-text" class="transition-all duration-300">
-                              <h1 class="text-sm font-bold text-white">GestionStages</h1>
-                              <p class="text-xs text-blue-200">Espace Stagiaire</p>
-                          </div>
+                            <h1 class="text-sm font-bold text-white">GestionStages</h1>
+                            <p class="text-xs text-blue-200">Espace Stagiaire</p>
+                        </div>
                         </transition>
                     </Link>
                     <button 
@@ -124,13 +124,13 @@ const props = defineProps({
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" :d="item.icon" />
                     </svg>
                     <transition name='fade' mode='out-in'>
-                      <span 
-                          v-if="sidebarExpanded" 
-                          class="ml-3 transition-all duration-300"
+                    <span 
+                        v-if="sidebarExpanded" 
+                        class="ml-3 transition-all duration-300"
                           :key="`label-${item.route}`"
-                      >
-                          {{ item.name }}
-                      </span>
+                    >
+                        {{ item.name }}
+                    </span>
                     </transition>
                     <div 
                         v-if="isActive(item.active) && sidebarExpanded"
@@ -150,23 +150,23 @@ const props = defineProps({
                             sidebarExpanded ? 'px-3 py-3' : 'justify-center py-3'
                         ]"
                     >
-                        <div class="relative flex-shrink-0">
-                            <img
-                                v-if="user && user.avatar"
-                                :src="'/storage/' + user.avatar"
-                                alt="Photo de profil"
-                                class="w-8 h-8 rounded-full object-cover border-2 border-blue-300"
-                            />
+                    <div class="relative flex-shrink-0">
+                        <img
+                            v-if="user && user.avatar"
+                            :src="'/storage/' + user.avatar"
+                            alt="Photo de profil"
+                            class="w-8 h-8 rounded-full object-cover border-2 border-blue-300"
+                        />
                             <div v-else class="w-8 h-8 rounded-full bg-blue-500 flex items-center justify-center text-white text-sm font-semibold border-2 border-blue-300">
-                                {{ user?.nom?.charAt(0) || 'U' }}
-                            </div>
-                            <div class="absolute -bottom-1 -right-1 w-3 h-3 bg-green-400 border-2 border-blue-600 rounded-full"></div>
+                            {{ user?.nom?.charAt(0) || 'U' }}
                         </div>
+                        <div class="absolute -bottom-1 -right-1 w-3 h-3 bg-green-400 border-2 border-blue-600 rounded-full"></div>
+                    </div>
                         <transition name='fade' mode='out-in'>
                           <div v-if="sidebarExpanded" class="ml-3 text-left flex-1" key="user-info">
-                              <div class="font-medium text-white text-sm">{{ user?.nom || 'Utilisateur' }}</div>
-                              <div class="text-xs text-blue-200 truncate">Stagiaire</div>
-                          </div>
+                        <div class="font-medium text-white text-sm">{{ user?.nom || 'Utilisateur' }}</div>
+                        <div class="text-xs text-blue-200 truncate">Stagiaire</div>
+                    </div>
                         </transition>
                         <transition name='fade' mode='out-in'>
                           <svg v-if="sidebarExpanded" class="w-4 h-4 text-blue-200 ml-2 transition-transform" :class="{ 'rotate-180': showUserMenu }" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -226,68 +226,152 @@ const props = defineProps({
         </aside>
 
         <!-- MAIN CONTENT -->
-        <div class="flex-1 flex flex-col overflow-hidden">
-            <!-- Top Header simplifié -->
+        <div class="flex-1 flex flex-col">
+            <!-- Top Header modernisé et professionnel -->
             <header class="bg-white shadow-sm border-b border-gray-200 z-20">
-                <div class="flex items-center justify-between px-6 py-4">
-                    <div class="flex items-center space-x-4">
+                <div class="flex items-center justify-between px-8 py-6">
+                    <div class="flex items-center space-x-6">
+                        <!-- Logo avec container moderne -->
+                        <div class="flex-shrink-0">
+                            <div class="bg-gradient-to-br from-blue-50 to-blue-100 p-3 rounded-xl border border-blue-200/50 shadow-sm">
                         <img
                             :src="logoUrl"
                             alt="Logo du Ministère"
                             class="h-12 w-auto object-contain"
                         />
-                        <div class="hidden md:block">
-                            <h1 class="text-xl font-semibold text-gray-800">
+                            </div>
+                        </div>
+                        
+                        <!-- Séparateur visuel -->
+                        <div class="hidden md:block w-px h-12 bg-gradient-to-b from-transparent via-gray-300 to-transparent"></div>
+                        
+                        <!-- Informations textuelles avec hiérarchie claire -->
+                        <div class="hidden md:block space-y-1">
+                            <h1 class="text-xl font-semibold text-gray-900 tracking-tight">
                                 Programme de Stages
                             </h1>
-                            <p class="text-sm text-gray-500">Ministère des Finances</p>
+                            <div class="flex items-center space-x-2">
+                                <p class="text-sm font-medium text-blue-600">Ministère des Finances</p>
+                                <span class="text-gray-300">•</span>
+                                <p class="text-sm text-gray-500">République du Bénin</p>
+                            </div>
                         </div>
                     </div>
                     
-                    <!-- Badge pour mobile uniquement -->
-                    <div class="md:hidden bg-blue-600 text-white px-3 py-1 rounded-full text-xs font-medium">
-                        Espace Stagiaire
+                    <!-- Section droite avec indicateurs -->
+                    <div class="flex items-center space-x-4">
+                        <!-- Badge statut pour desktop -->
+                        <div class="hidden lg:flex items-center space-x-3">
+                            <div class="flex items-center space-x-2 bg-green-50 text-green-700 px-3 py-2 rounded-full text-sm font-medium border border-green-200">
+                                <div class="w-2 h-2 bg-green-500 rounded-full animate-pulse"></div>
+                                <span>Plateforme Active</span>
+                            </div>
+                        </div>
+                        
+                        <!-- Badge mobile/tablet -->
+                        <div class="lg:hidden bg-gradient-to-r from-blue-600 to-blue-700 text-white px-4 py-2 rounded-full text-sm font-medium shadow-md">
+                            <div class="flex items-center space-x-2">
+                                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
+                                </svg>
+                                <span>Espace Stagiaire</span>
+                            </div>
+                        </div>
+                        
+                        <!-- Indicateur de version/environnement (optionnel) -->
+                        <div class="hidden xl:block text-xs text-gray-400 font-mono bg-gray-50 px-2 py-1 rounded border">
+                            v2.1.0
+                        </div>
                     </div>
                 </div>
+                
+                <!-- Barre de progression ou indicateur supplémentaire (optionnel) -->
+                <div class="h-1 bg-gradient-to-r from-blue-500 via-blue-600 to-blue-700"></div>
             </header>
 
-            <!-- Cloche de notifications globale -->
-            <div class="fixed top-6 right-8 z-50">
-                <div class="relative">
-                    <button @click="showNotifications = !showNotifications" class="relative focus:outline-none">
-                        <svg class="w-8 h-8 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 17h5l-1.405-1.405A2.032 2.032 0 0118 14.158V11a6.002 6.002 0 00-4-5.659V5a2 2 0 10-4 0v.341C7.67 6.165 6 8.388 6 11v3.159c0 .538-.214 1.055-.595 1.436L4 17h5m6 0v1a3 3 0 11-6 0v-1m6 0H9" />
-                        </svg>
-                        <span v-if="notifications.length" class="absolute -top-1 -right-1 bg-red-500 text-white text-xs rounded-full px-1.5 py-0.5">{{ notifications.length }}</span>
-                    </button>
-                    <div v-if="showNotifications" class="absolute right-0 mt-2 w-96 bg-white rounded-lg shadow-lg border border-gray-200 overflow-hidden animate-fade-in z-50">
-                        <div class="p-4 border-b font-semibold text-gray-700 flex items-center justify-between">
-                            <span>Notifications</span>
-                            <button @click="showNotifications = false" class="text-gray-400 hover:text-gray-600">
-                                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
-                                </svg>
-                            </button>
+            <!-- Cloche de notifications globale avec positionnement ajusté -->
+            <div class="fixed top-8 right-8 z-50">
+                                    <div class="relative">
+                    <button @click="showNotifications = !showNotifications" class="relative focus:outline-none group">
+                        <div class="bg-white p-3 rounded-full shadow-lg border border-gray-200 group-hover:shadow-xl transition-all duration-200 group-hover:border-blue-300">
+                            <svg class="w-6 h-6 text-blue-600 group-hover:text-blue-700 transition-colors" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 17h5l-1.405-1.405A2.032 2.032 0 0118 14.158V11a6.002 6.002 0 00-4-5.659V5a2 2 0 10-4 0v.341C7.67 6.165 6 8.388 6 11v3.159c0 .538-.214 1.055-.595 1.436L4 17h5m6 0v1a3 3 0 11-6 0v-1m6 0H9" />
+                            </svg>
                         </div>
-                        <div v-if="notifications.length === 0" class="p-4 text-gray-500 text-center">Aucune notification</div>
-                        <ul v-else class="divide-y divide-gray-100 max-h-96 overflow-y-auto">
-                            <li v-for="notif in notifications" :key="notif.id" class="p-4 hover:bg-blue-50 flex items-start gap-3">
-                                <div class="pt-1">
-                                    <svg v-if="notif.data.message.includes('acceptée')" class="w-6 h-6 text-green-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7" /></svg>
-                                    <svg v-else-if="notif.data.message.includes('refusée')" class="w-6 h-6 text-red-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" /></svg>
-                                    <svg v-else-if="notif.data.message.includes('maître de stage')" class="w-6 h-6 text-blue-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" /></svg>
-                                    <svg v-else class="w-6 h-6 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10" stroke="currentColor" stroke-width="2" fill="none" /></svg>
+                        <span v-if="notifications.length" class="absolute -top-1 -right-1 bg-red-500 text-white text-xs rounded-full px-2 py-1 font-medium shadow-md min-w-[1.25rem] text-center">
+                            {{ notifications.length > 99 ? '99+' : notifications.length }}
+                        </span>
+                    </button>
+                    
+                    <!-- Panel de notifications avec design modernisé -->
+                    <div v-if="showNotifications" class="absolute right-0 mt-4 w-96 bg-white rounded-xl shadow-2xl border border-gray-200 overflow-hidden animate-fade-in z-50">
+                        <div class="bg-gradient-to-r from-blue-50 to-blue-100 p-4 border-b border-blue-200">
+                            <div class="flex items-center justify-between">
+                                <div class="flex items-center space-x-2">
+                                    <svg class="w-5 h-5 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 17h5l-1.405-1.405A2.032 2.032 0 0118 14.158V11a6.002 6.002 0 00-4-5.659V5a2 2 0 10-4 0v.341C7.67 6.165 6 8.388 6 11v3.159c0 .538-.214 1.055-.595 1.436L4 17h5m6 0v1a3 3 0 11-6 0v-1m6 0H9" />
+                                    </svg>
+                                    <span class="font-semibold text-gray-800">Notifications</span>
+                                    <span v-if="notifications.length" class="bg-blue-600 text-white text-xs px-2 py-1 rounded-full">{{ notifications.length }}</span>
                                 </div>
-                                <div class="flex-1">
-                                    <div class="text-sm text-gray-800 mb-1" v-html="notif.data.message"></div>
-                                    <div v-if="notif.data.url" class="text-xs text-blue-600 hover:underline">
-                                        <a :href="notif.data.url">Voir plus</a>
-                                    </div>
-                                    <div class="text-xs text-gray-400 mt-1">{{ new Date(notif.created_at).toLocaleString('fr-FR') }}</div>
-                                </div>
-                                <button @click="markAsRead(notif.id)" class="ml-2 text-xs text-gray-400 hover:text-green-600" title="Marquer comme lue">
-                                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7" /></svg>
+                                <button @click="showNotifications = false" class="text-gray-400 hover:text-gray-600 p-1 rounded-full hover:bg-white/50 transition-colors">
+                                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
+                                    </svg>
                                 </button>
+                            </div>
+                        </div>
+                        
+                        <div v-if="notifications.length === 0" class="p-8 text-center">
+                            <svg class="w-12 h-12 text-gray-300 mx-auto mb-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20 13V6a2 2 0 00-2-2H6a2 2 0 00-2 2v7m16 0v5a2 2 0 01-2 2H6a2 2 0 01-2-2v-5m16 0h-2.586a1 1 0 00-.707.293l-2.414 2.414a1 1 0 01-.707.293h-3.172a1 1 0 01-.707-.293l-2.414-2.414A1 1 0 006.586 13H4" />
+                            </svg>
+                            <p class="text-gray-500 font-medium">Aucune notification</p>
+                            <p class="text-sm text-gray-400 mt-1">Vous êtes à jour !</p>
+                        </div>
+                        
+                        <ul v-else class="divide-y divide-gray-100 max-h-96 overflow-y-auto">
+                            <li v-for="notif in notifications" :key="notif.id" class="p-4 hover:bg-gray-50 transition-colors">
+                                <div class="flex items-start gap-3">
+                                    <div class="pt-1 flex-shrink-0">
+                                        <div class="w-8 h-8 rounded-full flex items-center justify-center" :class="{
+                                            'bg-green-100': notif.data.message.includes('acceptée'),
+                                            'bg-red-100': notif.data.message.includes('refusée'),
+                                            'bg-blue-100': notif.data.message.includes('maître de stage'),
+                                            'bg-gray-100': !notif.data.message.includes('acceptée') && !notif.data.message.includes('refusée') && !notif.data.message.includes('maître de stage')
+                                        }">
+                                            <svg v-if="notif.data.message.includes('acceptée')" class="w-5 h-5 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7" />
+                                            </svg>
+                                            <svg v-else-if="notif.data.message.includes('refusée')" class="w-5 h-5 text-red-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
+                                            </svg>
+                                            <svg v-else-if="notif.data.message.includes('maître de stage')" class="w-5 h-5 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+                                            </svg>
+                                            <svg v-else class="w-5 h-5 text-gray-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                <circle cx="12" cy="12" r="10" stroke="currentColor" stroke-width="2" fill="none" />
+                                            </svg>
+                                        </div>
+                                    </div>
+                                    <div class="flex-1 min-w-0">
+                                        <div class="text-sm font-medium text-gray-900 mb-1 leading-relaxed" v-html="notif.data.message"></div>
+                                        <div v-if="notif.data.url" class="mb-2">
+                                            <a :href="notif.data.url" class="inline-flex items-center text-xs text-blue-600 hover:text-blue-700 font-medium hover:underline">
+                                                Voir les détails
+                                                <svg class="w-3 h-3 ml-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7" />
+                                                </svg>
+                                            </a>
+                                        </div>
+                                        <div class="flex items-center justify-between">
+                                            <div class="text-xs text-gray-500">{{ new Date(notif.created_at).toLocaleString('fr-FR') }}</div>
+                                            <button @click="markAsRead(notif.id)" class="text-xs text-gray-400 hover:text-green-600 font-medium hover:bg-green-50 px-2 py-1 rounded transition-colors" title="Marquer comme lue">
+                                                Marquer comme lue
+                                            </button>
+                                        </div>
+                                    </div>
+                                </div>
                             </li>
                         </ul>
                     </div>
@@ -305,7 +389,7 @@ const props = defineProps({
             </header>
 
             <!-- Page Content -->
-            <main class="flex-1 overflow-auto min-h-screen p-6">
+            <main class="flex-1 overflow-y-auto p-6">
                 <slot />
             </main>
         </div>
@@ -343,5 +427,21 @@ const props = defineProps({
   opacity: 0.12;
   z-index: -1;
   pointer-events: none;
+}
+
+/* Animation pour le panel de notifications */
+@keyframes fade-in {
+  from {
+    opacity: 0;
+    transform: translateY(-10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.animate-fade-in {
+  animation: fade-in 0.2s ease-out;
 }
 </style>

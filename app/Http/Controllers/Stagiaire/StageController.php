@@ -66,7 +66,7 @@ class StageController extends Controller
                 
                 // Déterminer le maître de stage actuel
                 $activeAffectation = $stage->affectationsMaitreStage
-                    ->where('statut', 'En cours')
+                    ->whereIn('statut', ['En cours', 'Acceptée'])
                     ->first();
                 if ($activeAffectation) {
                     $stage->maitre_stage_actuel = [
@@ -136,10 +136,10 @@ class StageController extends Controller
 
             // Injecter le même champ maitre_stage_actuel que dans la liste
             $activeAffectation = $stage->affectationsMaitreStage
-                ->where('statut', 'En cours')
+                ->whereIn('statut', ['En cours', 'Acceptée'])
                 ->first();
             if (!$activeAffectation) {
-                // Prendre la dernière affectation avec maitreStage si aucune n'est "En cours"
+                // Prendre la dernière affectation avec maitreStage si aucune n'est "En cours" ou "Acceptée"
                 $activeAffectation = $stage->affectationsMaitreStage->filter(function($aff) { return $aff->maitreStage; })->sortByDesc('date_affectation')->first();
             }
             if ($activeAffectation && $activeAffectation->maitreStage) {
@@ -149,6 +149,16 @@ class StageController extends Controller
                     'prenom' => $activeAffectation->maitreStage->prenom,
                     'email' => $activeAffectation->maitreStage->email,
                 ];
+            }
+            
+            // Calcul dynamique du statut selon les dates (comme dans la liste)
+            $aujourdhui = now()->toDateString();
+            if ($stage->date_debut > $aujourdhui) {
+                $stage->statut_calculé = 'À venir';
+            } elseif ($stage->date_debut <= $aujourdhui && $stage->date_fin >= $aujourdhui) {
+                $stage->statut_calculé = 'En cours';
+            } else {
+                $stage->statut_calculé = 'Terminé';
             }
             
             return Inertia::render('Stagiaire/ShowStage', [

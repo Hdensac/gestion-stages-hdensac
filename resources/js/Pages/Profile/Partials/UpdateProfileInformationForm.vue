@@ -137,7 +137,7 @@ const updateProfileInformation = async () => {
                         />
                     </label>
                 </div>
-                <p class="text-sm text-gray-500">Cliquez sur l'icône pour modifier votre photo de profil</p>
+                <p class="text-sm text-gray-600">Cliquez sur l'icône pour modifier votre photo de profil</p>
             </div>
 
             <!-- Message de succès -->
@@ -170,7 +170,7 @@ const updateProfileInformation = async () => {
                     required
                             placeholder="Votre nom"
                         />
-                        <div v-if="form.nom" class="absolute right-3 top-2.5 text-green-500">
+                        <div v-if="form.nom && form.nom === user.nom" class="absolute right-3 top-2.5 text-blue-600">
                             <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
                                 <path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd" />
                             </svg>
@@ -190,7 +190,7 @@ const updateProfileInformation = async () => {
                             required
                             placeholder="Votre prénom"
                         />
-                        <div v-if="form.prenom" class="absolute right-3 top-2.5 text-green-500">
+                        <div v-if="form.prenom && form.prenom === user.prenom" class="absolute right-3 top-2.5 text-blue-600">
                             <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
                                 <path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd" />
                             </svg>
@@ -270,13 +270,13 @@ const updateProfileInformation = async () => {
                         </svg>
                     </div>
                     <div class="ml-3">
-                        <p class="text-sm text-yellow-700">
+                        <p class="text-sm text-blue-700">
                             Votre adresse email n'est pas vérifiée.
                     <Link
                         :href="route('verification.send')"
                         method="post"
                         as="button"
-                                class="font-medium text-yellow-700 underline hover:text-yellow-600"
+                                class="font-medium text-blue-700 underline hover:text-blue-600"
                     >
                                 Cliquez ici pour renvoyer l'email de vérification.
                     </Link>

@@ -711,7 +711,7 @@ const markAsRead = (notificationId) => {
               Tu es actuellement <span class="font-semibold text-indigo-600">stagiaire</span> sur la plateforme.
             </p>
         </div>
-          <img src="/images/illustration-welcome.svg" class="h-20 mt-4 self-end hidden md:block" alt="Bienvenue" />
+          <img src="/images/bienvenue.png" class="h-20 mt-4 self-end hidden md:block" alt="Bienvenue" />
         </div>
         <!-- 2. Mes Stages (aperçu) -->
         <div class="col-span-1 bg-white rounded-2xl shadow p-6 flex flex-col">
@@ -742,7 +742,7 @@ const markAsRead = (notificationId) => {
         <div class="col-span-1 bg-white rounded-2xl shadow p-6 flex flex-col">
           <div class="flex items-center justify-between mb-2">
             <h3 class="text-lg font-semibold text-indigo-800">Notifications</h3>
-            <button @click="openNotifications()" class="text-indigo-600 hover:underline text-sm">Tout voir</button>
+            <button @click="openNotifications()" class="text-indigo-600 hover:underline text-sm"></button>
           </div>
           <ul>
             <li v-for="notif in props.notifications.slice(0,3)" :key="notif.id" class="mb-3 flex items-center">

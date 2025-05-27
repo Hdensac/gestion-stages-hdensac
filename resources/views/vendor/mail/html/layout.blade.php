@@ -22,6 +22,22 @@ width: 100% !important;
 width: 100% !important;
 }
 }
+
+/* Styles personnalisés pour le thème bleu */
+.button-primary {
+    background-color: #2563eb !important;
+    border-color: #2563eb !important;
+    color: #ffffff !important;
+}
+
+.button-primary:hover {
+    background-color: #1d4ed8 !important;
+    border-color: #1d4ed8 !important;
+}
+
+.content-cell a {
+    color: #2563eb !important;
+}
 </style>
 {{ $head ?? '' }}
 </head>
