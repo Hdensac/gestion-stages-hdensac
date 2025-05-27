@@ -80,7 +80,10 @@ class StageController extends Controller
             });
             
             return Inertia::render('Stagiaire/MesStages', [
-                'stages' => $stages
+                'stages' => $stages,
+                'notifications' => Auth::user()->unreadNotifications()->orderBy('created_at', 'desc')->take(10)->get(),
+                'message' => isset($message) ? $message : null,
+                'error' => isset($error) ? $error : null,
             ]);
             
         } catch (\Exception $e) {
@@ -150,8 +153,9 @@ class StageController extends Controller
             
             return Inertia::render('Stagiaire/ShowStage', [
                 'stage' => $stage,
+                'notifications' => Auth::user()->unreadNotifications()->orderBy('created_at', 'desc')->take(10)->get(),
+                'error' => session('error'),
                 'success' => session('success'),
-                'error' => session('error')
             ]);
             
         } catch (\Exception $e) {

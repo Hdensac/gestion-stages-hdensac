@@ -1,6 +1,6 @@
 <script setup>
-import { ref } from 'vue';
-import { Link, usePage } from '@inertiajs/vue3';
+import { ref, provide } from 'vue';
+import { Link, usePage, router } from '@inertiajs/vue3';
 import Dropdown from '@/Components/Dropdown.vue';
 import DropdownLink from '@/Components/DropdownLink.vue';
 
@@ -8,6 +8,8 @@ const sidebarExpanded = ref(true);
 const showUserMenu = ref(false);
 const user = usePage().props.auth?.user;
 const logoUrl = '/images/logoministere.png';
+const showNotifications = ref(false);
+provide('openNotifications', () => { showNotifications.value = true });
 
 const toggleSidebar = () => {
     sidebarExpanded.value = !sidebarExpanded.value;
@@ -51,10 +53,23 @@ const menuItems = [
 const isActive = (routeNames) => {
     return routeNames.some(routeName => route().current(routeName));
 };
+
+const markAsRead = (notificationId) => {
+  router.post(route('stagiaire.notifications.markAsRead', notificationId), {}, {
+    preserveScroll: true,
+  });
+};
+
+const props = defineProps({
+  notifications: {
+    type: Array,
+    default: () => []
+  }
+});
 </script>
 
 <template>
-    <div class="flex h-screen bg-gray-100">
+    <div class="flex h-screen stagiaire-bg">
         <!-- SIDEBAR -->
         <aside 
             :class="[
@@ -211,7 +226,7 @@ const isActive = (routeNames) => {
         </aside>
 
         <!-- MAIN CONTENT -->
-        <div class="flex-1 flex flex-col overflow-hidden bg-white">
+        <div class="flex-1 flex flex-col overflow-hidden">
             <!-- Top Header simplifié -->
             <header class="bg-white shadow-sm border-b border-gray-200 z-20">
                 <div class="flex items-center justify-between px-6 py-4">
@@ -236,6 +251,49 @@ const isActive = (routeNames) => {
                 </div>
             </header>
 
+            <!-- Cloche de notifications globale -->
+            <div class="fixed top-6 right-8 z-50">
+                <div class="relative">
+                    <button @click="showNotifications = !showNotifications" class="relative focus:outline-none">
+                        <svg class="w-8 h-8 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 17h5l-1.405-1.405A2.032 2.032 0 0118 14.158V11a6.002 6.002 0 00-4-5.659V5a2 2 0 10-4 0v.341C7.67 6.165 6 8.388 6 11v3.159c0 .538-.214 1.055-.595 1.436L4 17h5m6 0v1a3 3 0 11-6 0v-1m6 0H9" />
+                        </svg>
+                        <span v-if="notifications.length" class="absolute -top-1 -right-1 bg-red-500 text-white text-xs rounded-full px-1.5 py-0.5">{{ notifications.length }}</span>
+                    </button>
+                    <div v-if="showNotifications" class="absolute right-0 mt-2 w-96 bg-white rounded-lg shadow-lg border border-gray-200 overflow-hidden animate-fade-in z-50">
+                        <div class="p-4 border-b font-semibold text-gray-700 flex items-center justify-between">
+                            <span>Notifications</span>
+                            <button @click="showNotifications = false" class="text-gray-400 hover:text-gray-600">
+                                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
+                                </svg>
+                            </button>
+                        </div>
+                        <div v-if="notifications.length === 0" class="p-4 text-gray-500 text-center">Aucune notification</div>
+                        <ul v-else class="divide-y divide-gray-100 max-h-96 overflow-y-auto">
+                            <li v-for="notif in notifications" :key="notif.id" class="p-4 hover:bg-blue-50 flex items-start gap-3">
+                                <div class="pt-1">
+                                    <svg v-if="notif.data.message.includes('acceptée')" class="w-6 h-6 text-green-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7" /></svg>
+                                    <svg v-else-if="notif.data.message.includes('refusée')" class="w-6 h-6 text-red-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" /></svg>
+                                    <svg v-else-if="notif.data.message.includes('maître de stage')" class="w-6 h-6 text-blue-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" /></svg>
+                                    <svg v-else class="w-6 h-6 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10" stroke="currentColor" stroke-width="2" fill="none" /></svg>
+                                </div>
+                                <div class="flex-1">
+                                    <div class="text-sm text-gray-800 mb-1" v-html="notif.data.message"></div>
+                                    <div v-if="notif.data.url" class="text-xs text-blue-600 hover:underline">
+                                        <a :href="notif.data.url">Voir plus</a>
+                                    </div>
+                                    <div class="text-xs text-gray-400 mt-1">{{ new Date(notif.created_at).toLocaleString('fr-FR') }}</div>
+                                </div>
+                                <button @click="markAsRead(notif.id)" class="ml-2 text-xs text-gray-400 hover:text-green-600" title="Marquer comme lue">
+                                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7" /></svg>
+                                </button>
+                            </li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+
             <!-- Page Heading (si présent) -->
             <header
                 v-if="$slots.header"
@@ -247,7 +305,7 @@ const isActive = (routeNames) => {
             </header>
 
             <!-- Page Content -->
-            <main class="flex-1 overflow-auto bg-gray-50 p-6">
+            <main class="flex-1 overflow-auto min-h-screen p-6">
                 <slot />
             </main>
         </div>
@@ -268,5 +326,22 @@ const isActive = (routeNames) => {
 .menu-fade-enter-from, .menu-fade-leave-to {
   opacity: 0;
   transform: translateY(10px);
+}
+
+.stagiaire-bg {
+  position: relative;
+  min-height: 100vh;
+}
+.stagiaire-bg::before {
+  content: '';
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: url('/images/bg-stagiaire.jpg') center/cover no-repeat;
+  opacity: 0.12;
+  z-index: -1;
+  pointer-events: none;
 }
 </style>

@@ -1,10 +1,23 @@
 <script setup>
-import { Head, useForm } from '@inertiajs/vue3';
-import { ref, computed, watch, reactive, onMounted } from 'vue';
+import { Head, useForm, router } from '@inertiajs/vue3';
+import { ref, computed, watch, reactive, onMounted, inject } from 'vue';
 import Stagiaire from '@/Layouts/Stagiaire.vue';
 import EmailSender from '@/Components/EmailSender.vue';
+import { Link } from '@inertiajs/vue3';
 
-const props = defineProps(['auth', 'structures', 'users']);
+const props = defineProps({
+  auth: Object,
+  structures: Array,
+  users: Array,
+  stages: {
+    type: Array,
+    default: () => []
+  },
+  notifications: {
+    type: Array,
+    default: () => []
+  }
+});
 const showModal = ref(false);
 const memberInfosLoaded = ref(false);
 const codeSuivi = ref('');
@@ -662,60 +675,83 @@ watch(() => form.type, (newType) => {
     form.universite = ''; // Réinitialiser le champ université
   }
 });
+
+function formatDate(dateStr) {
+  if (!dateStr) return '';
+  const date = new Date(dateStr);
+  return date.toLocaleDateString('fr-FR', { day: '2-digit', month: 'long', year: 'numeric' });
+}
+
+const openNotifications = inject('openNotifications');
+
+const markAsRead = (notificationId) => {
+  router.post(route('stagiaire.notifications.markAsRead', notificationId), {}, {
+    preserveScroll: true,
+    onSuccess: () => {
+      // Optionnel : recharger les notifications ou retirer du tableau local
+    }
+  });
+};
 </script>
 <template>
   <Head title="Tableau de bord" />
-  <Stagiaire>
-    <template #header>
-      <div class="flex items-center justify-between">
-        <div class="flex items-center space-x-2">
-          <svg class="w-6 h-6 text-indigo-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"></path>
-          </svg>
-          <h2 class="text-xl font-semibold leading-tight text-gray-800">Tableau de bord <span class="text-indigo-600">Stagiaire</span></h2>
-        </div>
-        <div class="text-sm text-gray-500">
-          Programme de Stages - Ministère des Finances
-        </div>
-      </div>
-    </template>
+  <Stagiaire :notifications="notifications">
+    <div class="min-h-screen">
+      <!-- Cloche de notifications -->
+      <!-- (supprimée, déplacée dans le layout) -->
 
-    <!-- Recherche par code de suivi -->
-    <div class="py-6">
-      <div class="mx-auto max-w-7xl sm:px-6 lg:px-8">
-        <div class="overflow-hidden bg-gradient-to-br from-blue-50 via-white to-indigo-50 shadow-lg sm:rounded-2xl border border-blue-100">
-          <div class="p-6">
-            <h2 class="text-xl font-semibold text-indigo-800 mb-4 flex items-center gap-2">
-              <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 text-indigo-500" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
-              </svg>
-              Rechercher une demande par code de suivi
-            </h2>
-            <div class="flex flex-wrap gap-4">
-              <div class="flex-grow">
-                <input
-                  type="text"
-                  v-model="searchCode"
-                  placeholder="Entrez le code de suivi (ex: AB12CD34)"
-                  class="w-full p-3 border border-indigo-200 rounded-md focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 bg-white/80"
-                />
-              </div>
-              <button
-                @click="searchByTrackingCode"
-                class="px-6 py-3 bg-gradient-to-r from-indigo-500 to-blue-500 text-white rounded-md hover:from-indigo-600 hover:to-blue-600 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2 transition-all duration-200 flex items-center gap-2 shadow-md"
-              >
-                <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
-                </svg>
-                Rechercher
-              </button>
-            </div>
-            <p class="mt-3 text-sm text-indigo-700">
-              Vous pouvez retrouver rapidement une demande en saisissant son code de suivi unique.
-              Cela vous permet de vérifier son statut même si vous n'êtes pas l'auteur de la demande.
+      <!-- Blocs personnalisés du dashboard -->
+      <div class="mx-auto max-w-7xl sm:px-6 lg:px-8 grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
+        <!-- 1. Accueil personnalisé -->
+        <div class="col-span-1 md:col-span-1 bg-white rounded-2xl shadow p-6 flex flex-col justify-between">
+          <div>
+            <h2 class="text-xl font-bold text-indigo-800 mb-2">Bienvenue, {{ auth.user.prenom }} !</h2>
+            <p class="text-gray-600">
+              <!-- À remplacer par le vrai statut -->
+              Tu es actuellement <span class="font-semibold text-indigo-600">stagiaire</span> sur la plateforme.
             </p>
-          </div>
         </div>
+          <img src="/images/illustration-welcome.svg" class="h-20 mt-4 self-end hidden md:block" alt="Bienvenue" />
+        </div>
+        <!-- 2. Mes Stages (aperçu) -->
+        <div class="col-span-1 bg-white rounded-2xl shadow p-6 flex flex-col">
+          <div class="flex items-center justify-between mb-2">
+            <h3 class="text-lg font-semibold text-indigo-800">Mes Stages</h3>
+            <Link :href="route('stagiaire.stages')" class="text-indigo-600 hover:underline text-sm">Voir tout</Link>
+      </div>
+          <ul>
+            <li v-for="stage in stages" :key="stage.id" class="mb-4 flex items-center justify-between">
+              <div>
+                <div class="font-medium">{{ stage.structure?.libelle }}</div>
+                <div class="text-xs text-gray-500">{{ formatDate(stage.date_debut) }} - {{ formatDate(stage.date_fin) }}</div>
+                <span class="inline-block mt-1 px-2 py-0.5 rounded-full text-xs"
+                  :class="{
+                    'bg-green-100 text-green-800': stage.statut_calculé === 'Terminé',
+                    'bg-blue-100 text-blue-800': stage.statut_calculé === 'En cours',
+                    'bg-yellow-100 text-yellow-800': stage.statut_calculé === 'À venir'
+                  }">
+                  {{ stage.statut_calculé || stage.statut }}
+                </span>
+              </div>
+              <Link :href="route('stagiaire.stages.show', stage.id)" class="text-indigo-600 hover:underline text-sm">Voir</Link>
+            </li>
+          </ul>
+          <div v-if="!stages.length" class="text-gray-400 italic">Aucun stage pour l'instant.</div>
+            </div>
+        <!-- 3. Notifications (aperçu dynamique) -->
+        <div class="col-span-1 bg-white rounded-2xl shadow p-6 flex flex-col">
+          <div class="flex items-center justify-between mb-2">
+            <h3 class="text-lg font-semibold text-indigo-800">Notifications</h3>
+            <button @click="openNotifications()" class="text-indigo-600 hover:underline text-sm">Tout voir</button>
+          </div>
+          <ul>
+            <li v-for="notif in props.notifications.slice(0,3)" :key="notif.id" class="mb-3 flex items-center">
+              <span class="w-2 h-2 rounded-full mr-2" :class="notif.read_at ? 'bg-gray-300' : 'bg-indigo-500'"></span>
+              <span class="flex-1 text-gray-700" v-html="notif.data.message"></span>
+              <span class="text-xs text-gray-400 ml-2">{{ new Date(notif.created_at).toLocaleDateString('fr-FR') }}</span>
+            </li>
+          </ul>
+          <div v-if="props.notifications.length === 0" class="text-gray-400 italic">Aucune notification récente.</div>
       </div>
     </div>
 
@@ -1194,10 +1230,45 @@ watch(() => form.type, (newType) => {
           duration: 8000
         })"
       />
+      </div>
     </div>
   </Stagiaire>
 </template>
 <style scoped>
+.dashboard-bg {
+  position: relative;
+  z-index: 1;
+}
+
+.dashboard-bg::before {
+  content: '';
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: url('/images/bg-stagiaire.jpg') center/cover no-repeat;
+  opacity: 0.12;
+  z-index: -1;
+  pointer-events: none;
+}
+
+/* Amélioration de la lisibilité des blocs sur le fond */
+.bg-white {
+  background-color: rgba(255, 255, 255, 0.95);
+  backdrop-filter: blur(8px);
+}
+
+/* Animation subtile au chargement */
+@keyframes fadeIn {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+.dashboard-bg {
+  animation: fadeIn 0.5s ease-in-out;
+}
+
 /* Styles de base */
 .btn-primary {
   background-color: #3b82f6;
@@ -1825,5 +1896,13 @@ textarea:disabled {
 /* Ajustements pour s'assurer que le toast passe au-dessus de la modal */
 .fixed {
   z-index: 100;
+}
+
+@keyframes fade-in {
+  from { opacity: 0; transform: translateY(-10px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+.animate-fade-in {
+  animation: fade-in 0.2s ease;
 }
 </style>

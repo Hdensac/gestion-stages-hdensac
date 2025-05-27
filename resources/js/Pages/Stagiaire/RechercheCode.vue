@@ -5,6 +5,10 @@ import Stagiaire from '@/Layouts/Stagiaire.vue';
 
 const props = defineProps({
   errors: Object,
+  notifications: {
+    type: Array,
+    default: () => []
+  }
 });
 
 const form = useForm({
@@ -26,7 +30,7 @@ const submit = () => {
 
 <template>
   <Head title="Recherche de demande" />
-  <Stagiaire>
+  <Stagiaire :notifications="notifications">
     <template #header>
       <h2 class="text-xl font-semibold leading-tight text-gray-800">Recherche de demande</h2>
     </template>

@@ -16,6 +16,7 @@ use Illuminate\Support\Facades\Mail;
 use Inertia\Inertia;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Log;
+use App\Notifications\StagiaireNotification;
 
 class DemandeController extends Controller
 {
@@ -28,9 +29,10 @@ class DemandeController extends Controller
         $structures = Structure::whereNull('parent_id')->get();
         $users = User::where('id', '!=', Auth::id())->get();
 
-        return Inertia::render('Stagiaire/Dashboard', [
+        return Inertia::render('Stagiaire/RechercheCode', [
             'structures' => $structures,
-            'users' => $users
+            'users' => $users,
+            'notifications' => Auth::check() && method_exists(Auth::user(), 'unreadNotifications') ? Auth::user()->unreadNotifications()->orderBy('created_at', 'desc')->take(10)->get() : [],
         ]);
     }
 
@@ -152,6 +154,32 @@ class DemandeController extends Controller
                 // On continue le processus même si l'email échoue
             }
 
+            // Après la création de la demande, notifier le stagiaire et les membres du groupe
+            try {
+                if ($stagiaire && $stagiaire->user) {
+                    $stagiaire->user->notify(new StagiaireNotification(
+                        'Votre demande de stage a bien été soumise.',
+                        route('stagiaire.mes-demandes')
+                    ));
+                }
+                if ($validated['nature'] === 'Groupe' && !empty($validated['membres'])) {
+                    foreach ($validated['membres'] as $membreId) {
+                        $membreUser = \App\Models\User::find($membreId);
+                        if ($membreUser && (!$stagiaire->user || $membreUser->id !== $stagiaire->user->id)) {
+                            $membreUser->notify(new StagiaireNotification(
+                                'Vous avez été ajouté à une demande de stage en groupe.',
+                                route('stagiaire.mes-demandes')
+                            ));
+                        }
+                    }
+                }
+            } catch (\Exception $e) {
+                \Log::error('Erreur lors de l\'envoi de la notification Laravel (soumission)', [
+                    'error' => $e->getMessage(),
+                    'demande_id' => isset($demande) ? $demande->id : null
+                ]);
+            }
+
             // Tout s'est bien passé, on valide la transaction
             DB::commit();
 
@@ -193,7 +221,8 @@ class DemandeController extends Controller
         }
 
         return Inertia::render('Stagiaire/ShowDemande', [
-            'demande' => $demande
+            'demande' => $demande,
+            'notifications' => Auth::check() && method_exists(Auth::user(), 'unreadNotifications') ? Auth::user()->unreadNotifications()->orderBy('created_at', 'desc')->take(10)->get() : [],
         ]);
     }
 
@@ -220,7 +249,8 @@ class DemandeController extends Controller
         // Cela permet à n'importe qui avec le code de suivre l'état de la demande
 
         return Inertia::render('Stagiaire/ShowDemande', [
-            'demande' => $demande
+            'demande' => $demande,
+            'notifications' => Auth::check() && method_exists(Auth::user(), 'unreadNotifications') ? Auth::user()->unreadNotifications()->orderBy('created_at', 'desc')->take(10)->get() : [],
         ]);
     }
 
@@ -245,7 +275,8 @@ class DemandeController extends Controller
 
         // Retourner la vue avec les demandes (vides ou non)
         return Inertia::render('Stagiaire/MesDemandes', [
-            'demandes' => $demandes
+            'demandes' => $demandes,
+            'notifications' => Auth::check() && method_exists(Auth::user(), 'unreadNotifications') ? Auth::user()->unreadNotifications()->orderBy('created_at', 'desc')->take(10)->get() : [],
         ]);
     }
 
@@ -299,7 +330,7 @@ class DemandeController extends Controller
                 }
             }
         } catch (\Exception $e) {
-            Log::error('Erreur lors de l\'envoi de l\'email d\'annulation: ' . $e->getMessage());
+            Log::error("Erreur lors de l'envoi de l'email d'annulation: " . $e->getMessage());
             // On continue le processus même si l'email échoue
         }
 

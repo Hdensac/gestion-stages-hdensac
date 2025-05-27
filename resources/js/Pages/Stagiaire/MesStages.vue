@@ -1,6 +1,6 @@
 <template>
   <Head title="Mes Stages" />
-  <Stagiaire>
+  <Stagiaire :notifications="notifications">
     <template #header>
       <div class="flex items-center justify-between">
         <div class="flex items-center space-x-2">
@@ -122,6 +122,10 @@ import Stagiaire from '@/Layouts/Stagiaire.vue';
 
 const props = defineProps({
   stages: {
+    type: Array,
+    default: () => []
+  },
+  notifications: {
     type: Array,
     default: () => []
   },

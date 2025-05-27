@@ -3,7 +3,11 @@ import { Head } from '@inertiajs/vue3';
 import Stagiaire from '@/Layouts/Stagiaire.vue';
 
 defineProps({
-  demande: Object
+  demande: Object,
+  notifications: {
+    type: Array,
+    default: () => []
+  }
 });
 
 // Fonction pour formater une date
@@ -29,7 +33,7 @@ const getStatusColor = (statut) => {
 
 <template>
   <Head title="Détails de la demande" />
-  <Stagiaire>
+  <Stagiaire :notifications="notifications">
     <template #header>
       <h2 class="text-xl font-semibold text-gray-800">Détails de la demande</h2>
     </template>

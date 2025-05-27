@@ -7,6 +7,10 @@ const props = defineProps({
   demandes: Object,
   errors: Object,
   toast: Object,
+  notifications: {
+    type: Array,
+    default: () => []
+  }
 });
 
 // Système de toast amélioré
@@ -135,7 +139,7 @@ const viewMode = ref('table'); // 'table' ou 'card'
 
 <template>
   <Head title="Mes Demandes de Stage" />
-  <Stagiaire>
+  <Stagiaire :notifications="notifications">
     <template #header>
       <div class="flex items-center justify-between">
         <div class="flex items-center space-x-2">

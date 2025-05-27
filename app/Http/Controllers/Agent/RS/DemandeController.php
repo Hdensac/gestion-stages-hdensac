@@ -13,6 +13,7 @@ use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Mail;
 use Inertia\Inertia;
 use Illuminate\Support\Facades\Log;
+use App\Notifications\StagiaireNotification;
 
 class DemandeController extends Controller
 {
@@ -433,6 +434,31 @@ class DemandeController extends Controller
                 // On continue même si l'email échoue
             }
 
+            // Après l'envoi de l'email d'acceptation, notifier le stagiaire et les membres du groupe
+            try {
+                if ($demande->stagiaire && $demande->stagiaire->user) {
+                    $demande->stagiaire->user->notify(new StagiaireNotification(
+                        'Votre demande de stage a été acceptée !',
+                        route('stagiaire.stages')
+                    ));
+                }
+                if ($demande->nature === 'Groupe' && $demande->membres) {
+                    foreach ($demande->membres as $membre) {
+                        if ($membre->user && $demande->stagiaire && $demande->stagiaire->user && $membre->user->id !== $demande->stagiaire->user->id) {
+                            $membre->user->notify(new StagiaireNotification(
+                                'Votre demande de stage a été acceptée (groupe) !',
+                                route('stagiaire.stages')
+                            ));
+                        }
+                    }
+                }
+            } catch (\Exception $e) {
+                \Log::error('Erreur lors de l\'envoi de la notification Laravel', [
+                    'error' => $e->getMessage(),
+                    'demande_id' => $demande->id
+                ]);
+            }
+
             return redirect()->back()->with('success', 'La demande a été acceptée avec succès.');
 
         } catch (\Exception $e) {
@@ -572,6 +598,31 @@ class DemandeController extends Controller
                     'demande_id' => $demande->id
                 ]);
                 // On continue même si l'email échoue
+            }
+
+            // Après l'envoi de l'email de refus, notifier le stagiaire et les membres du groupe
+            try {
+                if ($demande->stagiaire && $demande->stagiaire->user) {
+                    $demande->stagiaire->user->notify(new StagiaireNotification(
+                        'Votre demande de stage a été refusée.',
+                        route('stagiaire.mes-demandes')
+                    ));
+                }
+                if ($demande->nature === 'Groupe' && $demande->membres) {
+                    foreach ($demande->membres as $membre) {
+                        if ($membre->user && $demande->stagiaire && $demande->stagiaire->user && $membre->user->id !== $demande->stagiaire->user->id) {
+                            $membre->user->notify(new StagiaireNotification(
+                                'La demande de stage de votre groupe a été refusée.',
+                                route('stagiaire.mes-demandes')
+                            ));
+                        }
+                    }
+                }
+            } catch (\Exception $e) {
+                \Log::error('Erreur lors de l\'envoi de la notification Laravel (refus)', [
+                    'error' => $e->getMessage(),
+                    'demande_id' => $demande->id
+                ]);
             }
 
             return redirect()->back()->with('success', 'La demande a été refusée avec succès.');
@@ -873,6 +924,31 @@ class DemandeController extends Controller
                 'maitre_stage_id' => $maitreStage->user_id,
                 'agent_affectant_id' => $agent->id
             ]);
+
+            // Après l'envoi du mail d'affectation, notifier le stagiaire et les membres du groupe
+            try {
+                if ($stagiaire && $stagiaire->user) {
+                    $stagiaire->user->notify(new StagiaireNotification(
+                        'Vous avez été affecté à un maître de stage.',
+                        route('stagiaire.stages')
+                    ));
+                }
+                if ($demande->nature === 'Groupe' && $demande->membres) {
+                    foreach ($demande->membres as $membre) {
+                        if ($membre->user && $stagiaire->user->id !== $membre->user->id) {
+                            $membre->user->notify(new StagiaireNotification(
+                                'Votre groupe a été affecté à un maître de stage.',
+                                route('stagiaire.stages')
+                            ));
+                        }
+                    }
+                }
+            } catch (\Exception $e) {
+                \Log::error('Erreur lors de l\'envoi de la notification Laravel (affectation)', [
+                    'error' => $e->getMessage(),
+                    'demande_id' => $demande->id
+                ]);
+            }
 
             return redirect()->back()->with('success', 'Le maître de stage a été affecté avec succès.');
 

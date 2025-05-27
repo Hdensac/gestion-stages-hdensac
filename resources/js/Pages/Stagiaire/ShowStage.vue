@@ -1,6 +1,6 @@
 <template>
   <Head :title="`Stage - ${stage.structure?.libelle || 'Détails'}`" />
-  <Stagiaire>
+  <Stagiaire :notifications="notifications">
     <template #header>
       <div class="flex items-center justify-between">
         <div class="flex items-center space-x-2">
@@ -215,8 +215,18 @@ import { ref } from 'vue';
 
 const props = defineProps({
   stage: Object,
-  error: String,
-  success: String
+  notifications: {
+    type: Array,
+    default: () => []
+  },
+  error: {
+    type: String,
+    default: null
+  },
+  success: {
+    type: String,
+    default: null
+  }
 });
 
 console.log('STAGE DETAIL:', props.stage);

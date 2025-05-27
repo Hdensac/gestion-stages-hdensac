@@ -163,9 +163,7 @@ Route::get('/dashboard', function () {
     Route::delete('/mes-demandes/{id}', [DemandeController::class, 'destroy'])->name('mes.demandes.annuler');
     Route::post('/demandes/recherche', [DemandeController::class, 'findByCode'])->name('demandes.search');
     Route::get('/demandes/recherche', [DemandeController::class, 'findByCode'])->name('demandes.search.get');
-    Route::get('/recherche-code', function () {
-        return Inertia::render('Stagiaire/RechercheCode');
-    })->name('recherche.code');
+    Route::get('/recherche-code', [App\Http\Controllers\DemandeController::class, 'create'])->name('recherche.code');
 
     // Routes pour les emails
     Route::post('/api/emails/demande-confirmation', [EmailController::class, 'sendDemandeConfirmation']);
@@ -240,6 +238,11 @@ Route::get('/dashboard', function () {
 
     // Route pour télécharger le rapport mensuel
     Route::get('/admin/rapport-mensuel', [RapportController::class, 'telecharger'])->name('admin.rapport-mensuel');
+
+    Route::post('/stagiaire/notifications/{id}/mark-as-read', [
+        \App\Http\Controllers\Stagiaire\NotificationController::class,
+        'markAsRead'
+    ])->name('stagiaire.notifications.markAsRead');
 });
 
 require __DIR__.'/auth.php';

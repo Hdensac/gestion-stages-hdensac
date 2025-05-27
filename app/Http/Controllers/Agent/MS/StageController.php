@@ -15,6 +15,7 @@ use Illuminate\Support\Facades\Log;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Inertia\Inertia;
+use App\Notifications\StagiaireNotification;
 
 class StageController extends Controller
 {
@@ -811,30 +812,29 @@ class StageController extends Controller
                 'statut' => 'Réaffectée'
             ]);
 
-            // Envoi du mail au stagiaire
+            // Après la réaffectation, notifier le stagiaire et les membres du groupe
             try {
                 $stagiaire = $stage->demandeStage ? $stage->demandeStage->stagiaire : null;
                 $nouveauMS = \App\Models\User::find($validated['nouveau_maitre_stage_id']);
-                if ($stagiaire && $stagiaire->user && $stagiaire->user->email && $nouveauMS) {
-                    \Mail::to($stagiaire->user->email)
-                        ->send(new \App\Mail\AffectationMaitreStageMail($stagiaire, $stage, $nouveauMS, true));
+                if ($stagiaire && $stagiaire->user && $nouveauMS) {
+                    $stagiaire->user->notify(new StagiaireNotification(
+                        'Votre stage a été réaffecté à un nouveau maître de stage.',
+                        route('stagiaire.stages')
+                    ));
                 }
-                // Envoi aux membres du groupe si besoin
                 $demande = $stage->demandeStage;
                 if ($demande && $demande->nature === 'Groupe' && $demande->membres) {
                     foreach ($demande->membres as $membre) {
-                        if (
-                            $membre->user &&
-                            $membre->user->email &&
-                            $stagiaire && $stagiaire->user->email !== $membre->user->email
-                        ) {
-                            \Mail::to($membre->user->email)
-                                ->send(new \App\Mail\AffectationMaitreStageMail($membre, $stage, $nouveauMS, true));
+                        if ($membre->user && $stagiaire && $stagiaire->user->id !== $membre->user->id) {
+                            $membre->user->notify(new StagiaireNotification(
+                                'Votre groupe a été réaffecté à un nouveau maître de stage.',
+                                route('stagiaire.stages')
+                            ));
                         }
                     }
                 }
             } catch (\Exception $e) {
-                \Log::error('Erreur lors de l\'envoi du mail de réaffectation MS', [
+                \Log::error('Erreur lors de l\'envoi de la notification Laravel (réaffectation)', [
                     'error' => $e->getMessage(),
                     'stage_id' => $stage->id
                 ]);
