@@ -44,7 +44,7 @@ class EmailController extends Controller
                     $demande,
                     $user,
                     $demande->code_suivi,
-                    route('stagiaire.mes-demandes')
+                    route('mes.demandes')
                 ));
 
             // Envoyer aux membres du groupe si demandé
@@ -62,7 +62,7 @@ class EmailController extends Controller
                             $demande,
                             null,
                             $demande->code_suivi,
-                            route('stagiaire.mes-demandes')
+                            route('mes.demandes')
                         ));
                 }
             }

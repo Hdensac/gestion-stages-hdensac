@@ -231,23 +231,26 @@
           </div>
         </div>
         
-        <div v-if="demande.statut === 'Acceptée'" class="mt-6 bg-white rounded-lg shadow-md overflow-hidden">
-          <div class="border-b border-gray-200 bg-gradient-to-r from-blue-600 to-blue-800 py-4 px-6">
-            <h3 class="text-lg font-semibold text-white flex items-center gap-2">
-              <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                <circle cx="12" cy="12" r="10"></circle>
-                <line x1="12" y1="8" x2="12" y2="16"></line>
-                <line x1="8" y1="12" x2="16" y2="12"></line>
-              </svg>
+        <div v-if="demande.statut === 'Acceptée'" class="mt-6 bg-white/80 backdrop-blur-sm rounded-2xl shadow-xl shadow-blue-100/20 overflow-hidden border border-white/20 animate-fade-in-up hover:shadow-2xl hover:shadow-blue-100/30 transition-all duration-500" style="animation-delay: 0.3s">
+          <div class="bg-gradient-to-r from-blue-600 via-blue-700 to-blue-800 py-6 px-8 relative overflow-hidden">
+            <div class="absolute inset-0 bg-white/10 backdrop-blur-sm"></div>
+            <h3 class="text-xl font-bold text-white flex items-center gap-3 relative z-10">
+              <div class="p-2 bg-white/20 rounded-lg backdrop-blur-sm">
+                <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                  <circle cx="12" cy="12" r="10"></circle>
+                  <line x1="12" y1="8" x2="12" y2="16"></line>
+                  <line x1="8" y1="12" x2="16" y2="12"></line>
+                </svg>
+              </div>
               Actions disponibles
             </h3>
           </div>
-          <div class="p-6">
+          <div class="p-8">
             <button
               @click="openMaitreStageModal"
-              class="px-4 py-3 bg-indigo-600 text-white rounded-md hover:bg-indigo-700 transition-colors flex items-center gap-2 font-medium"
+              class="group px-8 py-4 bg-gradient-to-r from-indigo-600 to-indigo-700 text-white rounded-xl hover:from-indigo-700 hover:to-indigo-800 transition-all duration-300 flex items-center gap-3 font-bold text-lg shadow-lg hover:shadow-xl transform hover:-translate-y-1"
             >
-              <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 group-hover:scale-110 transition-transform duration-300" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4" />
               </svg>
               Affecter un maître de stage
@@ -257,42 +260,45 @@
       </div>
     </div>
 
+    <!-- Modales modernisées -->
     <!-- Modal de rejet -->
     <Modal :show="showRejectModal" @close="closeRejectModal">
-      <div class="p-6">
-        <h2 class="text-lg font-medium text-gray-900 mb-4 flex items-center gap-2">
-          <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-red-500" viewBox="0 0 20 20" fill="currentColor">
-            <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM8.707 7.293a1 1 0 00-1.414 1.414L8.586 10l-1.293 1.293a1 1 0 101.414 1.414L10 11.414l1.293 1.293a1 1 0 001.414-1.414L11.414 10l1.293-1.293a1 1 0 00-1.414-1.414L10 8.586 8.707 7.293z" clip-rule="evenodd" />
-          </svg>
+      <div class="p-8 bg-white/95 backdrop-blur-sm rounded-2xl shadow-2xl">
+        <h2 class="text-2xl font-bold text-gray-900 mb-6 flex items-center gap-3">
+          <div class="p-3 bg-red-100 rounded-xl">
+            <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 text-red-600" viewBox="0 0 20 20" fill="currentColor">
+              <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM8.707 7.293a1 1 0 00-1.414 1.414L8.586 10l-1.293 1.293a1 1 0 101.414 1.414L10 11.414l1.293 1.293a1 1 0 001.414-1.414L11.414 10l1.293-1.293a1 1 0 00-1.414-1.414L10 8.586 8.707 7.293z" clip-rule="evenodd" />
+            </svg>
+          </div>
           Rejeter la demande
         </h2>
-        <div class="mb-4">
-          <label class="block text-sm font-medium text-gray-700 mb-2">
+        <div class="mb-6">
+          <label class="block text-sm font-bold text-gray-700 mb-3 uppercase tracking-wide">
             Motif du rejet
           </label>
           <textarea
             v-model="rejectForm.motif_refus"
-            rows="4"
-            class="w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring focus:ring-blue-500 focus:ring-opacity-20"
-            placeholder="Veuillez expliquer le motif du rejet..."
+            rows="5"
+            class="w-full rounded-xl border-gray-200 shadow-sm focus:border-blue-500 focus:ring focus:ring-blue-200 focus:ring-opacity-50 text-gray-900 font-medium"
+            placeholder="Veuillez expliquer en détail le motif du rejet..."
           ></textarea>
-          <p v-if="rejectForm.errors.motif_refus" class="mt-2 text-sm text-red-600">
+          <p v-if="rejectForm.errors.motif_refus" class="mt-3 text-sm text-red-600">
             {{ rejectForm.errors.motif_refus }}
           </p>
         </div>
         <div class="flex justify-end gap-4">
           <button
             @click="closeRejectModal"
-            class="px-4 py-2 bg-gray-100 text-gray-700 rounded-md border border-gray-300 hover:bg-gray-200 transition-colors"
+            class="px-6 py-3 bg-gray-100 text-gray-700 rounded-xl border border-gray-200 hover:bg-gray-200 transition-all duration-300 font-medium"
           >
             Annuler
           </button>
           <button
             @click="rejectDemande"
-            class="px-4 py-2 bg-red-600 text-white rounded-md hover:bg-red-700 transition-colors flex items-center gap-2"
+            class="px-6 py-3 bg-gradient-to-r from-red-600 to-red-700 text-white rounded-xl hover:from-red-700 hover:to-red-800 transition-all duration-300 flex items-center gap-2 font-medium shadow-lg hover:shadow-xl transform hover:-translate-y-0.5"
             :disabled="rejectForm.processing"
           >
-            <svg v-if="rejectForm.processing" class="animate-spin -ml-1 mr-2 h-4 w-4 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+            <svg v-if="rejectForm.processing" class="animate-spin -ml-1 mr-2 h-5 w-5 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
               <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
               <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
             </svg>
@@ -304,29 +310,31 @@
 
     <!-- Modal de confirmation d'approbation -->
     <Modal :show="showApproveModal" @close="closeApproveModal">
-      <div class="p-6">
-        <h2 class="text-lg font-medium text-gray-900 mb-4 flex items-center gap-2">
-          <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-emerald-500" viewBox="0 0 20 20" fill="currentColor">
-            <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd" />
-          </svg>
+      <div class="p-8 bg-white/95 backdrop-blur-sm rounded-2xl shadow-2xl">
+        <h2 class="text-2xl font-bold text-gray-900 mb-6 flex items-center gap-3">
+          <div class="p-3 bg-emerald-100 rounded-xl">
+            <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 text-emerald-600" viewBox="0 0 20 20" fill="currentColor">
+              <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd" />
+            </svg>
+          </div>
           Confirmer l'approbation
         </h2>
-        <p class="text-sm text-gray-600 mb-4">
+        <p class="text-sm text-gray-600 mb-6">
           Êtes-vous sûr de vouloir approuver cette demande de stage ? Cette action enverra une notification au stagiaire.
         </p>
         <div class="flex justify-end gap-4">
           <button
             @click="closeApproveModal"
-            class="px-4 py-2 bg-gray-100 text-gray-700 rounded-md border border-gray-300 hover:bg-gray-200 transition-colors"
+            class="px-6 py-3 bg-gray-100 text-gray-700 rounded-xl border border-gray-200 hover:bg-gray-200 transition-all duration-300 font-medium"
           >
             Annuler
           </button>
           <button
             @click="approveDemande"
-            class="px-4 py-2 bg-emerald-600 text-white rounded-md hover:bg-emerald-700 transition-colors flex items-center gap-2"
+            class="px-6 py-3 bg-gradient-to-r from-emerald-600 to-emerald-700 text-white rounded-xl hover:from-emerald-700 hover:to-emerald-800 transition-all duration-300 flex items-center gap-2 font-medium shadow-lg hover:shadow-xl transform hover:-translate-y-0.5"
             :disabled="approveForm.processing"
           >
-            <svg v-if="approveForm.processing" class="animate-spin -ml-1 mr-2 h-4 w-4 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+            <svg v-if="approveForm.processing" class="animate-spin -ml-1 mr-2 h-5 w-5 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
               <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
               <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
             </svg>
@@ -338,20 +346,22 @@
 
     <!-- Modal d'affectation de maître de stage -->
     <Modal :show="showMaitreStageModal" @close="closeMaitreStageModal">
-      <div class="p-6">
-        <h2 class="text-lg font-medium text-gray-900 mb-4 flex items-center gap-2">
-          <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-indigo-500" viewBox="0 0 20 20" fill="currentColor">
-            <path d="M13 6a3 3 0 11-6 0 3 3 0 016 0zM18 8a2 2 0 11-4 0 2 2 0 014 0zM14 15a4 4 0 00-8 0v3h8v-3zM6 8a2 2 0 11-4 0 2 2 0 014 0zM16 18v-3a5.972 5.972 0 00-.75-2.906A3.005 3.005 0 0119 15v3h-3zM4.75 12.094A5.973 5.973 0 004 15v3H1v-3a3 3 0 013.75-2.906z" />
-          </svg>
+      <div class="p-8 bg-white/95 backdrop-blur-sm rounded-2xl shadow-2xl">
+        <h2 class="text-2xl font-bold text-gray-900 mb-6 flex items-center gap-3">
+          <div class="p-3 bg-indigo-100 rounded-xl">
+            <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 text-indigo-600" viewBox="0 0 20 20" fill="currentColor">
+              <path d="M13 6a3 3 0 11-6 0 3 3 0 016 0zM18 8a2 2 0 11-4 0 2 2 0 014 0zM14 15a4 4 0 00-8 0v3h8v-3zM6 8a2 2 0 11-4 0 2 2 0 014 0zM16 18v-3a5.972 5.972 0 00-.75-2.906A3.005 3.005 0 0119 15v3h-3zM4.75 12.094A5.973 5.973 0 004 15v3H1v-3a3 3 0 013.75-2.906z" />
+            </svg>
+          </div>
           Affecter un maître de stage
         </h2>
-        <div class="mb-4">
-          <label class="block text-sm font-medium text-gray-700 mb-2">
+        <div class="mb-6">
+          <label class="block text-sm font-bold text-gray-700 mb-3 uppercase tracking-wide">
             Sélectionner un agent avec le rôle MS
           </label>
           <select
             v-model="selectedMaitreStageId"
-            class="w-full rounded-md border-gray-300 shadow-sm focus:border-blue-300 focus:ring focus:ring-blue-200 focus:ring-opacity-50"
+            class="w-full rounded-xl border-gray-200 shadow-sm focus:border-blue-500 focus:ring focus:ring-blue-200 focus:ring-opacity-50 text-gray-900 font-medium"
           >
             <option value="" disabled>Sélectionner un maître de stage</option>
             <option v-for="agent in maitreStageAgents" :key="agent.id" :value="agent.id">
@@ -359,20 +369,20 @@
               {{ agent.structure_responsable ? '- Responsable de: ' + agent.structure_responsable.libelle : '' }}
             </option>
           </select>
-          <p v-if="maitreStageForm.errors.maitre_stage_id" class="mt-2 text-sm text-red-600">
+          <p v-if="maitreStageForm.errors.maitre_stage_id" class="mt-3 text-sm text-red-600">
             {{ maitreStageForm.errors.maitre_stage_id }}
           </p>
         </div>
         <div class="flex justify-end gap-4">
           <button
             @click="closeMaitreStageModal"
-            class="px-4 py-2 bg-gray-100 text-gray-700 rounded-md border border-gray-300 hover:bg-gray-200 transition-colors"
+            class="px-6 py-3 bg-gray-100 text-gray-700 rounded-xl border border-gray-200 hover:bg-gray-200 transition-all duration-300 font-medium"
           >
             Annuler
           </button>
           <button
             @click="submitMaitreStage"
-            class="px-4 py-2 bg-indigo-600 text-white rounded-md hover:bg-indigo-700 transition-colors flex items-center gap-2"
+            class="px-6 py-3 bg-gradient-to-r from-indigo-600 to-indigo-700 text-white rounded-xl hover:from-indigo-700 hover:to-indigo-800 transition-all duration-300 flex items-center gap-2 font-medium shadow-lg hover:shadow-xl transform hover:-translate-y-0.5"
             :disabled="maitreStageForm.processing || !selectedMaitreStageId"
           >
             <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
@@ -382,7 +392,7 @@
           </button>
           <button
             @click="fetchMaitreStageAgents"
-            class="px-4 py-2 bg-yellow-500 text-white rounded-md hover:bg-yellow-600 transition-colors flex items-center gap-2"
+            class="px-6 py-3 bg-gradient-to-r from-yellow-500 to-yellow-600 text-white rounded-xl hover:from-yellow-600 hover:to-yellow-700 transition-all duration-300 flex items-center gap-2 font-medium shadow-lg hover:shadow-xl transform hover:-translate-y-0.5"
             type="button"
           >
             <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
@@ -392,12 +402,12 @@
           </button>
         </div>
 
-        <div v-if="maitreStageAgents.length === 0" class="mt-4 p-4 bg-yellow-50 border border-yellow-200 rounded-md text-yellow-800">
-          <div class="flex items-center gap-2">
-            <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-yellow-500" viewBox="0 0 20 20" fill="currentColor">
+        <div v-if="maitreStageAgents.length === 0" class="mt-6 p-6 bg-gradient-to-r from-yellow-50 to-yellow-100/50 rounded-xl border border-yellow-200/50">
+          <div class="flex items-center gap-3">
+            <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 text-yellow-500" viewBox="0 0 20 20" fill="currentColor">
               <path fill-rule="evenodd" d="M8.257 3.099c.765-1.36 2.722-1.36 3.486 0l5.58 9.92c.75 1.334-.213 2.98-1.742 2.98H4.42c-1.53 0-2.493-1.646-1.743-2.98l5.58-9.92zM11 13a1 1 0 11-2 0 1 1 0 012 0zm-1-8a1 1 0 00-1 1v3a1 1 0 002 0V6a1 1 0 00-1-1z" clip-rule="evenodd" />
             </svg>
-            <span>Aucun agent avec le rôle MS n'a été trouvé. Veuillez vérifier que des agents avec ce rôle existent dans le système.</span>
+            <span class="text-yellow-800 font-medium">Aucun agent avec le rôle MS n'a été trouvé. Veuillez vérifier que des agents avec ce rôle existent dans le système.</span>
           </div>
         </div>
       </div>
@@ -581,3 +591,96 @@ onMounted(() => {
   }
 });
 </script>
+
+<style scoped>
+@keyframes fadeInUp {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+@keyframes slideInRight {
+  from {
+    opacity: 0;
+    transform: translateX(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateX(0);
+  }
+}
+
+.animate-fade-in {
+  animation: fadeIn 0.5s ease-out forwards;
+}
+
+.animate-fade-in-up {
+  animation: fadeInUp 0.6s ease-out forwards;
+}
+
+.animate-slide-in-right {
+  animation: slideInRight 0.5s ease-out forwards;
+}
+
+/* Ajout d'un effet de glassmorphism subtil */
+.backdrop-blur-sm {
+  backdrop-filter: blur(8px);
+}
+
+/* Amélioration des transitions */
+.transition-all {
+  transition-property: all;
+  transition-timing-function: cubic-bezier(0.4, 0, 0.2, 1);
+  transition-duration: 300ms;
+}
+
+/* Amélioration des ombres */
+.shadow-xl {
+  box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
+}
+
+.shadow-2xl {
+  box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.25);
+}
+
+/* Amélioration des hover states */
+.hover\:shadow-xl:hover {
+  box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
+}
+
+.hover\:shadow-2xl:hover {
+  box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.25);
+}
+
+/* Amélioration des gradients */
+.bg-gradient-to-r {
+  background-size: 200% 200%;
+  animation: gradient 15s ease infinite;
+}
+
+@keyframes gradient {
+  0% {
+    background-position: 0% 50%;
+  }
+  50% {
+    background-position: 100% 50%;
+  }
+  100% {
+    background-position: 0% 50%;
+  }
+}
+</style>

@@ -32,7 +32,7 @@ class DemandeController extends Controller
         return Inertia::render('Stagiaire/RechercheCode', [
             'structures' => $structures,
             'users' => $users,
-            'notifications' => Auth::check() && method_exists(Auth::user(), 'unreadNotifications') ? Auth::user()->unreadNotifications()->orderBy('created_at', 'desc')->take(10)->get() : [],
+            'notifications' => Auth::check() && method_exists(Auth::user(), 'notifications') ? Auth::user()->notifications()->whereNull('read_at')->orderBy('created_at', 'desc')->take(10)->get() : [],
         ]);
     }
 
@@ -159,7 +159,7 @@ class DemandeController extends Controller
                 if ($stagiaire && $stagiaire->user) {
                     $stagiaire->user->notify(new StagiaireNotification(
                         'Votre demande de stage a bien été soumise.',
-                        route('stagiaire.mes-demandes')
+                        route('mes.demandes')
                     ));
                 }
                 if ($validated['nature'] === 'Groupe' && !empty($validated['membres'])) {
@@ -168,7 +168,7 @@ class DemandeController extends Controller
                         if ($membreUser && (!$stagiaire->user || $membreUser->id !== $stagiaire->user->id)) {
                             $membreUser->notify(new StagiaireNotification(
                                 'Vous avez été ajouté à une demande de stage en groupe.',
-                                route('stagiaire.mes-demandes')
+                                route('mes.demandes')
                             ));
                         }
                     }
@@ -222,7 +222,7 @@ class DemandeController extends Controller
 
         return Inertia::render('Stagiaire/ShowDemande', [
             'demande' => $demande,
-            'notifications' => Auth::check() && method_exists(Auth::user(), 'unreadNotifications') ? Auth::user()->unreadNotifications()->orderBy('created_at', 'desc')->take(10)->get() : [],
+            'notifications' => Auth::check() && method_exists(Auth::user(), 'notifications') ? Auth::user()->notifications()->whereNull('read_at')->orderBy('created_at', 'desc')->take(10)->get() : [],
         ]);
     }
 
@@ -250,7 +250,7 @@ class DemandeController extends Controller
 
         return Inertia::render('Stagiaire/ShowDemande', [
             'demande' => $demande,
-            'notifications' => Auth::check() && method_exists(Auth::user(), 'unreadNotifications') ? Auth::user()->unreadNotifications()->orderBy('created_at', 'desc')->take(10)->get() : [],
+            'notifications' => Auth::check() && method_exists(Auth::user(), 'notifications') ? Auth::user()->notifications()->whereNull('read_at')->orderBy('created_at', 'desc')->take(10)->get() : [],
         ]);
     }
 
@@ -276,7 +276,7 @@ class DemandeController extends Controller
         // Retourner la vue avec les demandes (vides ou non)
         return Inertia::render('Stagiaire/MesDemandes', [
             'demandes' => $demandes,
-            'notifications' => Auth::check() && method_exists(Auth::user(), 'unreadNotifications') ? Auth::user()->unreadNotifications()->orderBy('created_at', 'desc')->take(10)->get() : [],
+            'notifications' => Auth::check() && method_exists(Auth::user(), 'notifications') ? Auth::user()->notifications()->whereNull('read_at')->orderBy('created_at', 'desc')->take(10)->get() : [],
         ]);
     }
 
@@ -318,6 +318,14 @@ class DemandeController extends Controller
         try {
             Mail::to($user->email)->send(new \App\Mail\DemandeAnnulationMail($demande, $user));
 
+            // Notifier le stagiaire principal in-app
+            if ($user) {
+                $user->notify(new \App\Notifications\StagiaireNotification(
+                    'Votre demande de stage a été annulée.',
+                    route('mes.demandes')
+                ));
+            }
+
             // Si c'est une demande de groupe, envoyer aussi aux membres
             if ($demande->nature === 'Groupe') {
                 $membres = \App\Models\MembreGroupe::where('demande_stage_id', $demande->id)->get();
@@ -326,6 +334,11 @@ class DemandeController extends Controller
                     $membreUser = User::find($membre->user_id);
                     if ($membreUser && $membreUser->id !== $user->id) {
                         Mail::to($membreUser->email)->send(new \App\Mail\DemandeAnnulationMail($demande, $membreUser));
+                        // Notifier chaque membre in-app
+                        $membreUser->notify(new \App\Notifications\StagiaireNotification(
+                            'Une demande de stage à laquelle vous étiez associé a été annulée.',
+                            route('mes.demandes')
+                        ));
                     }
                 }
             }

@@ -385,6 +385,28 @@ class StageController extends Controller
                     }
                 }
 
+                // Après l'envoi de l'email lors de la création ou modification du thème
+                if ($stage->demandeStage && $stage->demandeStage->stagiaire && $stage->demandeStage->stagiaire->user) {
+                    $stagiaireUser = $stage->demandeStage->stagiaire->user;
+                    $etat = $validated['etat'] ?? null;
+                    if ($etat === 'Proposé') {
+                        $stagiaireUser->notify(new \App\Notifications\StagiaireNotification(
+                            'Un nouveau thème de stage a été proposé pour votre stage.',
+                            route('stagiaire.stages.show', $stage->id)
+                        ));
+                    } elseif ($etat === 'Modifié') {
+                        $stagiaireUser->notify(new \App\Notifications\StagiaireNotification(
+                            'Le thème de votre stage a été modifié.',
+                            route('stagiaire.stages.show', $stage->id)
+                        ));
+                    } elseif ($etat === 'Validé') {
+                        $stagiaireUser->notify(new \App\Notifications\StagiaireNotification(
+                            'Le thème de votre stage a été validé !',
+                            route('stagiaire.stages.show', $stage->id)
+                        ));
+                    }
+                }
+
                 Log::info('Thème du stage mis à jour', [
                     'stage_id' => $stage->id,
                     'theme_id' => $theme->id,
@@ -421,6 +443,28 @@ class StageController extends Controller
                             'error' => $e->getMessage(),
                             'stage_id' => $stage->id
                         ]);
+                    }
+                }
+
+                // Après l'envoi de l'email lors de la création ou modification du thème
+                if ($stage->demandeStage && $stage->demandeStage->stagiaire && $stage->demandeStage->stagiaire->user) {
+                    $stagiaireUser = $stage->demandeStage->stagiaire->user;
+                    $etat = $validated['etat'] ?? null;
+                    if ($etat === 'Proposé') {
+                        $stagiaireUser->notify(new \App\Notifications\StagiaireNotification(
+                            'Un nouveau thème de stage a été proposé pour votre stage.',
+                            route('stagiaire.stages.show', $stage->id)
+                        ));
+                    } elseif ($etat === 'Modifié') {
+                        $stagiaireUser->notify(new \App\Notifications\StagiaireNotification(
+                            'Le thème de votre stage a été modifié.',
+                            route('stagiaire.stages.show', $stage->id)
+                        ));
+                    } elseif ($etat === 'Validé') {
+                        $stagiaireUser->notify(new \App\Notifications\StagiaireNotification(
+                            'Le thème de votre stage a été validé !',
+                            route('stagiaire.stages.show', $stage->id)
+                        ));
                     }
                 }
 
@@ -498,6 +542,15 @@ class StageController extends Controller
                 'etat' => 'Validé'
             ]);
 
+            // Lors du refus du thème
+            if ($stage->demandeStage && $stage->demandeStage->stagiaire && $stage->demandeStage->stagiaire->user) {
+                $stagiaireUser = $stage->demandeStage->stagiaire->user;
+                $stagiaireUser->notify(new \App\Notifications\StagiaireNotification(
+                    'Le thème de votre stage a été refusé.',
+                    route('stagiaire.stages.show', $stage->id)
+                ));
+            }
+
             Log::info('Thème du stage validé', [
                 'stage_id' => $stage->id,
                 'theme_id' => $stage->themeStage->id,
@@ -552,6 +605,15 @@ class StageController extends Controller
                 'etat' => 'Refusé',
                 'motif_refus' => $validated['motif_refus']
             ]);
+
+            // Lors du refus du thème
+            if ($stage->demandeStage && $stage->demandeStage->stagiaire && $stage->demandeStage->stagiaire->user) {
+                $stagiaireUser = $stage->demandeStage->stagiaire->user;
+                $stagiaireUser->notify(new \App\Notifications\StagiaireNotification(
+                    'Le thème de votre stage a été refusé.',
+                    route('stagiaire.stages.show', $stage->id)
+                ));
+            }
 
             Log::info('Thème du stage refusé', [
                 'stage_id' => $stage->id,
@@ -633,20 +695,13 @@ class StageController extends Controller
                 ])
             );
 
-            // Envoyer un mail au stagiaire
-            try {
-                if ($stage->stagiaire_info && $stage->stagiaire_info->email) {
-                    Mail::to($stage->stagiaire_info->email)
-                        ->send(new EvaluationNotifieeMail($stage->stagiaire_info, $stage, $evaluation));
-                } elseif ($stage->demandeStage && $stage->demandeStage->stagiaire && $stage->demandeStage->stagiaire->user) {
-                    Mail::to($stage->demandeStage->stagiaire->user->email)
-                        ->send(new EvaluationNotifieeMail($stage->demandeStage->stagiaire, $stage, $evaluation));
-                }
-            } catch (\Exception $e) {
-                Log::error('Erreur lors de l\'envoi du mail de notification de l\'évaluation', [
-                    'error' => $e->getMessage(),
-                    'stage_id' => $stage->id
-                ]);
+            // Lors de la soumission d'une évaluation
+            if ($stage->demandeStage && $stage->demandeStage->stagiaire && $stage->demandeStage->stagiaire->user) {
+                $stagiaireUser = $stage->demandeStage->stagiaire->user;
+                $stagiaireUser->notify(new \App\Notifications\StagiaireNotification(
+                    'Votre stage a été évalué par votre maître de stage.',
+                    route('stagiaire.stages.show', $stage->id)
+                ));
             }
 
             Log::info('Évaluation enregistrée', [

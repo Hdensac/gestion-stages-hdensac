@@ -605,7 +605,7 @@ class DemandeController extends Controller
                 if ($demande->stagiaire && $demande->stagiaire->user) {
                     $demande->stagiaire->user->notify(new StagiaireNotification(
                         'Votre demande de stage a été refusée.',
-                        route('stagiaire.mes-demandes')
+                        route('mes.demandes')
                     ));
                 }
                 if ($demande->nature === 'Groupe' && $demande->membres) {
@@ -613,7 +613,7 @@ class DemandeController extends Controller
                         if ($membre->user && $demande->stagiaire && $demande->stagiaire->user && $membre->user->id !== $demande->stagiaire->user->id) {
                             $membre->user->notify(new StagiaireNotification(
                                 'La demande de stage de votre groupe a été refusée.',
-                                route('stagiaire.mes-demandes')
+                                route('mes.demandes')
                             ));
                         }
                     }
