@@ -11,7 +11,7 @@
           </div>
           <div>
             <h2 class="text-2xl font-bold text-gray-900">Détails du Stage</h2>
-            <p class="text-sm text-gray-500 mt-1">{{ stage.structure?.libelle || 'Structure non définie' }}</p>
+            <p class="text-base text-gray-600 mt-1 font-medium">{{ stage.structure?.libelle || 'Structure non définie' }}</p>
           </div>
         </div>
         
@@ -160,25 +160,25 @@
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4" />
                       </svg>
                     </div>
-                    <h3 class="text-lg font-semibold text-gray-900">Informations du stage</h3>
+                    <h3 class="text-xl font-semibold text-gray-900">Informations du stage</h3>
                   </div>
                   
                   <div class="space-y-4">
                     <div class="flex justify-between items-center py-2 border-b border-indigo-100 last:border-b-0">
-                      <span class="text-sm font-medium text-gray-600">Structure</span>
-                      <span class="text-sm text-gray-900 font-medium">{{ stage.structure?.libelle || 'Non spécifiée' }}</span>
+                      <span class="text-base font-medium text-gray-700">Structure</span>
+                      <span class="text-base text-gray-900 font-semibold">{{ stage.structure?.libelle || 'Non spécifiée' }}</span>
                     </div>
                     <div class="flex justify-between items-center py-2 border-b border-indigo-100 last:border-b-0">
-                      <span class="text-sm font-medium text-gray-600">Type</span>
-                      <span class="text-sm text-gray-900 font-medium">{{ stage.type || 'Non renseigné' }}</span>
+                      <span class="text-base font-medium text-gray-700">Type</span>
+                      <span class="text-base text-gray-900 font-semibold">{{ stage.type || 'Non renseigné' }}</span>
                     </div>
                     <div class="flex justify-between items-center py-2 border-b border-indigo-100 last:border-b-0">
-                      <span class="text-sm font-medium text-gray-600">Période</span>
-                      <span class="text-sm text-gray-900 font-medium">{{ formatDate(stage.date_debut) }} - {{ formatDate(stage.date_fin) }}</span>
+                      <span class="text-base font-medium text-gray-700">Période</span>
+                      <span class="text-base text-gray-900 font-semibold">{{ formatDate(stage.date_debut) }} - {{ formatDate(stage.date_fin) }}</span>
                     </div>
                     <div class="flex justify-between items-center py-2">
-                      <span class="text-sm font-medium text-gray-600">Durée</span>
-                      <span class="text-sm text-gray-900 font-medium">{{ calculateDuration(stage.date_debut, stage.date_fin) }}</span>
+                      <span class="text-base font-medium text-gray-700">Durée</span>
+                      <span class="text-base text-gray-900 font-semibold">{{ calculateDuration(stage.date_debut, stage.date_fin) }}</span>
                     </div>
                   </div>
                 </div>
@@ -307,8 +307,8 @@
                   </div>
                   
                   <div v-if="stage.commentaire_evaluation" class="p-4 bg-white rounded-lg border border-emerald-200">
-                    <h4 class="text-sm font-medium text-gray-700 mb-2">Commentaire d'évaluation</h4>
-                    <p class="text-gray-600 leading-relaxed">{{ stage.commentaire_evaluation }}</p>
+                    <h4 class="text-base font-semibold text-gray-700 mb-2">Commentaire d'évaluation</h4>
+                    <p class="text-base text-gray-600 leading-relaxed">{{ stage.commentaire_evaluation }}</p>
                   </div>
                 </div>
                 
@@ -318,9 +318,9 @@
                       <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
                     </svg>
                   </div>
-                  <h4 class="text-lg font-medium text-gray-900 mb-2">Évaluation en attente</h4>
-                  <p class="text-gray-600">Ce stage n'a pas encore été évalué.</p>
-                  <p v-if="stage.statut !== 'Terminé'" class="text-sm text-gray-500 mt-2">
+                  <h4 class="text-xl font-semibold text-gray-900 mb-2">Évaluation en attente</h4>
+                  <p class="text-base text-gray-600">Ce stage n'a pas encore été évalué.</p>
+                  <p v-if="stage.statut !== 'Terminé'" class="text-base text-gray-500 mt-2">
                     L'évaluation sera disponible une fois le stage terminé.
                   </p>
                 </div>

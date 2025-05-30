@@ -16,7 +16,7 @@
             <h2 class="text-2xl font-bold bg-gradient-to-r from-indigo-700 to-purple-700 bg-clip-text text-transparent">
               Mes Stages
             </h2>
-            <p class="text-sm text-indigo-600/70 font-medium">Suivez vos stages et progressions</p>
+            <p class="text-base text-indigo-600/70 font-semibold">Suivez vos stages et progressions</p>
           </div>
         </div>
       </div>
@@ -39,7 +39,7 @@
                 </div>
                 <div>
                   <h3 class="text-lg font-semibold text-red-800 mb-1">Une erreur s'est produite</h3>
-                  <p class="text-red-700">{{ error }}</p>
+                  <p class="text-base text-red-700">{{ error }}</p>
                 </div>
               </div>
             </div>
@@ -60,7 +60,7 @@
                 </div>
                 <div>
                   <h3 class="text-lg font-semibold text-blue-800 mb-1">Information</h3>
-                  <p class="text-blue-700">{{ message }}</p>
+                  <p class="text-base text-blue-700">{{ message }}</p>
                 </div>
               </div>
             </div>
@@ -71,9 +71,9 @@
         <Transition name="fade-scale" appear>
           <div v-if="stages.length === 0 && !error && !message" class="relative">
             <!-- Background décoratif -->
-            <div class="absolute inset-0 bg-gradient-to-br from-indigo-50 via-white to-purple-50 rounded-3xl"></div>
-            <div class="absolute top-0 right-0 w-64 h-64 bg-gradient-to-br from-indigo-200/30 to-purple-200/30 rounded-full -translate-y-32 translate-x-32 blur-3xl"></div>
-            <div class="absolute bottom-0 left-0 w-48 h-48 bg-gradient-to-tr from-blue-200/30 to-indigo-200/30 rounded-full translate-y-24 -translate-x-24 blur-3xl"></div>
+            <div class="absolute inset-0 bg-gradient-to-br from-indigo-100 via-blue-100 to-purple-100 rounded-3xl"></div>
+            <div class="absolute top-0 right-0 w-64 h-64 bg-gradient-to-br from-indigo-300/30 to-purple-300/30 rounded-full -translate-y-32 translate-x-32 blur-3xl"></div>
+            <div class="absolute bottom-0 left-0 w-48 h-48 bg-gradient-to-tr from-blue-300/30 to-indigo-300/30 rounded-full translate-y-24 -translate-x-24 blur-3xl"></div>
             
             <div class="relative bg-white/60 backdrop-blur-sm rounded-3xl border border-indigo-100/50 shadow-xl p-12 text-center">
               <!-- Animation de l'icône -->
@@ -148,13 +148,13 @@
                 class="group relative">
                 
                 <!-- Effet de halo au hover -->
-                <div class="absolute -inset-0.5 bg-gradient-to-r from-indigo-500 to-purple-500 rounded-3xl opacity-0 group-hover:opacity-20 blur transition-all duration-500"></div>
+                <div class="absolute -inset-0.5 bg-gradient-to-r from-indigo-600 to-purple-600 rounded-3xl opacity-0 group-hover:opacity-30 blur transition-all duration-500"></div>
                 
                 <div class="relative bg-white rounded-3xl shadow-lg border border-gray-100/50 overflow-hidden transform group-hover:-translate-y-2 group-hover:shadow-2xl transition-all duration-500">
                   <!-- En-tête avec gradient -->
-                  <div class="relative bg-gradient-to-br from-indigo-50 via-white to-purple-50 px-6 py-5 border-b border-indigo-100/50">
+                  <div class="relative bg-gradient-to-br from-indigo-100 via-blue-100 to-purple-100 px-6 py-5 border-b border-indigo-200/50">
                     <!-- Décoration background -->
-                    <div class="absolute top-0 right-0 w-32 h-32 bg-gradient-to-br from-indigo-200/20 to-purple-200/20 rounded-full -translate-y-16 translate-x-16"></div>
+                    <div class="absolute top-0 right-0 w-32 h-32 bg-gradient-to-br from-indigo-300/20 to-purple-300/20 rounded-full -translate-y-16 translate-x-16"></div>
                     
                     <div class="relative flex justify-between items-start">
                       <div class="flex-1 min-w-0">
@@ -165,12 +165,12 @@
                           <svg class="w-4 h-4 text-indigo-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 13.255A23.931 23.931 0 0112 15c-3.183 0-6.22-.62-9-1.745M16 6V4a2 2 0 00-2-2h-4a2 2 0 00-2-2v2m8 0H8m8 0v6l-3-2-3 2V6" />
                           </svg>
-                          <p class="text-sm font-medium text-indigo-700">{{ stage.type || 'Type non spécifié' }}</p>
+                          <p class="text-base font-medium text-indigo-700">{{ stage.type || 'Type non spécifié' }}</p>
                         </div>
                       </div>
                       
                       <div class="ml-4 flex-shrink-0">
-                        <span class="inline-flex items-center px-3 py-1.5 text-xs font-bold rounded-full shadow-sm"
+                        <span class="inline-flex items-center px-3 py-1.5 text-sm font-bold rounded-full shadow-sm"
                           :class="{
                             'bg-gradient-to-r from-green-400 to-green-500 text-white': stage.statut_calculé === 'Terminé',
                             'bg-gradient-to-r from-blue-400 to-blue-500 text-white animate-pulse': stage.statut_calculé === 'En cours',
@@ -184,7 +184,7 @@
 
                     <!-- Barre de progression pour les stages en cours -->
                     <div v-if="stage.statut_calculé === 'En cours'" class="mt-4">
-                      <div class="flex justify-between text-xs text-indigo-600 mb-1">
+                      <div class="flex justify-between text-sm text-indigo-600 mb-1 font-medium">
                         <span>Progression</span>
                         <span>{{ getProgressPercentage(stage) }}%</span>
                       </div>
@@ -203,16 +203,16 @@
                         <svg class="w-4 h-4 text-indigo-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                           <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
                         </svg>
-                        <p class="text-sm font-semibold text-gray-700">Période</p>
+                        <p class="text-base font-semibold text-gray-700">Période</p>
                       </div>
                       <div class="flex items-center justify-between text-sm">
-                        <div class="bg-white rounded-lg px-3 py-2 font-medium text-gray-800 shadow-sm">
+                        <div class="bg-white rounded-lg px-3 py-2 font-semibold text-gray-800 shadow-sm text-base">
                           {{ formatDate(stage.date_debut) }}
                         </div>
                         <div class="flex-1 mx-3">
                           <div class="border-t-2 border-dashed border-indigo-200"></div>
                         </div>
-                        <div class="bg-white rounded-lg px-3 py-2 font-medium text-gray-800 shadow-sm">
+                        <div class="bg-white rounded-lg px-3 py-2 font-semibold text-gray-800 shadow-sm text-base">
                           {{ formatDate(stage.date_fin) }}
                         </div>
                       </div>
@@ -224,16 +224,16 @@
                         <svg class="w-4 h-4 text-indigo-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                           <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
                         </svg>
-                        <p class="text-sm font-semibold text-gray-700">Maître de stage</p>
+                        <p class="text-base font-semibold text-gray-700">Maître de stage</p>
                       </div>
                       <div v-if="stage.maitre_stage_actuel" class="flex items-center space-x-3 bg-indigo-50/50 rounded-xl p-3">
                         <div class="w-8 h-8 bg-gradient-to-br from-indigo-400 to-purple-500 rounded-full flex items-center justify-center">
-                          <span class="text-white text-sm font-bold">
+                          <span class="text-white text-base font-bold">
                             {{ stage.maitre_stage_actuel.prenom?.charAt(0) }}{{ stage.maitre_stage_actuel.nom?.charAt(0) }}
                           </span>
                         </div>
                         <div>
-                          <p class="font-medium text-gray-800">
+                          <p class="font-semibold text-gray-800 text-base">
                             {{ stage.maitre_stage_actuel.prenom }} {{ stage.maitre_stage_actuel.nom }}
                           </p>
                         </div>
@@ -244,7 +244,7 @@
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
                           </svg>
                         </div>
-                        <p class="text-gray-500 italic">Non assigné</p>
+                        <p class="text-gray-500 italic text-base">Non assigné</p>
                       </div>
                     </div>
 
@@ -254,11 +254,11 @@
                         <svg class="w-4 h-4 text-indigo-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                           <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9.663 17h4.673M12 3v1m6.364 1.636l-.707.707M21 12h-1M4 12H3m3.343-5.657l-.707-.707m2.828 9.9a5 5 0 117.072 0l-.548.547A3.374 3.374 0 0014 18.469V19a2 2 0 11-4 0v-.531c0-.895-.356-1.754-.988-2.386l-.548-.547z" />
                         </svg>
-                        <p class="text-sm font-semibold text-gray-700">Thème</p>
+                        <p class="text-base font-semibold text-gray-700">Thème</p>
                       </div>
                       <div v-if="stage.themeStage" class="bg-white rounded-xl border border-gray-100 p-4">
-                        <p class="font-medium text-gray-800 mb-2">{{ stage.themeStage.intitule }}</p>
-                        <span class="inline-flex items-center px-2.5 py-1 text-xs font-bold rounded-lg"
+                        <p class="font-semibold text-gray-800 mb-2 text-base">{{ stage.themeStage.intitule }}</p>
+                        <span class="inline-flex items-center px-2.5 py-1 text-sm font-bold rounded-lg"
                           :class="{
                             'bg-gradient-to-r from-green-400 to-green-500 text-white': stage.themeStage.etat === 'Validé',
                             'bg-gradient-to-r from-yellow-400 to-yellow-500 text-white': stage.themeStage.etat === 'Proposé',
@@ -271,7 +271,7 @@
                         <svg class="w-8 h-8 text-gray-300 mx-auto mb-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                           <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1" d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.746 0 3.332.477 4.5 1.253v13C19.832 18.477 18.246 18 16.5 18c-1.746 0-3.332.477-4.5 1.253" />
                         </svg>
-                        <p class="text-gray-500 text-sm italic">Aucun thème proposé</p>
+                        <p class="text-gray-500 text-base italic">Aucun thème proposé</p>
                       </div>
                     </div>
                   </div>
@@ -279,7 +279,7 @@
                   <!-- Action button -->
                   <div class="px-6 pb-6">
                     <Link :href="route('stagiaire.stages.show', stage.id)" 
-                      class="group/btn w-full flex items-center justify-center px-6 py-3 bg-gradient-to-r from-indigo-600 to-purple-600 border border-transparent rounded-2xl font-semibold text-sm text-white shadow-lg hover:shadow-xl transform hover:-translate-y-0.5 transition-all duration-300">
+                      class="group/btn w-full flex items-center justify-center px-6 py-3 bg-gradient-to-r from-indigo-600 to-purple-600 border border-transparent rounded-2xl font-semibold text-base text-white shadow-lg hover:shadow-xl transform hover:-translate-y-0.5 transition-all duration-300">
                       <span class="mr-2">Voir les détails</span>
                       <svg class="w-4 h-4 transform group-hover/btn:translate-x-1 transition-transform duration-300" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 7l5 5m0 0l-5 5m5-5H6" />

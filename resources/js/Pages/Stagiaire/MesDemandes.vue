@@ -247,7 +247,7 @@ watch(searchQuery, () => {
           </div>
           <div>
             <h2 class="text-xl font-bold leading-tight text-gray-800">Mes Demandes de <span class="text-indigo-600">Stage</span></h2>
-            <p class="text-sm text-gray-600 mt-1">Gérez et suivez vos demandes</p>
+            <p class="text-base text-gray-600 mt-1 font-medium">Gérez et suivez vos demandes</p>
           </div>
         </div>
         
@@ -255,12 +255,12 @@ watch(searchQuery, () => {
           <!-- Statistiques rapides -->
           <div class="hidden md:flex items-center gap-2">
             <div class="bg-white/90 rounded-lg px-3 py-1.5 border border-indigo-200 shadow-sm">
-              <span class="text-xs text-indigo-600 font-medium">Total: </span>
-              <span class="text-sm font-bold text-indigo-800">{{ statistics.total }}</span>
+              <span class="text-sm text-indigo-600 font-medium">Total: </span>
+              <span class="text-base font-bold text-indigo-800">{{ statistics.total }}</span>
             </div>
             <div v-if="statistics.enAttente" class="bg-amber-50 rounded-lg px-3 py-1.5 border border-amber-200 shadow-sm">
-              <span class="text-xs text-amber-600 font-medium">En attente: </span>
-              <span class="text-sm font-bold text-amber-800">{{ statistics.enAttente }}</span>
+              <span class="text-sm text-amber-600 font-medium">En attente: </span>
+              <span class="text-base font-bold text-amber-800">{{ statistics.enAttente }}</span>
             </div>
           </div>
 
@@ -444,34 +444,7 @@ watch(searchQuery, () => {
 
             <!-- Statistiques visuelles -->
             <div v-if="hasDemandes" class="grid grid-cols-2 md:grid-cols-4 gap-4 mb-8">
-              <div class="bg-gradient-to-r from-indigo-500 to-blue-500 rounded-xl p-4 text-white shadow-lg">
-                <div class="flex items-center justify-between">
-                  <div>
-                    <p class="text-indigo-100 text-sm font-medium">Total</p>
-                    <p class="text-2xl font-bold">{{ statistics.total }}</p>
-                  </div>
-                  <div class="p-2 bg-white/20 rounded-lg">
-                    <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path>
-                    </svg>
-                  </div>
-                </div>
-              </div>
-
-              <div class="bg-gradient-to-r from-amber-400 to-yellow-500 rounded-xl p-4 text-white shadow-lg">
-                <div class="flex items-center justify-between">
-                  <div>
-                    <p class="text-amber-100 text-sm font-medium">En attente</p>
-                    <p class="text-2xl font-bold">{{ statistics.enAttente }}</p>
-                  </div>
-                  <div class="p-2 bg-white/20 rounded-lg">
-                    <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
-                    </svg>
-                  </div>
-                </div>
-              </div>
-
+              <!-- En cours card -->
               <div class="bg-gradient-to-r from-blue-400 to-indigo-500 rounded-xl p-4 text-white shadow-lg">
                 <div class="flex items-center justify-between">
                   <div>
@@ -486,6 +459,22 @@ watch(searchQuery, () => {
                 </div>
               </div>
 
+              <!-- En attente card -->
+              <div class="bg-gradient-to-r from-amber-400 to-yellow-500 rounded-xl p-4 text-white shadow-lg">
+                <div class="flex items-center justify-between">
+                  <div>
+                    <p class="text-amber-100 text-sm font-medium">En attente</p>
+                    <p class="text-2xl font-bold">{{ statistics.enAttente }}</p>
+                  </div>
+                  <div class="p-2 bg-white/20 rounded-lg">
+                    <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
+                    </svg>
+                  </div>
+                </div>
+              </div>
+
+              <!-- Acceptées card -->
               <div class="bg-gradient-to-r from-emerald-400 to-green-500 rounded-xl p-4 text-white shadow-lg">
                 <div class="flex items-center justify-between">
                   <div>
@@ -495,6 +484,21 @@ watch(searchQuery, () => {
                   <div class="p-2 bg-white/20 rounded-lg">
                     <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                       <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
+                    </svg>
+                  </div>
+                </div>
+              </div>
+
+              <!-- Refusées card -->
+              <div class="bg-gradient-to-r from-rose-500 to-red-500 rounded-xl p-4 text-white shadow-lg">
+                <div class="flex items-center justify-between">
+                  <div>
+                    <p class="text-rose-100 text-sm font-medium">Refusées</p>
+                    <p class="text-2xl font-bold">{{ statistics.refusees }}</p>
+                  </div>
+                  <div class="p-2 bg-white/20 rounded-lg">
+                    <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 14l2-2m0 0l2-2m-2 2l-2-2m2 2l2 2m7-2a9 9 0 11-18 0 9 9 0 0118 0z" />
                     </svg>
                   </div>
                 </div>
@@ -572,12 +576,12 @@ watch(searchQuery, () => {
                   </thead>
                   <tbody class="bg-white divide-y divide-indigo-50">
                     <tr v-for="demande in filteredAndSortedDemandes" :key="demande.id">
-                      <td class="px-6 py-4 font-mono text-sm text-indigo-800">{{ demande.code_suivi }}</td>
-                      <td class="px-6 py-4 text-sm">{{ demande.structure?.libelle || '-' }}</td>
-                      <td class="px-6 py-4 text-sm">{{ demande.nature }}</td>
+                      <td class="px-6 py-4 font-mono text-lg text-indigo-800 font-bold">{{ demande.code_suivi }}</td>
+                      <td class="px-6 py-4 text-lg">{{ demande.structure?.libelle || '-' }}</td>
+                      <td class="px-6 py-4 text-lg italic">{{ demande.nature }}</td>
                       <td class="px-6 py-4">
                         <span
-                          class="inline-flex items-center px-2.5 py-1 rounded-full font-semibold text-xs"
+                          class="inline-flex items-center px-2.5 py-1 rounded-full font-semibold text-sm"
                           :class="getStatusConfig(demande.statut).bg + ' ' + getStatusConfig(demande.statut).text + ' ' + getStatusConfig(demande.statut).border"
                         >
                           {{ demande.statut }}
@@ -612,9 +616,9 @@ watch(searchQuery, () => {
                   class="bg-white/90 border border-indigo-100 rounded-2xl shadow p-6 flex flex-col gap-3"
                 >
                   <div class="flex items-center justify-between">
-                    <span class="font-mono text-indigo-700 text-sm">{{ demande.code_suivi }}</span>
+                    <span class="font-mono text-indigo-700 text-lg font-bold">{{ demande.code_suivi }}</span>
                     <span
-                      class="inline-flex items-center px-2.5 py-1 rounded-full font-semibold text-xs"
+                      class="inline-flex items-center px-2.5 py-1 rounded-full font-semibold text-sm"
                       :class="getStatusConfig(demande.statut).bg + ' ' + getStatusConfig(demande.statut).text + ' ' + getStatusConfig(demande.statut).border"
                     >
                       {{ demande.statut }}
@@ -622,11 +626,11 @@ watch(searchQuery, () => {
                   </div>
                   <div class="mt-2">
                     <div class="text-lg font-bold text-indigo-800">{{ demande.structure?.libelle || '-' }}</div>
-                    <div class="text-xs text-gray-500 mb-1">Nature : {{ demande.nature }}</div>
-                    <div class="text-xs text-gray-400">Soumise le {{ formatDate(demande.date_soumission) }}</div>
+                    <div class="text-base text-gray-600 italic">Nature : {{ demande.nature }}</div>
+                    <div class="text-base text-gray-500">Soumise le {{ formatDate(demande.date_soumission) }}</div>
                   </div>
                   <div class="flex gap-2 mt-4">
-                    <button @click="voirDetails(demande.id)" class="text-indigo-600 hover:underline text-xs font-medium">Détails</button>
+                    <button @click="voirDetails(demande.id)" class="text-indigo-600 hover:underline text-base font-medium">Détails</button>
                     <button
                       v-if="demande.statut === 'En attente'"
                       @click="annulerDemande(demande.id)"
@@ -647,3 +651,67 @@ watch(searchQuery, () => {
     </div>
   </Stagiaire>
 </template>
+
+<style scoped>
+/* Styles pour les animations de toast */
+.toast-enter-active, .toast-leave-active {
+  transition: all 0.5s ease;
+}
+.toast-enter-from, .toast-leave-to {
+  opacity: 0;
+  transform: translateX(100%);
+}
+
+.toast-move {
+  transition: transform 0.5s ease;
+}
+
+/* Animation pour le halo */
+@keyframes pulse-halo {
+  0% {
+    box-shadow: 0 0 0 0 rgba(79, 70, 229, 0.7);
+  }
+  70% {
+    box-shadow: 0 0 0 10px rgba(79, 70, 229, 0);
+  }
+  100% {
+    box-shadow: 0 0 0 0 rgba(79, 70, 229, 0);
+  }
+}
+
+.animate-pulse-halo {
+  animation: pulse-halo 2s infinite;
+}
+
+/* Backdrop blur */
+.backdrop-blur-md {
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+}
+
+/* Custom scrollbar for notification panel */
+/* Works in Chrome, Edge, Safari */
+.max-h-96::-webkit-scrollbar {
+  width: 8px;
+}
+
+.max-h-96::-webkit-scrollbar-track {
+  background: #f1f1f1;
+  border-radius: 10px;
+}
+
+.max-h-96::-webkit-scrollbar-thumb {
+  background: #cbd5e1;
+  border-radius: 10px;
+}
+
+.max-h-96::-webkit-scrollbar-thumb:hover {
+  background: #94a3b8;
+}
+
+/* Works in Firefox */
+.max-h-96 {
+  scrollbar-width: thin;
+  scrollbar-color: #cbd5e1 #f1f1f1;
+}
+</style>

@@ -43,9 +43,9 @@ const handleInputChange = (event) => {
   <Head title="Recherche de demande" />
   <Stagiaire :notifications="notifications">
     <template #header>
-      <div class="bg-gradient-to-r from-indigo-600 to-blue-600 px-6 py-8">
+      <div class="bg-gradient-to-r from-indigo-600 to-blue-600 px-4 py-2">
         <div class="max-w-7xl mx-auto">
-          <div class="flex items-center space-x-3">
+          <div class="flex items-center space-x-2">
             <div class="flex-shrink-0">
               <svg class="h-8 w-8 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"/>
@@ -53,7 +53,7 @@ const handleInputChange = (event) => {
             </div>
             <div>
               <h2 class="text-2xl font-bold text-white">Recherche de demande</h2>
-              <p class="text-indigo-100 mt-1">Retrouvez votre demande grâce à votre code de suivi</p>
+              <p class="text-indigo-100 mt-1 text-base font-medium">Retrouvez votre demande grâce à votre code de suivi</p>
             </div>
           </div>
         </div>
@@ -169,8 +169,8 @@ const handleInputChange = (event) => {
                 <div class="flex items-start space-x-4">
                   <div class="bg-blue-500 text-white rounded-full w-8 h-8 flex items-center justify-center text-sm font-bold flex-shrink-0">1</div>
                   <div>
-                    <h3 class="font-semibold text-gray-900 mb-2">Qu'est-ce que le code de suivi ?</h3>
-                    <p class="text-sm text-gray-700">
+                    <h3 class="font-semibold text-gray-900 mb-2 text-lg">Qu'est-ce que le code de suivi ?</h3>
+                    <p class="text-base text-gray-700">
                       C'est un identifiant unique de 8 caractères (lettres et chiffres) généré automatiquement lors de votre demande.
                     </p>
                   </div>
@@ -181,8 +181,8 @@ const handleInputChange = (event) => {
                 <div class="flex items-start space-x-4">
                   <div class="bg-green-500 text-white rounded-full w-8 h-8 flex items-center justify-center text-sm font-bold flex-shrink-0">2</div>
                   <div>
-                    <h3 class="font-semibold text-gray-900 mb-2">Où le trouver ?</h3>
-                    <p class="text-sm text-gray-700">
+                    <h3 class="font-semibold text-gray-900 mb-2 text-lg">Où le trouver ?</h3>
+                    <p class="text-base text-gray-700">
                       Vérifiez votre boîte email (y compris les spams) pour l'email de confirmation envoyé après votre demande.
                     </p>
                   </div>
@@ -199,15 +199,15 @@ const handleInputChange = (event) => {
                   </svg>
                 </div>
                 <div class="flex-1">
-                  <h3 class="font-semibold text-gray-900 mb-2">Code de suivi perdu ?</h3>
-                  <p class="text-sm text-gray-700 mb-3">
+                  <h3 class="font-semibold text-gray-900 mb-2 text-lg">Code de suivi perdu ?</h3>
+                  <p class="text-base text-gray-700 mb-3">
                     Pas de panique ! Contactez notre service des stages qui pourra vous aider à retrouver votre demande.
                   </p>
                   <div class="flex items-center space-x-2">
                     <svg class="h-4 w-4 text-indigo-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                       <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 8l7.89 4.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"/>
                     </svg>
-                    <a href="mailto:stages@example.com" class="text-indigo-600 hover:text-indigo-700 font-medium text-sm transition-colors duration-200">
+                    <a href="mailto:stages@example.com" class="text-indigo-600 hover:text-indigo-700 font-medium text-base transition-colors duration-200">
                       stages@example.com
                     </a>
                   </div>

@@ -56,7 +56,7 @@ const getStatusIcon = (statut) => {
       <div class="flex items-center justify-between">
         <div>
           <h2 class="text-2xl font-bold text-slate-900">Détails de la demande</h2>
-          <p class="mt-1 text-sm text-slate-600">Consultation des informations détaillées</p>
+          <p class="mt-1 text-base text-slate-600 font-medium">Consultation des informations détaillées</p>
         </div>
       </div>
     </template>
@@ -73,11 +73,11 @@ const getStatusIcon = (statut) => {
             </div>
             <div>
               <h1 class="text-3xl font-bold text-slate-900">Demande #{{ demande.code_suivi }}</h1>
-              <p class="text-slate-600 font-mono text-sm mt-1">{{ demande.code_suivi }}</p>
+              <p class="text-slate-600 font-mono text-base mt-1">{{ demande.code_suivi }}</p>
             </div>
           </div>
           <a :href="route('mes.demandes')" 
-            class="inline-flex items-center gap-2 px-6 py-3 bg-white text-slate-700 rounded-xl border border-slate-200 hover:bg-slate-50 hover:border-slate-300 transition-all duration-200 shadow-sm hover:shadow-md font-medium">
+            class="inline-flex items-center gap-2 px-6 py-3 bg-white text-slate-700 rounded-xl border border-slate-200 hover:bg-slate-50 hover:border-slate-300 transition-all duration-200 shadow-sm hover:shadow-md font-medium text-base">
             <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18" />
             </svg>
@@ -117,12 +117,12 @@ const getStatusIcon = (statut) => {
                 <!-- Grille d'informations -->
                 <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
                   <div class="space-y-1">
-                    <label class="block text-sm font-medium text-slate-500">Structure d'accueil</label>
+                    <label class="block text-base font-medium text-slate-600">Structure d'accueil</label>
                     <p class="text-lg font-semibold text-slate-900">{{ demande.structure?.libelle || '-' }}</p>
                   </div>
                   
                   <div class="space-y-1">
-                    <label class="block text-sm font-medium text-slate-500">Type de stage</label>
+                    <label class="block text-base font-medium text-slate-600">Type de stage</label>
                     <div class="flex items-center gap-2">
                       <div class="w-2 h-2 bg-blue-500 rounded-full"></div>
                       <p class="text-lg font-semibold text-slate-900">{{ demande.type }}</p>
@@ -130,7 +130,7 @@ const getStatusIcon = (statut) => {
                   </div>
                   
                   <div class="space-y-1">
-                    <label class="block text-sm font-medium text-slate-500">Nature du stage</label>
+                    <label class="block text-base font-medium text-slate-600">Nature du stage</label>
                     <div class="flex items-center gap-2">
                       <div class="w-2 h-2 bg-purple-500 rounded-full"></div>
                       <p class="text-lg font-semibold text-slate-900">{{ demande.nature }}</p>
@@ -138,7 +138,7 @@ const getStatusIcon = (statut) => {
                   </div>
                   
                   <div class="space-y-1">
-                    <label class="block text-sm font-medium text-slate-500">Date de soumission</label>
+                    <label class="block text-base font-medium text-slate-600">Date de soumission</label>
                     <p class="text-lg font-semibold text-slate-900">{{ formatDate(demande.date_soumission) }}</p>
                   </div>
                 </div>
@@ -149,9 +149,9 @@ const getStatusIcon = (statut) => {
                     <svg class="w-5 h-5 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                       <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
                     </svg>
-                    <h3 class="font-semibold text-blue-900">Période de stage</h3>
+                    <h3 class="font-semibold text-blue-900 text-lg">Période de stage</h3>
                   </div>
-                  <p class="text-blue-800 font-medium">
+                  <p class="text-blue-800 font-medium text-base">
                     Du <span class="font-bold">{{ formatDate(demande.date_debut) }}</span> 
                     au <span class="font-bold">{{ formatDate(demande.date_fin) }}</span>
                   </p>
@@ -168,7 +168,7 @@ const getStatusIcon = (statut) => {
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z" />
                   </svg>
                   <h2 class="text-xl font-semibold text-slate-900">Membres du groupe</h2>
-                  <span class="px-2 py-1 bg-purple-100 text-purple-700 text-xs font-medium rounded-full">
+                  <span class="px-2 py-1 bg-purple-100 text-purple-700 text-sm font-medium rounded-full">
                     {{ demande.membres.length }} membre{{ demande.membres.length > 1 ? 's' : '' }}
                   </span>
                 </div>
@@ -336,8 +336,8 @@ const getStatusIcon = (statut) => {
 
                 <!-- Informations académiques -->
                 <div class="space-y-4 pt-4 border-t border-slate-100">
-                  <h4 class="font-semibold text-slate-900 flex items-center gap-2">
-                    <svg class="w-4 h-4 text-indigo-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <h4 class="font-semibold text-slate-900 flex items-center gap-2 text-lg">
+                    <svg class="w-5 h-5 text-indigo-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                       <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 14l9-5-9-5-9 5 9 5z" />
                     </svg>
                     Formation
@@ -345,17 +345,17 @@ const getStatusIcon = (statut) => {
                   
                   <div class="space-y-3">
                     <div>
-                      <p class="text-sm text-slate-500">Université</p>
-                      <p class="font-medium text-slate-900">{{ demande.stagiaire?.universite || '-' }}</p>
+                      <p class="text-base text-slate-500">Université</p>
+                      <p class="font-medium text-slate-900 text-base">{{ demande.stagiaire?.universite || '-' }}</p>
                     </div>
                     
                     <div>
-                      <p class="text-sm text-slate-500">Filière</p>
-                      <p class="font-medium text-slate-900">{{ demande.stagiaire?.filiere || '-' }}</p>
+                      <p class="text-base text-slate-500">Filière</p>
+                      <p class="font-medium text-slate-900 text-base">{{ demande.stagiaire?.filiere || '-' }}</p>
                     </div>
                     
                     <div>
-                      <p class="text-sm text-slate-500">Niveau d'étude</p>
+                      <p class="text-base text-slate-500">Niveau d'étude</p>
                       <div class="inline-flex items-center px-3 py-1 bg-indigo-100 text-indigo-800 text-sm font-medium rounded-full">
                         {{ demande.stagiaire?.niveau_etude || '-' }}
                       </div>

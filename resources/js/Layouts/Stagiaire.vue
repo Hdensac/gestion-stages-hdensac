@@ -27,25 +27,25 @@ const menuItems = [
     {
         name: 'Tableau de bord',
         route: 'stagiaire.dashboard',
-        icon: 'M3 7v10a2 2 0 002 2h14a2 2 0 002-2V9a2 2 0 00-2-2H5a2 2 0 00-2-2z',
+        icon: 'M3 5a2 2 0 012-2h14a2 2 0 012 2v14a2 2 0 01-2 2H5a2 2 0 01-2-2V5z',
         active: ['stagiaire.dashboard']
     },
     {
         name: 'Mes Demandes',
         route: 'mes.demandes',
-        icon: 'M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z',
+        icon: 'M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z',
         active: ['mes.demandes']
     },
     {
         name: 'Mes Stages',
         route: 'stagiaire.stages',
-        icon: 'M21 13.255A23.931 23.931 0 0112 15c-3.183 0-6.22-.62-9-1.745M16 6V4a2 2 0 00-2-2h-4a2 2 0 00-2-2v2m8 0V6a2 2 0 012 2v6a2 2 0 01-2 2H6a2 2 0 01-2-2V8a2 2 0 012-2z',
+        icon: 'M20.584 9.75A2.253 2.253 0 0018.25 7.5h-1.5V6a3 3 0 00-3-3H7.5a3 3 0 00-3 3v1.5h-1.5c-1.241 0-2.25 1.009-2.25 2.25v7.5A2.253 2.253 0 004.25 19.5h15a2.253 2.253 0 002.25-2.25v-7.5zM16.5 7.5h-9V6a1.5 1.5 0 011.5-1.5h4.5a1.5 1.5 0 011.5 1.5v1.5zm-.919 9.374a1.5 1.5 0 01-2.121 0l-.303-.303a1.5 1.5 0 012.121-2.121l.303.303a1.5 1.5 0 010 2.121zm2.121-2.121a1.5 1.5 0 010 2.121l-.303.303a1.5 1.5 0 01-2.121-2.121l.303-.303a1.5 1.5 0 012.121 0z',
         active: ['stagiaire.stages', 'stagiaire.stages.show']
     },
     {
         name: 'Recherche par code',
         route: 'recherche.code',
-        icon: 'M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z',
+        icon: 'M21 21l-5.197-5.197m0 0A7.5 7.5 0 105.196 5.196a7.5 7.5 0 0010.607 10.607z',
         active: ['recherche.code']
     }
 ];
@@ -120,7 +120,9 @@ const props = defineProps({
                             : 'text-blue-100 hover:bg-blue-500/30 hover:text-white'
                     ]"
                 >
-                    <svg class="w-5 h-5 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <svg class="w-6 h-6 flex-shrink-0 transition-colors duration-200" 
+                         :class="isActive(item.active) ? 'text-white' : 'text-blue-300 group-hover:text-white'" 
+                         fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" :d="item.icon" />
                     </svg>
                     <transition name='fade' mode='out-in'>
