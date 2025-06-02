@@ -63,7 +63,6 @@ class StageController extends Controller
                 } else {
                     $stage->statut_calculé = 'Terminé';
                 }
-                
                 // Déterminer le maître de stage actuel
                 $activeAffectation = $stage->affectationsMaitreStage
                     ->whereIn('statut', ['En cours', 'Acceptée'])
@@ -76,7 +75,10 @@ class StageController extends Controller
                         'email' => $activeAffectation->maitreStage->email,
                     ];
                 }
-                return $stage;
+                // Aplatir la relation themeStage
+                $stageArray = $stage->toArray();
+                $stageArray['themeStage'] = $stage->themeStage ? $stage->themeStage->toArray() : null;
+                return $stageArray;
             });
             
             return Inertia::render('Stagiaire/MesStages', [
@@ -161,8 +163,15 @@ class StageController extends Controller
                 $stage->statut_calculé = 'Terminé';
             }
             
+            \Log::info('DEBUG_STAGIAIRE_STAGE_SHOW', [
+                'stage_id' => $stage->id,
+                'theme_stage_id' => $stage->theme_stage_id,
+                'themeStage' => $stage->themeStage
+            ]);
             return Inertia::render('Stagiaire/ShowStage', [
-                'stage' => $stage,
+                'stage' => array_merge($stage->toArray(), [
+                    'themeStage' => $stage->themeStage ? $stage->themeStage->toArray() : null
+                ]),
                 'notifications' => Auth::user()->unreadNotifications()->orderBy('created_at', 'desc')->take(10)->get(),
                 'error' => session('error'),
                 'success' => session('success'),
@@ -177,5 +186,37 @@ class StageController extends Controller
             
             return redirect()->route('stagiaire.stages')->with('error', 'Une erreur est survenue lors du chargement des détails du stage.');
         }
+    }
+
+    /**
+     * Proposer un nouveau thème pour un stage (par le stagiaire)
+     */
+    public function proposerTheme(Request $request, Stage $stage)
+    {
+        $user = Auth::user();
+        $stagiaire = Stagiaire::where('user_id', $user->id)->first();
+        if (!$stagiaire) {
+            return response()->json(['success' => false, 'message' => 'Aucun profil de stagiaire trouvé.'], 403);
+        }
+        // Vérifier que le stage appartient bien au stagiaire
+        $demandeStage = DemandeStage::where('id', $stage->demande_stage_id)
+            ->where('stagiaire_id', $stagiaire->id_stagiaire)
+            ->first();
+        if (!$demandeStage) {
+            return response()->json(['success' => false, 'message' => 'Non autorisé.'], 403);
+        }
+        $validated = $request->validate([
+            'intitule' => 'required|string|max:255',
+            'description' => 'required|string|max:2000',
+            'mots_cles' => 'nullable|string|max:255',
+        ]);
+        $theme = $stage->themesProposes()->create([
+            'intitule' => $validated['intitule'],
+            'description' => $validated['description'],
+            'etat' => 'Proposé',
+            'mots_cles' => $validated['mots_cles'] ?? null,
+            'propose_par' => 'stagiaire',
+        ]);
+        return response()->json(['success' => true, 'theme' => $theme]);
     }
 }

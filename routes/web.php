@@ -220,6 +220,8 @@ Route::get('/dashboard', function () {
             Route::post('/stages/{stage}/noter', [App\Http\Controllers\Agent\MS\StageController::class, 'noter'])->name('stages.noter');
             Route::get('/stages/{stage}/maitres-stage-substructures', [App\Http\Controllers\Agent\MS\StageController::class, 'getMaitresStageSubstructures'])->name('stages.maitres-stage-substructures');
             Route::post('/stages/{stage}/reaffecter', [App\Http\Controllers\Agent\MS\StageController::class, 'reaffecter'])->name('stages.reaffecter');
+            Route::get('/stages/{stage}/themes-proposes', [App\Http\Controllers\Agent\MS\StageController::class, 'getThemesProposes'])->name('stages.themes-proposes');
+            Route::post('/stages/{stage}/themes/{theme}/action', [App\Http\Controllers\Agent\MS\StageController::class, 'validerOuRefuserTheme'])->name('stages.theme-action');
 
             // Route pour envoyer un message à un stagiaire
             Route::post('/stages/send-message', [StagiaireMessageController::class, 'sendMessage'])->name('stages.send-message');
@@ -234,6 +236,7 @@ Route::get('/dashboard', function () {
         // Routes pour les stages
         Route::get('/stages', [App\Http\Controllers\Stagiaire\StageController::class, 'index'])->name('stages');
         Route::get('/stages/{stage}', [App\Http\Controllers\Stagiaire\StageController::class, 'show'])->name('stages.show');
+        Route::post('/stages/{stage}/themes', [App\Http\Controllers\Stagiaire\StageController::class, 'proposerTheme'])->name('stages.proposer-theme');
     });
 
     // Route pour télécharger le rapport mensuel

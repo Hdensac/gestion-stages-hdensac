@@ -329,134 +329,148 @@
               <div v-if="stage.est_reaffecte" class="bg-amber-50 p-4 rounded-md border border-amber-200 mb-4">
                 <p class="text-amber-700 text-sm">Ce stage a été réaffecté. Vous ne pouvez pas modifier le thème.</p>
               </div>
-
               <div v-else>
-                <h3 class="text-lg font-semibold mb-4 flex items-center">
-                  <svg class="w-5 h-5 mr-2 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
-                  </svg>
-                  {{ stage.themeStage ? 'Modification du thème' : 'Définition du thème' }}
-                </h3>
-
-                <form @submit.prevent="onThemeSubmit" class="bg-white p-6 rounded-lg shadow-sm border border-gray-200">
-                  <div class="grid grid-cols-1 gap-6">
-                    <!-- Titre du thème -->
+                <!-- Formulaire de proposition de thème par le MS -->
+                <div v-if="!themesProposes.some(t => t.etat === 'Validé')" class="mb-8">
+                  <h3 class="text-lg font-semibold mb-2 flex items-center">
+                    <svg class="w-5 h-5 mr-2 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6v6m0 0v6m0-6h6m-6 0H6" />
+                    </svg>
+                    Proposer un thème (Maître de stage)
+                  </h3>
+                  <form @submit.prevent="proposerThemeMS" class="space-y-3 bg-white p-6 rounded-lg border border-gray-200 shadow-sm">
                     <div>
-                      <label for="titre" class="block text-sm font-medium text-gray-700 mb-1">
-                        Titre du thème <span class="text-red-500">*</span>
-                      </label>
-                      <input
-                        id="titre"
-                        v-model="themeForm.titre"
-                        type="text"
-                        required
-                        maxlength="255"
-                        class="w-full rounded-md border-gray-300 shadow-sm focus:ring-blue-500 focus:border-blue-500"
-                        placeholder="Ex: Développement d'une application web de gestion"
-                      />
-                      <p class="mt-1 text-sm text-gray-500">{{ themeForm.titre.length }}/255 caractères</p>
+                      <label class="block text-sm font-medium mb-1">Titre du thème *</label>
+                      <input v-model="themeMSForm.intitule" required maxlength="255" class="w-full border rounded px-3 py-2" />
                     </div>
-
-                    <!-- Description détaillée -->
                     <div>
-                      <label for="description" class="block text-sm font-medium text-gray-700 mb-1">
-                        Description détaillée <span class="text-red-500">*</span>
-                      </label>
-                      <textarea
-                        id="description"
-                        v-model="themeForm.description"
-                        rows="6"
-                        required
-                        maxlength="2000"
-                        class="w-full rounded-md border-gray-300 shadow-sm focus:ring-blue-500 focus:border-blue-500"
-                        placeholder="Décrivez en détail les objectifs, les tâches à accomplir, les technologies utilisées, les livrables attendus..."
-                      ></textarea>
-                      <p class="mt-1 text-sm text-gray-500">{{ themeForm.description.length }}/2000 caractères</p>
+                      <label class="block text-sm font-medium mb-1">Description *</label>
+                      <textarea v-model="themeMSForm.description" required maxlength="2000" class="w-full border rounded px-3 py-2"></textarea>
                     </div>
-
-                    <!-- Suggestions d'amélioration -->
-                    <div v-if="stage.themeStage && stage.themeStage.etat === 'Refusé'" class="bg-red-50 p-4 rounded-md border border-red-200">
-                      <h4 class="text-sm font-medium text-red-800 mb-2">Motif de refus précédent :</h4>
-                      <p class="text-sm text-red-700">{{ stage.themeStage.motif_refus || 'Aucun motif spécifié' }}</p>
-                    </div>
-
-                    <!-- État du thème -->
                     <div>
-                      <label for="etat" class="block text-sm font-medium text-gray-700 mb-1">État du thème</label>
-                      <select
-                        id="etat"
-                        v-model="themeForm.etat"
-                        class="w-full rounded-md border-gray-300 shadow-sm focus:ring-blue-500 focus:border-blue-500"
-                      >
-                        <option value="Proposé">Proposé (en attente de validation)</option>
-                        <option value="Modifié">Modifié (suite à des commentaires)</option>
-                        <option value="Validé">Validé (approuvé définitivement)</option>
-                      </select>
-                      <p class="mt-1 text-sm text-gray-500">
-                        <span v-if="themeForm.etat === 'Proposé'">Le thème sera soumis pour validation</span>
-                        <span v-else-if="themeForm.etat === 'Modifié'">Le thème a été modifié suite à des retours</span>
-                        <span v-else-if="themeForm.etat === 'Validé'">Le thème est définitivement approuvé</span>
-                      </p>
+                      <label class="block text-sm font-medium mb-1">Mots-clés (optionnel)</label>
+                      <input v-model="themeMSForm.mots_cles" maxlength="255" class="w-full border rounded px-3 py-2" />
                     </div>
-
-                    <!-- Commentaire optionnel -->
-                    <div>
-                      <label for="commentaire" class="block text-sm font-medium text-gray-700 mb-1">
-                        Notes et commentaires
-                      </label>
-                      <textarea
-                        id="commentaire"
-                        v-model="themeForm.commentaire"
-                        rows="3"
-                        maxlength="1000"
-                        class="w-full rounded-md border-gray-300 shadow-sm focus:ring-blue-500 focus:border-blue-500"
-                        placeholder="Ajoutez des notes sur le contexte, les contraintes, les ressources disponibles..."
-                      ></textarea>
-                      <p class="mt-1 text-sm text-gray-500">{{ (themeForm.commentaire || '').length }}/1000 caractères</p>
+                    <div class="flex gap-2 items-center">
+                      <button type="submit" :disabled="themeMSLoading" class="bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700">
+                        {{ themeMSLoading ? 'Envoi...' : 'Proposer' }}
+                      </button>
+                      <span v-if="themeMSSuccess" class="text-emerald-600 text-sm">{{ themeMSSuccess }}</span>
+                      <span v-if="themeMSError" class="text-red-600 text-sm">{{ themeMSError }}</span>
                     </div>
-
-                    <!-- Aperçu des mots-clés générés automatiquement -->
-                    <div v-if="themeForm.titre || themeForm.description" class="bg-blue-50 p-4 rounded-md border border-blue-200">
-                      <h4 class="text-sm font-medium text-blue-800 mb-2">
-                        <svg class="w-4 h-4 inline mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 7h.01M7 3h5c.512 0 1.024.195 1.414.586l7 7a2 2 0 010 2.828l-7 7a2 2 0 01-2.828 0l-7-7A1.994 1.994 0 013 12V7a4 4 0 014-4z" />
-                        </svg>
-                        Mots-clés qui seront générés automatiquement :
-                      </h4>
-                      <div class="flex flex-wrap gap-2">
-                        <span v-for="motCle in generatePreviewMotsCles()" :key="motCle"
-                          class="px-2 py-1 bg-blue-100 text-blue-700 rounded-full text-xs">
-                          {{ motCle }}
-                        </span>
-                      </div>
-                      <p class="text-xs text-blue-600 mt-2">Ces mots-clés faciliteront la recherche et la catégorisation du thème</p>
+                  </form>
+                </div>
+                <!-- Liste des thèmes proposés -->
+                <div>
+                  <h3 class="text-lg font-semibold mb-4 flex items-center">
+                    <svg class="w-5 h-5 mr-2 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
+                    </svg>
+                    Propositions de thèmes
+                  </h3>
+                  
+                  <div v-if="loadingThemes" class="text-center py-4">
+                    <div class="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-600 mx-auto"></div>
+                    <p class="mt-2 text-gray-600">Chargement des propositions...</p>
+                  </div>
+                  
+                  <div v-else>
+                    <div v-if="errorThemes" class="mb-4 bg-red-50 border border-red-200 text-red-700 px-4 py-3 rounded-lg">
+                      {{ errorThemes }}
                     </div>
-
-                    <!-- Boutons d'action -->
-                    <div class="flex justify-end space-x-3 pt-4 border-t border-gray-200">
-                      <button
-                        type="button"
-                        @click="activeTab = 'infos'"
-                        class="inline-flex items-center px-4 py-2 border border-gray-300 shadow-sm text-sm font-medium rounded-md text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500"
-                      >
-                        <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
-                        </svg>
+                    
+                    <div v-if="themesProposes.length === 0" class="text-center py-8 bg-gray-50 rounded-lg">
+                      <svg class="w-12 h-12 text-gray-400 mx-auto mb-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9.663 17h4.673M12 3v1m6.364 1.636l-.707.707M21 12h-1M4 12H3m3.343-5.657l-.707-.707m2.828 9.9a5 5 0 117.072 0l-.548.547A3.374 3.374 0 0014 18.469V19a2 2 0 11-4 0v-.531c0-.895-.356-1.754-.988-2.386l-.548-.547z" />
+                      </svg>
+                      <p class="text-gray-500">Aucune proposition de thème pour ce stage.</p>
+                    </div>
+                    
+                    <ul v-else class="space-y-4">
+                      <li v-for="theme in themesProposes" :key="theme.id" 
+                          class="p-6 rounded-lg border bg-white shadow-sm hover:shadow-md transition-shadow duration-200">
+                        <div class="flex justify-between items-start mb-4">
+                          <div>
+                            <h4 class="text-xl font-bold text-gray-900 mb-2">{{ theme.intitule }}</h4>
+                            <p class="text-gray-600">{{ theme.description }}</p>
+                          </div>
+                          <span class="px-3 py-1 rounded-full text-sm font-semibold"
+                                :class="{
+                                  'bg-emerald-100 text-emerald-700': theme.etat === 'Validé',
+                                  'bg-amber-100 text-amber-700': theme.etat === 'Proposé',
+                                  'bg-red-100 text-red-700': theme.etat === 'Refusé'
+                                }">
+                            {{ theme.etat }}
+                          </span>
+                        </div>
+                        
+                        <div class="space-y-3">
+                          <div v-if="theme.mots_cles" class="flex flex-wrap gap-2">
+                            <span v-for="(motCle, index) in theme.mots_cles.split(',')" :key="index"
+                                  class="px-2 py-1 bg-blue-50 text-blue-700 rounded-full text-sm">
+                              {{ motCle.trim() }}
+                            </span>
+                          </div>
+                          
+                          <div class="text-sm text-gray-500">
+                            Proposé le {{ formatDate(theme.created_at) }}
+                            <span v-if="theme.propose_par === 'stagiaire'">par le stagiaire</span>
+                            <span v-else>par vous</span>
+                          </div>
+                          
+                          <div v-if="theme.etat === 'Refusé' && theme.motif_refus" 
+                               class="mt-2 p-3 bg-red-50 rounded-lg">
+                            <p class="text-sm font-medium text-red-700">Motif du refus :</p>
+                            <p class="text-sm text-red-600">{{ theme.motif_refus }}</p>
+                          </div>
+                          
+                          <!-- Actions pour les thèmes en attente -->
+                          <div v-if="theme.etat === 'Proposé'" class="flex gap-3 mt-4">
+                            <button @click="validerTheme(theme)"
+                                    class="px-4 py-2 bg-emerald-600 text-white rounded-lg hover:bg-emerald-700 transition-colors duration-200 flex items-center">
+                              <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7" />
+                              </svg>
+                              Valider
+                            </button>
+                            <button @click="refuserTheme(theme)"
+                                    class="px-4 py-2 bg-red-600 text-white rounded-lg hover:bg-red-700 transition-colors duration-200 flex items-center">
+                              <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
+                              </svg>
+                              Refuser
+                            </button>
+                          </div>
+                        </div>
+                      </li>
+                    </ul>
+                  </div>
+                </div>
+                
+                <!-- Modal de refus -->
+                <div v-if="themeEnCours" class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-4">
+                  <div class="bg-white rounded-lg p-6 max-w-lg w-full">
+                    <h3 class="text-lg font-semibold mb-4">Refuser le thème</h3>
+                    <p class="text-gray-600 mb-4">Veuillez indiquer le motif du refus pour le thème :</p>
+                    <p class="font-medium mb-2">{{ themeEnCours.intitule }}</p>
+                    
+                    <textarea v-model="motifRefus"
+                              class="w-full border rounded-lg p-3 mb-4"
+                              rows="4"
+                              placeholder="Motif du refus..."></textarea>
+                    
+                    <div class="flex justify-end gap-3">
+                      <button @click="annulerRefus"
+                              class="px-4 py-2 bg-gray-100 text-gray-700 rounded-lg hover:bg-gray-200 transition-colors duration-200">
                         Annuler
                       </button>
-                      <button
-                        type="submit"
-                        :disabled="!themeForm.titre || !themeForm.description"
-                        class="inline-flex items-center px-4 py-2 border border-transparent shadow-sm text-sm font-medium rounded-md text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 disabled:opacity-50 disabled:cursor-not-allowed"
-                      >
-                        <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7" />
-                        </svg>
-                        {{ stage.themeStage ? 'Mettre à jour le thème' : 'Enregistrer le thème' }}
+                      <button @click="confirmerRefus"
+                              class="px-4 py-2 bg-red-600 text-white rounded-lg hover:bg-red-700 transition-colors duration-200">
+                        Confirmer le refus
                       </button>
                     </div>
                   </div>
-                </form>
+                </div>
               </div>
             </div>
 
@@ -774,14 +788,89 @@ import { ref, computed, onMounted, watch } from 'vue';
 import axios from 'axios'; // Ajout si pas déjà présent
 
 const props = defineProps({
-  stage: Object,
-  error: String,
-  success: String,
-  // On ne dépend plus de la prop maitresDeStage
+  stage: {
+    type: Object,
+    required: true
+  }
 });
 
-const toast = ref(null);
-const activeTab = ref('infos');
+const error = ref(null)
+const success = ref(null)
+const activeTab = ref('infos')
+const toast = ref(null)
+
+// Variables pour la gestion des thèmes
+const themesProposes = ref([])
+const loadingThemes = ref(false)
+const errorThemes = ref(null)
+const motifRefus = ref('')
+const themeEnCours = ref(null)
+
+// Fonctions pour la gestion des thèmes
+const fetchThemesProposes = async () => {
+  loadingThemes.value = true
+  errorThemes.value = null
+  try {
+    const response = await axios.get(`/agent/ms/stages/${props.stage.id}/themes-proposes`)
+    themesProposes.value = response.data.themes
+  } catch (error) {
+    errorThemes.value = "Erreur lors du chargement des propositions de thèmes"
+    console.error(error)
+  } finally {
+    loadingThemes.value = false
+  }
+}
+
+const validerTheme = async (theme) => {
+  if (!confirm('Êtes-vous sûr de vouloir valider ce thème ?')) return
+  
+  try {
+    await axios.post(`/agent/ms/stages/${props.stage.id}/themes/${theme.id}/action`, {
+      action: 'valider'
+    })
+    await fetchThemesProposes()
+    // Rafraîchir les données du stage
+    await fetchStage()
+  } catch (error) {
+    console.error(error)
+    alert('Erreur lors de la validation du thème')
+  }
+}
+
+const refuserTheme = (theme) => {
+  themeEnCours.value = theme
+  motifRefus.value = ''
+}
+
+const confirmerRefus = async () => {
+  if (!motifRefus.value.trim()) {
+    alert('Veuillez indiquer un motif de refus')
+    return
+  }
+  
+  try {
+    await axios.post(`/agent/ms/stages/${props.stage.id}/themes/${themeEnCours.value.id}/action`, {
+      action: 'refuser',
+      motif_refus: motifRefus.value
+    })
+    await fetchThemesProposes()
+    themeEnCours.value = null
+    motifRefus.value = ''
+  } catch (error) {
+    console.error(error)
+    alert('Erreur lors du refus du thème')
+  }
+}
+
+const annulerRefus = () => {
+  themeEnCours.value = null
+  motifRefus.value = ''
+}
+
+// Charger les thèmes au montage du composant
+onMounted(() => {
+  fetchThemesProposes()
+})
 
 // Ajout : liste dynamique des maîtres de stage
 const maitresDeStage = ref([]);
@@ -1275,4 +1364,57 @@ watch(
     }
   }
 );
+
+const showThemeEditForm = ref(false);
+
+function onCancelThemeEdit() {
+  showThemeEditForm.value = false;
+}
+
+// Synchroniser le formulaire avec le thème existant à chaque changement
+watch(
+  () => props.stage.themeStage,
+  (theme) => {
+    themeForm.value = {
+      titre: theme?.intitule || '',
+      description: theme?.description || '',
+      etat: theme?.etat || 'Proposé',
+      commentaire: theme?.commentaire || ''
+    };
+  },
+  { immediate: true }
+);
+
+console.log('themeStage reçu:', props.stage.themeStage)
+
+// Formulaire de proposition de thème par le MS
+const themeMSForm = ref({
+  intitule: '',
+  description: '',
+  mots_cles: ''
+});
+
+const themeMSLoading = ref(false);
+const themeMSSuccess = ref('');
+const themeMSError = ref('');
+
+const proposerThemeMS = async () => {
+  themeMSLoading.value = true;
+  themeMSSuccess.value = '';
+  themeMSError.value = '';
+
+  try {
+    const response = await axios.post(`/agent/ms/stages/${props.stage.id}/themes`, themeMSForm.value);
+    if (response.data.success) {
+      themeMSSuccess.value = 'Thème proposé avec succès !';
+      themeMSForm.value = { intitule: '', description: '', mots_cles: '' };
+    } else {
+      themeMSError.value = response.data.message || 'Erreur lors de la soumission du thème.';
+    }
+  } catch (error) {
+    themeMSError.value = error.response?.data?.message || error.message || 'Erreur lors de la soumission du thème.';
+  } finally {
+    themeMSLoading.value = false;
+  }
+};
 </script>

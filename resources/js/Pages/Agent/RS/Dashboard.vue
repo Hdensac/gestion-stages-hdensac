@@ -19,7 +19,7 @@
       </div>
     </template>
 
-    <div class="py-8">
+    <div class="py-2">
       <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 space-y-8">
         <!-- Message d'erreur -->
         <div v-if="error" class="bg-red-50 border border-red-200 text-red-800 p-4 rounded-xl shadow-sm backdrop-blur-sm" role="alert">

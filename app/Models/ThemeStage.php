@@ -5,6 +5,7 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\HasMany;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
 
 class ThemeStage extends Model
 {
@@ -23,6 +24,14 @@ class ThemeStage extends Model
     public function stages(): HasMany
     {
         return $this->hasMany(Stage::class);
+    }
+
+    /**
+     * Le stage auquel ce thème est rattaché.
+     */
+    public function stage(): BelongsTo
+    {
+        return $this->belongsTo(Stage::class, 'stage_id');
     }
 
     // Définir d'autres relations Eloquent ici ultérieurement (propositions, etc.)

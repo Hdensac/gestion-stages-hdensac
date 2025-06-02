@@ -4,20 +4,29 @@
   <MSLayout>
     <!-- Composant Toast pour les notifications -->
     <AdminToast ref="toast" />
+    
+    <!-- En-tête avec effet glassmorphism -->
     <template #header>
-      <div class="flex flex-col gap-1 mb-2">
-        <div class="flex items-center gap-4">
-          <div class="bg-green-100 text-green-700 rounded-full w-12 h-12 flex items-center justify-center text-2xl font-bold shadow">
-            <svg class="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253" />
-          </svg>
-        </div>
-        <div>
-            <h1 class="text-3xl font-extrabold text-green-800 leading-tight">Tableau de bord Maître de Stage</h1>
-            <p v-if="structureResponsable" class="text-blue-600 font-medium">
-            Responsable de : {{ structureResponsable.libelle }}
-            <span v-if="structureResponsable.sigle" class="text-gray-500">({{ structureResponsable.sigle }})</span>
-          </p>
+      <div class="relative backdrop-blur-lg bg-white/30 rounded-2xl p-6 shadow-lg border border-white/20 mb-6">
+        <div class="flex flex-col gap-3">
+          <div class="flex items-center gap-6">
+            <div class="bg-gradient-to-br from-green-400 to-green-600 text-white rounded-2xl w-16 h-16 flex items-center justify-center text-2xl font-bold shadow-lg transform hover:scale-105 transition-transform duration-300">
+              <svg class="w-10 h-10" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253" />
+              </svg>
+            </div>
+            <div>
+              <h1 class="text-4xl font-extrabold bg-gradient-to-r from-green-600 to-green-800 bg-clip-text text-transparent leading-tight">
+                Tableau de bord Maître de Stage
+              </h1>
+              <p v-if="structureResponsable" class="text-blue-600 font-medium mt-2 flex items-center gap-2">
+                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4" />
+                </svg>
+                Responsable de : {{ structureResponsable.libelle }}
+                <span v-if="structureResponsable.sigle" class="text-gray-500">({{ structureResponsable.sigle }})</span>
+              </p>
+            </div>
           </div>
         </div>
       </div>
@@ -25,79 +34,113 @@
 
     <div class="py-12">
       <div class="max-w-7xl mx-auto sm:px-6 lg:px-8">
-        <!-- Message d'erreur -->
-        <div v-if="error" class="mb-6 bg-red-100 border-l-4 border-red-500 text-red-700 p-4 rounded-md shadow">
-          <p class="font-bold">Erreur</p>
-          <p>{{ error }}</p>
+        <!-- Message d'erreur avec animation -->
+        <div v-if="error" class="mb-6 bg-red-100 border-l-4 border-red-500 text-red-700 p-4 rounded-lg shadow-lg transform transition-all duration-300 hover:scale-[1.02]">
+          <div class="flex items-center gap-2">
+            <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" />
+            </svg>
+            <p class="font-bold">Erreur</p>
+          </div>
+          <p class="mt-2">{{ error }}</p>
         </div>
 
-        <!-- Informations du maître de stage -->
-        <div class="bg-white overflow-hidden shadow-sm sm:rounded-lg mb-6 p-6">
-          <div class="flex items-center gap-4">
-            <div class="bg-green-100 text-green-700 rounded-full w-16 h-16 flex items-center justify-center text-2xl font-bold shadow">
-              <svg class="w-10 h-10" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+        <!-- Informations du maître de stage avec glassmorphism -->
+        <div class="backdrop-blur-lg bg-white/30 rounded-2xl shadow-lg border border-white/20 mb-8 p-8 transform transition-all duration-300 hover:shadow-xl">
+          <div class="flex items-center gap-6">
+            <div class="bg-gradient-to-br from-green-400 to-green-600 text-white rounded-2xl w-20 h-20 flex items-center justify-center text-2xl font-bold shadow-lg transform hover:scale-105 transition-transform duration-300">
+              <svg class="w-12 h-12" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
               </svg>
-              </div>
-              <div>
-              <h2 class="text-2xl font-bold text-gray-800">{{ agent?.user?.nom }} {{ agent?.user?.prenom }}</h2>
-              <p class="text-gray-600">{{ agent?.fonction }}</p>
-              <p class="text-green-600 font-semibold">Maître de Stage</p>
-              <p v-if="structureResponsable" class="text-blue-600 mt-1">
-                    Responsable de : <span class="font-semibold">{{ structureResponsable.libelle }}</span>
-                    <span v-if="structureResponsable.sigle" class="text-gray-500">({{ structureResponsable.sigle }})</span>
-                </p>
+            </div>
+            <div>
+              <h2 class="text-3xl font-bold bg-gradient-to-r from-gray-800 to-gray-600 bg-clip-text text-transparent">
+                {{ agent?.user?.nom }} {{ agent?.user?.prenom }}
+              </h2>
+              <p class="text-gray-600 mt-1">{{ agent?.fonction }}</p>
+              <p class="text-green-600 font-semibold mt-1 flex items-center gap-2">
+                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
+                </svg>
+                Maître de Stage
+              </p>
+              <p v-if="structureResponsable" class="text-blue-600 mt-2 flex items-center gap-2">
+                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4" />
+                </svg>
+                Responsable de : <span class="font-semibold">{{ structureResponsable.libelle }}</span>
+                <span v-if="structureResponsable.sigle" class="text-gray-500">({{ structureResponsable.sigle }})</span>
+              </p>
             </div>
           </div>
         </div>
 
-        <!-- Statistiques -->
+        <!-- Statistiques avec glassmorphism -->
         <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-10">
           <!-- Stages en cours -->
-          <div class="bg-white rounded-2xl shadow-lg hover:shadow-2xl transition-shadow duration-300 p-6 flex items-center gap-4">
-            <div class="p-4 rounded-full bg-blue-100 text-blue-600 shadow">
-              <svg class="h-10 w-10" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2" />
-                  </svg>
-                </div>
-                <div>
-                  <p class="text-sm font-medium text-gray-600">Stages en cours</p>
-              <p class="text-3xl font-extrabold text-gray-800">{{ stats.stagesEnCours }}</p>
+          <div class="backdrop-blur-lg bg-white/30 rounded-2xl shadow-lg border border-white/20 p-6 transform transition-all duration-300 hover:shadow-xl hover:scale-[1.02]">
+            <div class="flex items-center gap-4">
+              <div class="bg-gradient-to-br from-blue-400 to-blue-600 text-white rounded-xl p-4 shadow-lg">
+                <svg class="h-10 w-10" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2" />
+                </svg>
+              </div>
+              <div>
+                <p class="text-sm font-medium text-gray-600">Stages en cours</p>
+                <p class="text-4xl font-extrabold bg-gradient-to-r from-blue-600 to-blue-800 bg-clip-text text-transparent">
+                  {{ stats.stagesEnCours }}
+                </p>
+              </div>
             </div>
           </div>
+
           <!-- Stages terminés -->
-          <div class="bg-white rounded-2xl shadow-lg hover:shadow-2xl transition-shadow duration-300 p-6 flex items-center gap-4">
-            <div class="p-4 rounded-full bg-green-100 text-green-600 shadow">
-              <svg class="h-10 w-10" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
-                  </svg>
-                </div>
-                <div>
-                  <p class="text-sm font-medium text-gray-600">Stages terminés</p>
-              <p class="text-3xl font-extrabold text-gray-800">{{ stats.stagesTermines }}</p>
+          <div class="backdrop-blur-lg bg-white/30 rounded-2xl shadow-lg border border-white/20 p-6 transform transition-all duration-300 hover:shadow-xl hover:scale-[1.02]">
+            <div class="flex items-center gap-4">
+              <div class="bg-gradient-to-br from-green-400 to-green-600 text-white rounded-xl p-4 shadow-lg">
+                <svg class="h-10 w-10" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
+                </svg>
+              </div>
+              <div>
+                <p class="text-sm font-medium text-gray-600">Stages terminés</p>
+                <p class="text-4xl font-extrabold bg-gradient-to-r from-green-600 to-green-800 bg-clip-text text-transparent">
+                  {{ stats.stagesTermines }}
+                </p>
+              </div>
             </div>
           </div>
+
           <!-- Total stagiaires -->
-          <div class="bg-white rounded-2xl shadow-lg hover:shadow-2xl transition-shadow duration-300 p-6 flex items-center gap-4">
-            <div class="p-4 rounded-full bg-purple-100 text-purple-600 shadow">
-              <svg class="h-10 w-10" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z" />
-                  </svg>
-                </div>
-                <div>
-                  <p class="text-sm font-medium text-gray-600">Total stagiaires</p>
-              <p class="text-3xl font-extrabold text-gray-800">{{ stats.totalStagiaires }}</p>
+          <div class="backdrop-blur-lg bg-white/30 rounded-2xl shadow-lg border border-white/20 p-6 transform transition-all duration-300 hover:shadow-xl hover:scale-[1.02]">
+            <div class="flex items-center gap-4">
+              <div class="bg-gradient-to-br from-purple-400 to-purple-600 text-white rounded-xl p-4 shadow-lg">
+                <svg class="h-10 w-10" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z" />
+                </svg>
+              </div>
+              <div>
+                <p class="text-sm font-medium text-gray-600">Total stagiaires</p>
+                <p class="text-4xl font-extrabold bg-gradient-to-r from-purple-600 to-purple-800 bg-clip-text text-transparent">
+                  {{ stats.totalStagiaires }}
+                </p>
+              </div>
             </div>
           </div>
         </div>
 
-            <!-- Filtres pour les stages -->
-        <div class="bg-white overflow-hidden shadow-sm sm:rounded-lg mb-6">
-          <div class="p-6 bg-white border-b border-gray-200">
+        <!-- Filtres pour les stages avec glassmorphism -->
+        <div class="backdrop-blur-lg bg-white/30 rounded-2xl shadow-lg border border-white/20 mb-6">
+          <div class="p-6">
             <div class="flex flex-wrap items-center justify-between gap-4 mb-4">
-              <h2 class="text-xl font-semibold text-gray-800">Mes stages</h2>
+              <h2 class="text-2xl font-bold bg-gradient-to-r from-gray-800 to-gray-600 bg-clip-text text-transparent">
+                Mes stages
+              </h2>
               <div class="flex flex-wrap gap-3">
-                <select v-model="filters.statut" class="rounded-md border-gray-300 shadow-sm focus:border-green-500 focus:ring focus:ring-green-200 focus:ring-opacity-50">
+                <select 
+                  v-model="filters.statut" 
+                  class="backdrop-blur-lg bg-white/50 rounded-xl border-gray-300 shadow-sm focus:border-green-500 focus:ring focus:ring-green-200 focus:ring-opacity-50 transition-all duration-300"
+                >
                   <option value="">Tous les statuts</option>
                   <option value="En cours">En cours</option>
                   <option value="Terminé">Terminés</option>
@@ -107,23 +150,27 @@
                   v-model="filters.search"
                   type="text"
                   placeholder="Rechercher un stagiaire..."
-                  class="rounded-md border-gray-300 shadow-sm focus:border-green-500 focus:ring focus:ring-green-200 focus:ring-opacity-50"
+                  class="backdrop-blur-lg bg-white/50 rounded-xl border-gray-300 shadow-sm focus:border-green-500 focus:ring focus:ring-green-200 focus:ring-opacity-50 transition-all duration-300"
                 />
                 <button
                   @click="resetFilters"
-                  class="px-3 py-2 bg-gray-100 text-gray-700 rounded-md hover:bg-gray-200 transition-colors duration-200"
+                  class="px-4 py-2 bg-gradient-to-r from-gray-100 to-gray-200 text-gray-700 rounded-xl hover:from-gray-200 hover:to-gray-300 transition-all duration-300 shadow-sm"
                 >
                   Réinitialiser
                 </button>
               </div>
             </div>
 
-            <div v-if="filteredStages.length === 0" class="text-gray-500 italic py-4">
+            <!-- Tableau des stages avec glassmorphism -->
+            <div v-if="filteredStages.length === 0" class="text-gray-500 italic py-4 text-center">
+              <svg class="w-12 h-12 mx-auto mb-2 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9.172 16.172a4 4 0 015.656 0M9 10h.01M15 10h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+              </svg>
               Aucun stage correspondant aux critères de recherche.
             </div>
             <div v-else class="overflow-x-auto">
               <table class="min-w-full divide-y divide-gray-200">
-                <thead class="bg-gray-50">
+                <thead class="bg-gray-50/50">
                   <tr>
                     <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Stagiaire</th>
                     <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Structure</th>
@@ -132,8 +179,10 @@
                     <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Actions</th>
                   </tr>
                 </thead>
-                <tbody class="bg-white divide-y divide-gray-200">
-                  <tr v-for="stage in top3StagesEnCours" :key="stage.id" class="hover:bg-gray-50" :class="{ 'bg-gray-100': stage.est_reaffecte }">
+                <tbody class="bg-white/50 divide-y divide-gray-200">
+                  <tr v-for="stage in top3StagesEnCours" :key="stage.id" 
+                      class="hover:bg-gray-50/50 transition-colors duration-200"
+                      :class="{ 'bg-yellow-50/50': stage.est_reaffecte }">
                     <td class="px-6 py-4 whitespace-nowrap">
                       <div class="flex items-center">
                         <div>
@@ -236,275 +285,408 @@
               </table>
             </div>
           </div>
-            </div>
-            
-        <!-- Modal pour les détails du stage -->
-        <div v-if="showStageDetailsModal" class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
-          <div class="bg-white rounded-lg shadow-xl max-w-4xl w-full max-h-[90vh] overflow-y-auto">
-            <div class="p-6 border-b border-gray-200">
-              <div class="flex justify-between items-center">
-                <h3 class="text-xl font-bold text-gray-900">Détails du stage</h3>
-                <button @click="showStageDetailsModal = false" class="text-gray-400 hover:text-gray-500">
-                  <svg class="h-6 w-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
+        </div>
+      </div>
+    </div>
+
+    <!-- Modal pour les détails du stage -->
+    <div v-if="showStageDetailsModal" 
+         class="fixed inset-0 bg-black/50 backdrop-blur-sm flex items-center justify-center z-50 transition-opacity duration-300"
+         @click.self="showStageDetailsModal = false">
+      <div class="bg-white/90 backdrop-blur-lg rounded-2xl shadow-2xl max-w-4xl w-full max-h-[90vh] overflow-y-auto transform transition-all duration-300 scale-100"
+           :class="{ 'scale-95 opacity-0': !showStageDetailsModal, 'scale-100 opacity-100': showStageDetailsModal }">
+        <div class="p-6 border-b border-gray-200/50">
+          <div class="flex justify-between items-center">
+            <h3 class="text-2xl font-bold bg-gradient-to-r from-gray-800 to-gray-600 bg-clip-text text-transparent">
+              Détails du stage
+            </h3>
+            <button @click="showStageDetailsModal = false" 
+                    class="text-gray-400 hover:text-gray-500 transition-colors duration-200">
+              <svg class="h-6 w-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
+              </svg>
+            </button>
+          </div>
+        </div>
+        <div class="p-6" v-if="selectedStage">
+          <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+            <div class="backdrop-blur-lg bg-white/50 rounded-xl p-6 shadow-lg border border-white/20">
+              <h4 class="text-lg font-semibold mb-4 bg-gradient-to-r from-gray-800 to-gray-600 bg-clip-text text-transparent">
+                Informations du stagiaire
+              </h4>
+              <div class="space-y-3">
+                <p class="flex items-center gap-2">
+                  <svg class="w-5 h-5 text-gray-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
                   </svg>
-                </button>
+                  <span class="font-medium">Nom :</span> 
+                  {{ selectedStage.demandeStage?.stagiaire?.user?.nom }} {{ selectedStage.demandeStage?.stagiaire?.user?.prenom }}
+                </p>
+                <p class="flex items-center gap-2">
+                  <svg class="w-5 h-5 text-gray-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z" />
+                  </svg>
+                  <span class="font-medium">Email :</span> 
+                  {{ selectedStage.demandeStage?.stagiaire?.user?.email }}
+                </p>
+                <p class="flex items-center gap-2">
+                  <svg class="w-5 h-5 text-gray-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 5a2 2 0 012-2h3.28a1 1 0 01.948.684l1.498 4.493a1 1 0 01-.502 1.21l-2.257 1.13a11.042 11.042 0 005.516 5.516l1.13-2.257a1 1 0 011.21-.502l4.493 1.498a1 1 0 01.684.949V19a2 2 0 01-2 2h-1C9.716 21 3 14.284 3 6V5z" />
+                  </svg>
+                  <span class="font-medium">Téléphone :</span> 
+                  {{ selectedStage.demandeStage?.stagiaire?.user?.telephone || 'Non renseigné' }}
+                </p>
+                <p class="flex items-center gap-2">
+                  <svg class="w-5 h-5 text-gray-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253" />
+                  </svg>
+                  <span class="font-medium">Niveau d'étude :</span> 
+                  {{ selectedStage.demandeStage?.stagiaire?.niveau_etude || 'Non renseigné' }}
+                </p>
+                <p class="flex items-center gap-2">
+                  <svg class="w-5 h-5 text-gray-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4" />
+                  </svg>
+                  <span class="font-medium">Université :</span> 
+                  {{ selectedStage.demandeStage?.stagiaire?.universite || 'Non renseignée' }}
+                </p>
+                <p class="flex items-center gap-2">
+                  <svg class="w-5 h-5 text-gray-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2" />
+                  </svg>
+                  <span class="font-medium">Filière :</span> 
+                  {{ selectedStage.demandeStage?.stagiaire?.filiere || 'Non renseignée' }}
+                </p>
               </div>
             </div>
-            <div class="p-6" v-if="selectedStage">
-              <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
-                <div>
-                  <h4 class="text-lg font-semibold mb-2">Informations du stagiaire</h4>
-                  <div class="bg-gray-50 p-4 rounded-lg">
-                    <p><span class="font-medium">Nom :</span> {{ selectedStage.demandeStage?.stagiaire?.user?.nom }} {{ selectedStage.demandeStage?.stagiaire?.user?.prenom }}</p>
-                    <p><span class="font-medium">Email :</span> {{ selectedStage.demandeStage?.stagiaire?.user?.email }}</p>
-                    <p><span class="font-medium">Téléphone :</span> {{ selectedStage.demandeStage?.stagiaire?.user?.telephone || 'Non renseigné' }}</p>
-                    <p><span class="font-medium">Niveau d'étude :</span> {{ selectedStage.demandeStage?.stagiaire?.niveau_etude || 'Non renseigné' }}</p>
-                    <p><span class="font-medium">Université :</span> {{ selectedStage.demandeStage?.stagiaire?.universite || 'Non renseignée' }}</p>
-                    <p><span class="font-medium">Filière :</span> {{ selectedStage.demandeStage?.stagiaire?.filiere || 'Non renseignée' }}</p>
-                  </div>
-                </div>
-                <div>
-                  <h4 class="text-lg font-semibold mb-2">Informations du stage</h4>
-                  <div class="bg-gray-50 p-4 rounded-lg">
-                    <p><span class="font-medium">Structure :</span> {{ selectedStage.structure?.libelle }}</p>
-                    <p><span class="font-medium">Type :</span> {{ selectedStage.type || 'Non renseigné' }}</p>
-                    <p><span class="font-medium">Période :</span> {{ formatDate(selectedStage.date_debut) }} - {{ formatDate(selectedStage.date_fin) }}</p>
-                    <p><span class="font-medium">Durée :</span> {{ calculateDuration(selectedStage.date_debut, selectedStage.date_fin) }}</p>
-                    <p><span class="font-medium">Statut :</span> {{ selectedStage.statut }}</p>
-                    <p><span class="font-medium">Note :</span> {{ selectedStage.note || 'Non évalué' }}</p>
-                  </div>
-                </div>
-              </div>
-
-              <!-- Informations de réaffectation -->
-              <div v-if="selectedStage.est_reaffecte && selectedStage.reaffectation_info" class="mt-6">
-                <h4 class="text-lg font-semibold mb-2">Informations de réaffectation</h4>
-                <div class="bg-yellow-50 p-4 rounded-lg border border-yellow-200">
-                  <p><span class="font-medium">Réaffecté à :</span> {{ selectedStage.reaffectation_info.nouveau_ms_prenom }} {{ selectedStage.reaffectation_info.nouveau_ms_nom }}</p>
-                  <p><span class="font-medium">Structure :</span> {{ selectedStage.reaffectation_info.structure_libelle }}</p>
-                  <p><span class="font-medium">Date de réaffectation :</span> {{ formatDate(selectedStage.reaffectation_info.date_reaffectation) }}</p>
-                  <p class="mt-2 text-yellow-700 italic">Ce stage a été réaffecté. Vous ne pouvez plus effectuer d'actions dessus.</p>
-                </div>
-              </div>
-
-              <!-- Actions -->
-              <div class="mt-6 flex justify-end space-x-3">
-                <!-- N'afficher les boutons d'action que si le stage est actif -->
-                <template v-if="selectedStage.est_actif !== false">
-                  <button
-                    @click="contactStagiaire(selectedStage)"
-                    class="px-4 py-2 bg-green-600 text-white rounded-md hover:bg-green-700 transition-colors duration-200"
-                  >
-                    Contacter le stagiaire
-                </button>
-                <button 
-                    v-if="selectedStage.statut === 'En cours'"
-                    @click="updateStageStatus(selectedStage, 'Terminé')"
-                    class="px-4 py-2 bg-purple-600 text-white rounded-md hover:bg-purple-700 transition-colors duration-200"
-                  >
-                    Marquer comme terminé
-                </button>
-                <button 
-                    @click="openReaffectationModal(selectedStage)"
-                    class="px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 transition-colors duration-200"
-                  >
-                    Réaffecter
-                  </button>
-                </template>
-                <button
-                  @click="showStageDetailsModal = false"
-                  class="px-4 py-2 bg-gray-200 text-gray-800 rounded-md hover:bg-gray-300 transition-colors duration-200"
-                >
-                  Fermer
-                </button>
+            <div class="backdrop-blur-lg bg-white/50 rounded-xl p-6 shadow-lg border border-white/20">
+              <h4 class="text-lg font-semibold mb-4 bg-gradient-to-r from-gray-800 to-gray-600 bg-clip-text text-transparent">
+                Informations du stage
+              </h4>
+              <div class="space-y-3">
+                <p class="flex items-center gap-2">
+                  <svg class="w-5 h-5 text-gray-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4" />
+                  </svg>
+                  <span class="font-medium">Structure :</span> 
+                  {{ selectedStage.structure?.libelle }}
+                </p>
+                <p class="flex items-center gap-2">
+                  <svg class="w-5 h-5 text-gray-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2" />
+                  </svg>
+                  <span class="font-medium">Type :</span> 
+                  {{ selectedStage.type || 'Non renseigné' }}
+                </p>
+                <p class="flex items-center gap-2">
+                  <svg class="w-5 h-5 text-gray-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
+                  </svg>
+                  <span class="font-medium">Période :</span> 
+                  {{ formatDate(selectedStage.date_debut) }} - {{ formatDate(selectedStage.date_fin) }}
+                </p>
+                <p class="flex items-center gap-2">
+                  <svg class="w-5 h-5 text-gray-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
+                  </svg>
+                  <span class="font-medium">Durée :</span> 
+                  {{ calculateDuration(selectedStage.date_debut, selectedStage.date_fin) }}
+                </p>
+                <p class="flex items-center gap-2">
+                  <svg class="w-5 h-5 text-gray-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
+                  </svg>
+                  <span class="font-medium">Statut :</span> 
+                  <span class="px-2 py-1 rounded-full text-sm font-medium"
+                        :class="{
+                          'bg-green-100 text-green-800': selectedStage.statut === 'Terminé',
+                          'bg-blue-100 text-blue-800': selectedStage.statut === 'En cours',
+                          'bg-yellow-100 text-yellow-800': selectedStage.statut === 'En attente'
+                        }">
+                    {{ selectedStage.statut }}
+                  </span>
+                </p>
+                <p class="flex items-center gap-2">
+                  <svg class="w-5 h-5 text-gray-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11.049 2.927c.3-.921 1.603-.921 1.902 0l1.519 4.674a1 1 0 00.95.69h4.915c.969 0 1.371 1.24.588 1.81l-3.976 2.888a1 1 0 00-.363 1.118l1.518 4.674c.3.922-.755 1.688-1.538 1.118l-3.976-2.888a1 1 0 00-1.176 0l-3.976 2.888c-.783.57-1.838-.197-1.538-1.118l1.518-4.674a1 1 0 00-.363-1.118l-3.976-2.888c-.784-.57-.38-1.81.588-1.81h4.914a1 1 0 00.951-.69l1.519-4.674z" />
+                  </svg>
+                  <span class="font-medium">Note :</span> 
+                  {{ selectedStage.note || 'Non évalué' }}
+                </p>
               </div>
             </div>
           </div>
-        </div>
-        
-        <!-- Modal pour contacter le stagiaire -->
-        <div v-if="showContactModal" class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
-          <div class="bg-white rounded-lg shadow-xl max-w-2xl w-full">
-            <div class="p-6 border-b border-gray-200">
-              <div class="flex justify-between items-center">
-                <h3 class="text-xl font-bold text-gray-900">Contacter le stagiaire</h3>
-                <button @click="showContactModal = false" class="text-gray-400 hover:text-gray-500">
-                  <svg class="h-6 w-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
-                  </svg>
-                </button>
-              </div>
-            </div>
-            <div class="p-6" v-if="selectedStage">
-              <!-- Message d'avertissement pour les stages réaffectés -->
-              <div v-if="selectedStage.est_reaffecte" class="bg-yellow-50 p-4 rounded-md border border-yellow-200 mb-4">
-                <p class="text-yellow-800">
-                  <svg class="w-5 h-5 inline-block mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" />
-                  </svg>
-                  Ce stage a été réaffecté. Vous ne pouvez plus contacter le stagiaire.
-                </p>
-              </div>
 
-              <!-- Formulaire de contact (uniquement pour les stages actifs) -->
-              <form v-if="!selectedStage.est_reaffecte" @submit.prevent="sendMessage">
-                <div class="mb-4">
-                  <label class="block text-gray-700 text-sm font-bold mb-2" for="subject">
-                    Sujet
-                  </label>
-                  <input
-                    v-model="contactForm.subject"
-                    id="subject"
-                    type="text"
-                    class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-green-500"
-                    placeholder="Sujet du message"
-                    required
-                  />
-                </div>
-                <div class="mb-6">
-                  <label class="block text-gray-700 text-sm font-bold mb-2" for="message">
-                    Message
-                  </label>
-                  <textarea
-                    v-model="contactForm.message"
-                    id="message"
-                    rows="5"
-                    class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-green-500"
-                    placeholder="Votre message..."
-                    required
-                  ></textarea>
-                </div>
-                <div class="flex justify-end space-x-3">
-                  <button
-                    type="button"
-                    @click="showContactModal = false"
-                    class="px-4 py-2 bg-gray-200 text-gray-800 rounded-md hover:bg-gray-300 transition-colors duration-200"
-                  >
-                    Annuler
-                  </button>
-                  <button
-                    type="submit"
-                    class="px-4 py-2 bg-green-600 text-white rounded-md hover:bg-green-700 transition-colors duration-200"
-                  >
-                    Envoyer
-                  </button>
-                </div>
-              </form>
-
-              <!-- Bouton de fermeture pour les stages réaffectés -->
-              <div v-if="selectedStage.est_reaffecte" class="flex justify-end">
-                <button
-                  @click="showContactModal = false"
-                  class="px-4 py-2 bg-gray-200 text-gray-800 rounded-md hover:bg-gray-300 transition-colors duration-200"
-                >
-                  Fermer
-                </button>
-              </div>
+          <!-- Informations de réaffectation -->
+          <div v-if="selectedStage.est_reaffecte && selectedStage.reaffectation_info" 
+               class="mt-6 backdrop-blur-lg bg-yellow-50/50 rounded-xl p-6 shadow-lg border border-yellow-200/50">
+            <h4 class="text-lg font-semibold mb-4 text-yellow-800">Informations de réaffectation</h4>
+            <div class="space-y-3">
+              <p class="flex items-center gap-2">
+                <svg class="w-5 h-5 text-yellow-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
+                </svg>
+                <span class="font-medium">Réaffecté à :</span> 
+                {{ selectedStage.reaffectation_info.nouveau_ms_prenom }} {{ selectedStage.reaffectation_info.nouveau_ms_nom }}
+              </p>
+              <p class="flex items-center gap-2">
+                <svg class="w-5 h-5 text-yellow-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4" />
+                </svg>
+                <span class="font-medium">Structure :</span> 
+                {{ selectedStage.reaffectation_info.structure_libelle }}
+              </p>
+              <p class="flex items-center gap-2">
+                <svg class="w-5 h-5 text-yellow-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
+                </svg>
+                <span class="font-medium">Date de réaffectation :</span> 
+                {{ formatDate(selectedStage.reaffectation_info.date_reaffectation) }}
+              </p>
             </div>
+            <p class="mt-4 text-yellow-700 italic flex items-center gap-2">
+              <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" />
+              </svg>
+              Ce stage a été réaffecté. Vous ne pouvez plus effectuer d'actions dessus.
+            </p>
+          </div>
+
+          <!-- Actions -->
+          <div class="mt-6 flex justify-end space-x-3">
+            <!-- N'afficher les boutons d'action que si le stage est actif -->
+            <template v-if="selectedStage.est_actif !== false">
+              <button
+                @click="contactStagiaire(selectedStage)"
+                class="px-4 py-2 bg-gradient-to-r from-green-500 to-green-600 text-white rounded-xl hover:from-green-600 hover:to-green-700 transition-all duration-300 shadow-lg hover:shadow-xl transform hover:scale-105"
+              >
+                <span class="flex items-center gap-2">
+                  <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z" />
+                  </svg>
+                  Contacter le stagiaire
+                </span>
+              </button>
+              <button 
+                v-if="selectedStage.statut === 'En cours'"
+                @click="updateStageStatus(selectedStage, 'Terminé')"
+                class="px-4 py-2 bg-gradient-to-r from-purple-500 to-purple-600 text-white rounded-xl hover:from-purple-600 hover:to-purple-700 transition-all duration-300 shadow-lg hover:shadow-xl transform hover:scale-105"
+              >
+                <span class="flex items-center gap-2">
+                  <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
+                  </svg>
+                  Marquer comme terminé
+                </span>
+              </button>
+              <button 
+                @click="openReaffectationModal(selectedStage)"
+                class="px-4 py-2 bg-gradient-to-r from-blue-500 to-blue-600 text-white rounded-xl hover:from-blue-600 hover:to-blue-700 transition-all duration-300 shadow-lg hover:shadow-xl transform hover:scale-105"
+              >
+                <span class="flex items-center gap-2">
+                  <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7h12m0 0l-4-4m4 4l-4 4m0 6H4m0 0l4 4m-4-4l4-4" />
+                  </svg>
+                  Réaffecter
+                </span>
+              </button>
+            </template>
+            <button
+              @click="showStageDetailsModal = false"
+              class="px-4 py-2 bg-gradient-to-r from-gray-200 to-gray-300 text-gray-700 rounded-xl hover:from-gray-300 hover:to-gray-400 transition-all duration-300 shadow-lg hover:shadow-xl transform hover:scale-105"
+            >
+              <span class="flex items-center gap-2">
+                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
+                </svg>
+                Fermer
+              </span>
+            </button>
           </div>
         </div>
+      </div>
+    </div>
+    
+    <!-- Modal pour contacter le stagiaire -->
+    <div v-if="showContactModal" class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+      <div class="bg-white rounded-lg shadow-xl max-w-2xl w-full">
+        <div class="p-6 border-b border-gray-200">
+          <div class="flex justify-between items-center">
+            <h3 class="text-xl font-bold text-gray-900">Contacter le stagiaire</h3>
+            <button @click="showContactModal = false" class="text-gray-400 hover:text-gray-500">
+              <svg class="h-6 w-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
+              </svg>
+            </button>
+          </div>
+        </div>
+        <div class="p-6" v-if="selectedStage">
+          <!-- Message d'avertissement pour les stages réaffectés -->
+          <div v-if="selectedStage.est_reaffecte" class="bg-yellow-50 p-4 rounded-md border border-yellow-200 mb-4">
+            <p class="text-yellow-800">
+              <svg class="w-5 h-5 inline-block mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" />
+              </svg>
+              Ce stage a été réaffecté. Vous ne pouvez plus contacter le stagiaire.
+            </p>
+          </div>
 
-        <!-- Modal pour la réaffectation -->
-        <div v-if="showReaffectationModal" class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
-          <div class="bg-white rounded-lg shadow-xl max-w-2xl w-full">
-            <div class="p-6 border-b border-gray-200">
-              <div class="flex justify-between items-center">
-                <h3 class="text-xl font-bold text-gray-900">Réaffecter le stage</h3>
-                <button @click="showReaffectationModal = false" class="text-gray-400 hover:text-gray-500">
-                  <svg class="h-6 w-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
-                  </svg>
-                </button>
-              </div>
+          <!-- Formulaire de contact (uniquement pour les stages actifs) -->
+          <form v-if="!selectedStage.est_reaffecte" @submit.prevent="sendMessage">
+            <div class="mb-4">
+              <label class="block text-gray-700 text-sm font-bold mb-2" for="subject">
+                Sujet
+              </label>
+              <input
+                v-model="contactForm.subject"
+                id="subject"
+                type="text"
+                class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-green-500"
+                placeholder="Sujet du message"
+                required
+              />
             </div>
-            <div class="p-6" v-if="selectedStage">
-              <!-- Message d'avertissement pour les stages réaffectés -->
-              <div v-if="selectedStage.est_reaffecte" class="bg-yellow-50 p-4 rounded-md border border-yellow-200 mb-4">
-                <p class="text-yellow-800">
-                  <svg class="w-5 h-5 inline-block mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" />
-                  </svg>
-                  Ce stage a déjà été réaffecté. Vous ne pouvez pas le réaffecter à nouveau.
-                </p>
-
-                <div v-if="selectedStage.reaffectation_info" class="mt-4 bg-white p-3 rounded-md border border-gray-200">
-                  <p><span class="font-medium">Réaffecté à :</span> {{ selectedStage.reaffectation_info.nouveau_ms_prenom }} {{ selectedStage.reaffectation_info.nouveau_ms_nom }}</p>
-                  <p><span class="font-medium">Structure :</span> {{ selectedStage.reaffectation_info.structure_libelle }}</p>
-                  <p><span class="font-medium">Date de réaffectation :</span> {{ formatDate(selectedStage.reaffectation_info.date_reaffectation) }}</p>
-                </div>
-              </div>
-
-              <!-- Chargement -->
-              <div v-else-if="loading" class="flex justify-center items-center py-8">
-                <div class="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-blue-500"></div>
-              </div>
-
-              <!-- Message d'erreur -->
-              <div v-else-if="errorMsg" class="bg-red-100 border-l-4 border-red-500 text-red-700 p-4 rounded-md">
-                <p class="font-bold">Erreur</p>
-                <p>{{ errorMsg }}</p>
-              </div>
-
-              <!-- Aucun maître de stage disponible -->
-              <div v-else-if="maitresStage.length === 0" class="bg-yellow-100 border-l-4 border-yellow-500 text-yellow-700 p-4 rounded-md">
-                <p class="font-bold">Information</p>
-                <p>Aucun maître de stage disponible dans les sous-structures. Vous ne pouvez pas réaffecter ce stage.</p>
-              </div>
-
-              <!-- Formulaire de réaffectation -->
-              <div v-else>
-                <p class="mb-4 text-gray-700">
-                  Vous pouvez réaffecter ce stage à un maître de stage d'une sous-structure.
-                  Cette action est irréversible et transférera la responsabilité du stage au nouveau maître de stage.
-                </p>
-
-                <div class="mb-6">
-                  <label class="block text-gray-700 text-sm font-bold mb-2" for="nouveau_ms">
-                    Nouveau maître de stage
-                  </label>
-                  <select
-                    v-model="reaffectationForm.nouveauMaitreStageId"
-                    id="nouveau_ms"
-                    class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
-                    required
-                  >
-                    <option value="" disabled>Sélectionnez un maître de stage</option>
-                    <option v-for="ms in maitresStage" :key="ms.id" :value="ms.id">
-                      {{ ms.prenom }} {{ ms.nom }} - {{ ms.structure.libelle }} ({{ ms.structure.sigle }})
-                    </option>
-                  </select>
-                </div>
-
-                <div class="flex justify-end space-x-3">
-                  <button
-                    type="button"
-                    @click="showReaffectationModal = false"
-                    class="px-4 py-2 bg-gray-200 text-gray-800 rounded-md hover:bg-gray-300 transition-colors duration-200"
-                  >
-                    Annuler
-                  </button>
-                  <button
-                    type="button"
-                    @click="reaffecterStage"
-                    class="px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 transition-colors duration-200"
-                    :disabled="!reaffectationForm.nouveauMaitreStageId"
-                  >
-                    Réaffecter le stage
-                  </button>
-                </div>
-              </div>
-
-              <!-- Bouton de fermeture pour les stages réaffectés -->
-              <div v-if="selectedStage.est_reaffecte" class="flex justify-end mt-4">
-                <button
-                  @click="showReaffectationModal = false"
-                  class="px-4 py-2 bg-gray-200 text-gray-800 rounded-md hover:bg-gray-300 transition-colors duration-200"
-                >
-                  Fermer
-                </button>
-                </div>
+            <div class="mb-6">
+              <label class="block text-gray-700 text-sm font-bold mb-2" for="message">
+                Message
+              </label>
+              <textarea
+                v-model="contactForm.message"
+                id="message"
+                rows="5"
+                class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-green-500"
+                placeholder="Votre message..."
+                required
+              ></textarea>
             </div>
+            <div class="flex justify-end space-x-3">
+              <button
+                type="button"
+                @click="showContactModal = false"
+                class="px-4 py-2 bg-gray-200 text-gray-800 rounded-md hover:bg-gray-300 transition-colors duration-200"
+              >
+                Annuler
+              </button>
+              <button
+                type="submit"
+                class="px-4 py-2 bg-green-600 text-white rounded-md hover:bg-green-700 transition-colors duration-200"
+              >
+                Envoyer
+              </button>
+            </div>
+          </form>
+
+          <!-- Bouton de fermeture pour les stages réaffectés -->
+          <div v-if="selectedStage.est_reaffecte" class="flex justify-end">
+            <button
+              @click="showContactModal = false"
+              class="px-4 py-2 bg-gray-200 text-gray-800 rounded-md hover:bg-gray-300 transition-colors duration-200"
+            >
+              Fermer
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Modal pour la réaffectation -->
+    <div v-if="showReaffectationModal" class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+      <div class="bg-white rounded-lg shadow-xl max-w-2xl w-full">
+        <div class="p-6 border-b border-gray-200">
+          <div class="flex justify-between items-center">
+            <h3 class="text-xl font-bold text-gray-900">Réaffecter le stage</h3>
+            <button @click="showReaffectationModal = false" class="text-gray-400 hover:text-gray-500">
+              <svg class="h-6 w-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
+              </svg>
+            </button>
+          </div>
+        </div>
+        <div class="p-6" v-if="selectedStage">
+          <!-- Message d'avertissement pour les stages réaffectés -->
+          <div v-if="selectedStage.est_reaffecte" class="bg-yellow-50 p-4 rounded-md border border-yellow-200 mb-4">
+            <p class="text-yellow-800">
+              <svg class="w-5 h-5 inline-block mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" />
+              </svg>
+              Ce stage a déjà été réaffecté. Vous ne pouvez pas le réaffecter à nouveau.
+            </p>
+
+            <div v-if="selectedStage.reaffectation_info" class="mt-4 bg-white p-3 rounded-md border border-gray-200">
+              <p><span class="font-medium">Réaffecté à :</span> {{ selectedStage.reaffectation_info.nouveau_ms_prenom }} {{ selectedStage.reaffectation_info.nouveau_ms_nom }}</p>
+              <p><span class="font-medium">Structure :</span> {{ selectedStage.reaffectation_info.structure_libelle }}</p>
+              <p><span class="font-medium">Date de réaffectation :</span> {{ formatDate(selectedStage.reaffectation_info.date_reaffectation) }}</p>
+            </div>
+          </div>
+
+          <!-- Chargement -->
+          <div v-else-if="loading" class="flex justify-center items-center py-8">
+            <div class="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-blue-500"></div>
+          </div>
+
+          <!-- Message d'erreur -->
+          <div v-else-if="errorMsg" class="bg-red-100 border-l-4 border-red-500 text-red-700 p-4 rounded-md">
+            <p class="font-bold">Erreur</p>
+            <p>{{ errorMsg }}</p>
+          </div>
+
+          <!-- Aucun maître de stage disponible -->
+          <div v-else-if="maitresStage.length === 0" class="bg-yellow-100 border-l-4 border-yellow-500 text-yellow-700 p-4 rounded-md">
+            <p class="font-bold">Information</p>
+            <p>Aucun maître de stage disponible dans les sous-structures. Vous ne pouvez pas réaffecter ce stage.</p>
+          </div>
+
+          <!-- Formulaire de réaffectation -->
+          <div v-else>
+            <p class="mb-4 text-gray-700">
+              Vous pouvez réaffecter ce stage à un maître de stage d'une sous-structure.
+              Cette action est irréversible et transférera la responsabilité du stage au nouveau maître de stage.
+            </p>
+
+            <div class="mb-6">
+              <label class="block text-gray-700 text-sm font-bold mb-2" for="nouveau_ms">
+                Nouveau maître de stage
+              </label>
+              <select
+                v-model="reaffectationForm.nouveauMaitreStageId"
+                id="nouveau_ms"
+                class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                required
+              >
+                <option value="" disabled>Sélectionnez un maître de stage</option>
+                <option v-for="ms in maitresStage" :key="ms.id" :value="ms.id">
+                  {{ ms.prenom }} {{ ms.nom }} - {{ ms.structure.libelle }} ({{ ms.structure.sigle }})
+                </option>
+              </select>
+            </div>
+
+            <div class="flex justify-end space-x-3">
+              <button
+                type="button"
+                @click="showReaffectationModal = false"
+                class="px-4 py-2 bg-gray-200 text-gray-800 rounded-md hover:bg-gray-300 transition-colors duration-200"
+              >
+                Annuler
+              </button>
+              <button
+                type="button"
+                @click="reaffecterStage"
+                class="px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 transition-colors duration-200"
+                :disabled="!reaffectationForm.nouveauMaitreStageId"
+              >
+                Réaffecter le stage
+              </button>
+            </div>
+          </div>
+
+          <!-- Bouton de fermeture pour les stages réaffectés -->
+          <div v-if="selectedStage.est_reaffecte" class="flex justify-end mt-4">
+            <button
+              @click="showReaffectationModal = false"
+              class="px-4 py-2 bg-gray-200 text-gray-800 rounded-md hover:bg-gray-300 transition-colors duration-200"
+            >
+              Fermer
+            </button>
           </div>
         </div>
       </div>

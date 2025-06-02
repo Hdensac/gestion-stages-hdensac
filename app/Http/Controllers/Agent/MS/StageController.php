@@ -220,6 +220,13 @@ class StageController extends Controller
                 'evaluation'
             ]);
 
+            // Log pour vérifier la présence de la relation themeStage
+            \Log::info('DEBUG_STAGE_SHOW', [
+                'id' => $stage->id,
+                'theme_stage_id' => $stage->theme_stage_id,
+                'themeStage' => $stage->themeStage
+            ]);
+
             // Forcer le chargement des relations si elles ne sont pas déjà chargées
             if (!$stage->relationLoaded('demandeStage') ||
                 !$stage->demandeStage ||
@@ -256,7 +263,9 @@ class StageController extends Controller
             ]);
 
             return Inertia::render('Agent/MS/Stages/Show', [
-                'stage' => $stage,
+                'stage' => array_merge($stage->toArray(), [
+                    'themeStage' => $stage->themeStage ? $stage->themeStage->toArray() : null
+                ]),
                 'openContact' => $request->boolean('openContact'),
                 'success' => session('success'),
                 'error' => session('error')
@@ -913,5 +922,79 @@ class StageController extends Controller
 
             return redirect()->back()->with('error', 'Une erreur est survenue lors de la réaffectation du stage.');
         }
+    }
+
+    /**
+     * Retourne toutes les propositions de thèmes pour un stage (pour le MS)
+     */
+    public function getThemesProposes(Stage $stage)
+    {
+        // Correction : s'assurer que le thème validé a bien le champ stage_id renseigné
+        if ($stage->theme_stage_id) {
+            $themeValide = \App\Models\ThemeStage::find($stage->theme_stage_id);
+            if ($themeValide && $themeValide->stage_id !== $stage->id) {
+                $themeValide->stage_id = $stage->id;
+                $themeValide->save();
+            }
+        }
+        $themes = $stage->themesProposes()->orderByDesc('created_at')->get();
+        return response()->json(['success' => true, 'themes' => $themes]);
+    }
+
+    /**
+     * Valider ou refuser une proposition de thème
+     */
+    public function validerOuRefuserTheme(Request $request, Stage $stage, ThemeStage $theme)
+    {
+        $user = Auth::user();
+        $agent = $user->agent;
+        // Vérifier que l'utilisateur est bien le MS du stage
+        $affectation = $stage->affectationsMaitreStage()->where('maitre_stage_id', $user->id)->first();
+        if (!$affectation) {
+            return response()->json(['success' => false, 'message' => 'Non autorisé.'], 403);
+        }
+        $validated = $request->validate([
+            'action' => 'required|in:valider,refuser',
+        ]);
+        if ($validated['action'] === 'valider') {
+            $theme->etat = 'Validé';
+            $theme->save();
+            $stage->theme_stage_id = $theme->id;
+            $stage->save();
+        } else {
+            $theme->etat = 'Refusé';
+            $theme->save();
+        }
+        return response()->json(['success' => true, 'theme' => $theme]);
+    }
+
+    /**
+     * Permettre au MS de proposer un thème (validé d'office)
+     */
+    public function proposerTheme(Request $request, Stage $stage)
+    {
+        $user = Auth::user();
+        $agent = $user->agent;
+        // Vérifier que l'utilisateur est bien le MS du stage
+        $affectation = $stage->affectationsMaitreStage()->where('maitre_stage_id', $user->id)->first();
+        if (!$affectation) {
+            return response()->json(['success' => false, 'message' => 'Non autorisé.'], 403);
+        }
+        $validated = $request->validate([
+            'intitule' => 'required|string|max:255',
+            'description' => 'required|string|max:2000',
+            'mots_cles' => 'nullable|string|max:255',
+        ]);
+        $theme = $stage->themesProposes()->create([
+            'intitule' => $validated['intitule'],
+            'description' => $validated['description'],
+            'etat' => 'Validé',
+            'mots_cles' => $validated['mots_cles'] ?? null,
+            'propose_par' => 'ms',
+        ]);
+        // Associer ce thème comme thème validé du stage
+        $stage->theme_stage_id = $theme->id;
+        $stage->save();
+        return response()->json(['success' => true, 'theme' => $theme]);
     }
 }

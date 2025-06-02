@@ -323,6 +323,7 @@
 </template>
 
 <script setup>
+import RSLayout from '@/Layouts/RSLayout.vue';
 import Pagination from '@/Components/Pagination.vue';
 import { ref, watch } from 'vue';
 import { router } from '@inertiajs/vue3';

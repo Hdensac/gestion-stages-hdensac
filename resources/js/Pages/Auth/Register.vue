@@ -82,7 +82,7 @@ const updatePasswordStrength = () => {
                         </svg>
                     </div>
                     <h1 class="text-2xl font-bold mb-2">Rejoignez-nous</h1>
-                    <p class="text-blue-100">Programme de Stages 2025</p>
+                    <p class="text-blue-100">Programme de Stages</p>
                 </div>
             </div>
             
@@ -265,7 +265,7 @@ const updatePasswordStrength = () => {
                             <h1 class="text-4xl font-black mb-3 bg-gradient-to-r from-white to-pink-100 bg-clip-text text-transparent">
                                 Rejoignez l'Excellence
                             </h1>
-                            <p class="text-indigo-100 text-lg">Programme de Stages 2025</p>
+                            <p class="text-indigo-100 text-lg">Programme de Stages</p>
                         </div>
                     </div>
 
@@ -361,7 +361,7 @@ const updatePasswordStrength = () => {
                             Créez votre compte
                         </h2>
                         <p class="text-gray-600 font-medium">Rejoignez le programme de stages</p>
-                        <p class="text-blue-600 text-sm font-semibold">Session 2025</p>
+                        <p class="text-blue-600 text-sm font-semibold"></p>
                     </div>
 
                     <!-- Carte du formulaire -->

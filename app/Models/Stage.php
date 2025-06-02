@@ -88,5 +88,21 @@ class Stage extends Model
         return $this->hasMany(Evaluation::class);
     }
 
+    /**
+     * Tous les thèmes proposés pour ce stage.
+     */
+    public function themesProposes()
+    {
+        return $this->hasMany(ThemeStage::class, 'stage_id');
+    }
+
+    /**
+     * Le thème validé pour ce stage.
+     */
+    public function themeValide()
+    {
+        return $this->belongsTo(ThemeStage::class, 'theme_stage_id');
+    }
+
     // Définir d'autres relations Eloquent ici ultérieurement
 }
