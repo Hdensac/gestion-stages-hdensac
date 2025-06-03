@@ -299,8 +299,8 @@ class DemandeController extends Controller
                     $demande->structure_id = $structure->id;
                 }
 
-                // Convertir le type au format attendu par la base de données
-                $typeFormatted = strtolower(str_replace('é', 'e', $demande->type));
+                    // Convertir le type au format attendu par la base de données
+                    $typeFormatted = strtolower(str_replace('é', 'e', $demande->type));
 
                 if ($demande->nature === 'Groupe') {
                     // Pour une demande en groupe, créer un stage pour chaque membre
@@ -336,21 +336,21 @@ class DemandeController extends Controller
                     $existingStage = \App\Models\Stage::where('demande_stage_id', $demande->id)->first();
 
                     if (!$existingStage) {
-                        $stage = \App\Models\Stage::create([
-                            'demande_stage_id' => $demande->id,
-                            'structure_id' => $demande->structure_id,
-                            'date_debut' => $demande->date_debut,
-                            'date_fin' => $demande->date_fin,
-                            'statut' => 'En cours',
+                    $stage = \App\Models\Stage::create([
+                        'demande_stage_id' => $demande->id,
+                        'structure_id' => $demande->structure_id,
+                        'date_debut' => $demande->date_debut,
+                        'date_fin' => $demande->date_fin,
+                        'statut' => 'En cours',
                             'type' => $typeFormatted,
                             'stagiaire_id' => $demande->stagiaire_id
-                        ]);
+                    ]);
 
                         Log::info('Stage créé pour une demande individuelle', [
-                            'stage_id' => $stage->id,
+                        'stage_id' => $stage->id,
                             'demande_stage_id' => $demande->id,
                             'stagiaire_id' => $demande->stagiaire_id
-                        ]);
+                    ]);
                     }
                 }
 

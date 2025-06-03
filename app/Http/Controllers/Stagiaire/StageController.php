@@ -52,16 +52,16 @@ class StageController extends Controller
                 $query->whereIn('demande_stage_id', $demandeIds)
                     ->orWhereIn('id', $stagesMembreGroupe);
             })
-            ->with([
-                'structure',
-                'demandeStage',
-                'themeStage',
-                'affectationsMaitreStage' => function($query) {
-                    $query->orderBy('date_affectation', 'desc');
-                },
-                'affectationsMaitreStage.maitreStage',
-            ])
-            ->get();
+                ->with([
+                    'structure',
+                    'demandeStage',
+                    'themeStage',
+                    'affectationsMaitreStage' => function($query) {
+                        $query->orderBy('date_affectation', 'desc');
+                    },
+                    'affectationsMaitreStage.maitreStage',
+                ])
+                ->get();
             
             // Ajouter des informations supplémentaires pour chaque stage
             $stages = $stages->map(function ($stage) {
@@ -94,7 +94,7 @@ class StageController extends Controller
             
             return Inertia::render('Stagiaire/MesStages', [
                 'stages' => $stages,
-                'notifications' => Auth::user()->unreadNotifications()->orderBy('created_at', 'desc')->take(10)->get(),
+                'notifications' => Auth::user()->notifications()->unread()->orderBy('created_at', 'desc')->take(10)->get(),
                 'message' => isset($message) ? $message : null,
                 'error' => isset($error) ? $error : null,
             ]);
@@ -183,7 +183,7 @@ class StageController extends Controller
                 'stage' => array_merge($stage->toArray(), [
                     'themeStage' => $stage->themeStage ? $stage->themeStage->toArray() : null
                 ]),
-                'notifications' => Auth::user()->unreadNotifications()->orderBy('created_at', 'desc')->take(10)->get(),
+                'notifications' => Auth::user()->notifications()->unread()->orderBy('created_at', 'desc')->take(10)->get(),
                 'error' => session('error'),
                 'success' => session('success'),
             ]);
@@ -229,6 +229,30 @@ class StageController extends Controller
             'propose_par' => 'stagiaire',
             'user_id' => $user->id,
         ]);
+
+        // Envoyer une notification in-app au MS et à tous les membres du groupe
+        if ($demandeStage) {
+            // Notification au MS
+            $msUser = $stage->affectationsMaitreStage->whereIn('statut', ['En cours', 'Acceptée'])->first()?->maitreStage?->user;
+            if ($msUser) {
+                $msUser->notify(new \App\Notifications\StagiaireNotification(
+                    'Un nouveau thème a été proposé pour le stage.',
+                    route('ms.stages.show', $stage->id)
+                ));
+            }
+
+            // Notification à tous les membres du groupe
+            $membres = $demandeStage->membres;
+            foreach ($membres as $membre) {
+                if ($membre->user_id != $user->id) { // Ne pas notifier le proposeur
+                    $membre->user->notify(new \App\Notifications\StagiaireNotification(
+                        'Un nouveau thème a été proposé pour le stage.',
+                        route('stagiaire.stages.show', $stage->id)
+                    ));
+                }
+            }
+        }
+
         return response()->json(['success' => true, 'theme' => $theme]);
     }
 }

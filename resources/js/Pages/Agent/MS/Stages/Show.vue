@@ -84,19 +84,16 @@
         <!-- Onglets -->
         <div class="bg-white overflow-hidden shadow-sm rounded-lg mb-6">
           <div class="border-b border-gray-200">
-            <nav class="flex overflow-x-auto" aria-label="Tabs">
+            <nav class="flex space-x-4 border-b border-gray-200">
               <button
-                v-for="(tab, index) in tabs"
-                :key="index"
+                v-for="tab in tabs"
+                :key="tab.id"
                 @click="activeTab = tab.id"
-                :disabled="tab.disabled && stage.est_reaffecte"
                 :class="[
-                  'whitespace-nowrap py-4 px-6 text-center border-b-2 font-medium text-sm leading-5 focus:outline-none transition duration-150 ease-in-out',
+                  'relative py-4 px-6 text-sm font-medium focus:outline-none focus:ring-2 focus:ring-inset focus:ring-indigo-500 transition-all duration-200',
                   activeTab === tab.id
-                    ? 'border-blue-500 text-blue-600'
-                    : tab.disabled && stage.est_reaffecte
-                      ? 'border-transparent text-gray-400 cursor-not-allowed'
-                      : 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300'
+                    ? 'text-indigo-600 bg-white border-b-2 border-indigo-500'
+                    : 'text-gray-500 hover:text-gray-700 hover:bg-white/50'
                 ]"
               >
                 <div class="flex items-center">
@@ -267,6 +264,15 @@
                         }">
                         {{ stage.statut }}
                       </span>
+                      </div>
+                      <!-- Bouton de confirmation -->
+                      <div v-if="stage.statut === 'En cours' && new Date(stage.date_fin) <= new Date() && !stage.termine_par_ms" class="mt-4">
+                        <button
+                          @click="confirmerFinStage"
+                          class="bg-green-500 hover:bg-green-600 text-white px-4 py-2 rounded-md"
+                        >
+                          Confirmer la fin du stage
+                        </button>
                       </div>
                     </div>
                   </div>
@@ -444,9 +450,9 @@
                   </div>
                       </li>
                     </ul>
-                  </div>
-                </div>
-                
+              </div>
+            </div>
+
                 <!-- Modal de refus -->
                 <div v-if="themeEnCours" class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-4">
                   <div class="bg-white rounded-lg p-6 max-w-lg w-full">
@@ -468,135 +474,53 @@
                               class="px-4 py-2 bg-red-600 text-white rounded-lg hover:bg-red-700 transition-colors duration-200">
                         Confirmer le refus
                       </button>
+                </div>
                     </div>
                   </div>
                 </div>
               </div>
-            </div>
 
             <!-- Evaluation avancée -->
             <div v-if="activeTab === 'evaluation'" class="space-y-6">
-              <div v-if="stage.est_reaffecte" class="bg-amber-50 p-4 rounded-md border border-amber-200 mb-4">
-                <p class="text-amber-700 text-sm">Ce stage a été réaffecté. Vous ne pouvez pas modifier l'évaluation.</p>
-              </div>
-
-              <!-- Affichage lecture seule si une évaluation existe -->
-              <div v-else-if="stage.evaluation">
-                <div class="bg-blue-50 p-4 rounded-md border border-blue-200 mb-4">
-                  <span class="text-blue-800 font-medium">Vous avez déjà évalué ce stage. Voici votre évaluation :</span>
-                </div>
-                <div class="bg-white p-6 rounded-lg shadow-sm border border-gray-200">
-                  <div class="grid grid-cols-1 gap-6">
-                    <div v-for="(label, key, idx) in {
-                      ponctualite: 'Ponctualité / Présences',
-                      motivation: 'Motivation / Initiative',
-                      capacite_apprendre: 'Capacités d\'apprendre',
-                      qualite_travail: 'Qualité du travail',
-                      rapidite_execution: 'Rapidité d\'exécution',
-                      jugement: 'Jugement',
-                      esprit_motivation: 'Esprit de motivation',
-                      esprit_collaboration: 'Esprit de collaboration',
-                      sens_responsabilite: 'Sens de responsabilité',
-                      communication: 'Communication'
-                    }" :key="key">
-                      <div class="flex justify-between items-center">
-                        <span class="font-medium">{{ idx+1 }}. {{ label }}</span>
-                        <span class="text-base font-semibold text-blue-800">{{ stage.evaluation[key] }}/2</span>
-                    </div>
-                          </div>
-                    <div class="bg-blue-50 p-4 rounded-md border border-blue-100">
-                      <h4 class="font-medium text-blue-800 mb-2">Note totale</h4>
-                      <div class="flex items-center">
-                        <span class="text-base font-semibold text-blue-800">{{ stage.evaluation.note_totale }}/20</span>
-                        </div>
-                      </div>
-                    <div>
-                      <h4 class="font-medium text-gray-800 mb-2">Commentaire général</h4>
-                      <div class="bg-gray-50 p-4 rounded-md">
-                        <p class="text-sm text-gray-600">{{ stage.evaluation.commentaire_general || 'Aucun commentaire général' }}</p>
-                      </div>
-                    </div>
-                  </div>
-                </div>
-              </div>
-
-              <!-- Formulaire de saisie si pas d'évaluation -->
-              <div v-else>
                 <h3 class="text-lg font-semibold mb-4 flex items-center">
                   <svg class="w-5 h-5 mr-2 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" />
                   </svg>
-                  Saisir une évaluation
+                Évaluation des membres du groupe
                 </h3>
-                <div v-if="stage.statut === 'En attente'" class="bg-yellow-50 p-4 rounded-md border border-yellow-200 mb-4">
-                  <p class="text-yellow-700 text-sm">Le stage n'a pas encore commencé. Vous pourrez évaluer le stagiaire une fois le stage en cours.</p>
-                </div>
-                <form v-else @submit.prevent="onEvaluationSubmit" class="bg-white p-6 rounded-lg shadow-sm border border-gray-200">
-                  <div class="grid grid-cols-1 gap-6">
-                    <div v-for="(label, key, idx) in {
-                      ponctualite: 'Ponctualité / Présences',
-                      motivation: 'Motivation / Initiative',
-                      capacite_apprendre: 'Capacités d\'apprendre',
-                      qualite_travail: 'Qualité du travail',
-                      rapidite_execution: 'Rapidité d\'exécution',
-                      jugement: 'Jugement',
-                      esprit_motivation: 'Esprit de motivation',
-                      esprit_collaboration: 'Esprit de collaboration',
-                      sens_responsabilite: 'Sens de responsabilité',
-                      communication: 'Communication'
-                    }" :key="key">
-                      <label :for="key" class="block text-sm font-medium text-gray-700 mb-1">{{ idx+1 }}. {{ label }} <span class="text-red-500">*</span></label>
-                      <div class="flex items-center gap-2">
-                          <input
-                          :id="key"
-                          v-model="evaluationForm[key]"
-                            type="range"
-                          min="0"
-                          max="2"
-                          step="0.5"
-                            required
-                            class="w-full h-2 bg-gray-200 rounded-lg appearance-none cursor-pointer"
-                          />
-                        <span class="ml-3 text-sm font-medium w-16">{{ evaluationForm[key] }}/2</span>
-                        </div>
-                      </div>
-                    <div class="bg-blue-50 p-4 rounded-md">
-                      <h4 class="font-medium text-blue-800 mb-2">Note totale</h4>
-                        <div class="flex items-center">
-                        <div class="relative w-full bg-blue-200 rounded-full h-3">
-                          <div class="absolute h-3 rounded-full bg-blue-600" :style="`width: ${(getTotal() / 20) * 100}%`"></div>
-                        </div>
-                        <span class="ml-3 text-base font-semibold text-blue-800">{{ getTotal() }}/20</span>
-                      </div>
-                    </div>
+              <div v-if="membresEvaluation.length > 0" class="space-y-4">
+                <div v-for="membre in membresEvaluation" :key="membre.id" class="bg-white p-4 rounded-lg shadow-sm border border-gray-200 flex justify-between items-center">
                     <div>
-                      <label for="commentaire_general" class="block text-sm font-medium text-gray-700 mb-1">Commentaire général <span class="text-red-500">*</span></label>
-                      <textarea
-                        id="commentaire_general"
-                        v-model="evaluationForm.commentaire_general"
-                        rows="5"
-                        required
-                        class="w-full rounded-md border-gray-300 shadow-sm focus:ring-blue-500 focus:border-blue-500"
-                        placeholder="Commentaire général sur le stagiaire et son stage..."
-                      ></textarea>
+                    <h4 class="text-lg font-semibold text-gray-900">{{ membre.user.prenom }} {{ membre.user.nom }}</h4>
+                    <p class="text-sm text-gray-500">Stagiaire</p>
                     </div>
-                    <div class="flex justify-end space-x-3 pt-2">
+                  <div class="flex items-center gap-3">
+                    <template v-if="membre.evaluationMembre && membre.evaluationMembre.note_totale">
+                      <span class="text-base font-semibold text-blue-800">Note : {{ membre.evaluationMembre.note_totale }}/20</span>
+                      <button @click="consulterEvaluation(membre)" class="px-3 py-2 bg-gray-200 text-gray-700 rounded hover:bg-gray-300">Voir l'évaluation</button>
+                    </template>
+                    <template v-else>
                       <button
-                        type="button"
-                        @click="activeTab = 'infos'"
-                        class="inline-flex items-center px-4 py-2 border border-gray-300 shadow-sm text-sm font-medium rounded-md text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500"
+                        v-if="membre.statutStage === 'Terminé'"
+                        @click="ouvrirModalEvaluation(membre)"
+                        class="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors duration-200"
                       >
-                        Annuler
+                        Évaluer
                       </button>
                       <button
-                        type="submit"
-                        class="inline-flex items-center px-4 py-2 border border-transparent shadow-sm text-sm font-medium rounded-md text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500"
+                        v-else
+                        class="px-4 py-2 bg-gray-300 text-gray-500 rounded-lg cursor-not-allowed"
+                        :title="'Le stage doit être terminé pour pouvoir évaluer ce stagiaire.'"
+                        disabled
                       >
-                        Enregistrer l'évaluation
+                        Évaluer
                       </button>
+                    </template>
                     </div>
                   </div>
-                </form>
+              </div>
+              <div v-else class="text-center py-8">
+                <p class="text-gray-500">Aucun membre du groupe trouvé.</p>
               </div>
                 </div>
 
@@ -1415,6 +1339,143 @@ const proposerThemeMS = async () => {
     themeMSError.value = error.response?.data?.message || error.message || 'Erreur lors de la soumission du thème.';
   } finally {
     themeMSLoading.value = false;
+  }
+};
+
+// Ajouter la fonction pour consulter l'évaluation d'un membre
+const membreSelectionne = ref(null);
+const evaluationMembre = ref(null);
+
+const consulterEvaluation = async (membre) => {
+  membreSelectionne.value = membre;
+  try {
+    const response = await axios.get(`/agent/ms/stages/${props.stage.id}/evaluations/${membre.id}`);
+    evaluationMembre.value = response.data.evaluation;
+  } catch (error) {
+    console.error('Erreur lors de la récupération de l\'évaluation:', error);
+    evaluationMembre.value = null;
+  }
+};
+
+const fermerModalEvaluation = () => {
+  membreSelectionne.value = null;
+  evaluationMembre.value = null;
+};
+
+const modalEvalOuvert = ref(false);
+const membreAevaluer = ref(null);
+const formEvalMembre = ref({
+  ponctualite: 1,
+  motivation: 1,
+  capacite_apprendre: 1,
+  qualite_travail: 1,
+  rapidite_execution: 1,
+  jugement: 1,
+  esprit_motivation: 1,
+  esprit_collaboration: 1,
+  sens_responsabilite: 1,
+  communication: 1,
+  commentaire_general: ''
+});
+
+const ouvrirModalEvaluation = (membre) => {
+  membreAevaluer.value = membre;
+  formEvalMembre.value = {
+    ponctualite: 1,
+    motivation: 1,
+    capacite_apprendre: 1,
+    qualite_travail: 1,
+    rapidite_execution: 1,
+    jugement: 1,
+    esprit_motivation: 1,
+    esprit_collaboration: 1,
+    sens_responsabilite: 1,
+    communication: 1,
+    commentaire_general: ''
+  };
+  modalEvalOuvert.value = true;
+};
+
+const fermerModalEval = () => {
+  modalEvalOuvert.value = false;
+  membreAevaluer.value = null;
+};
+
+const getTotalEvalMembre = () => {
+  return parseFloat((
+    parseFloat(formEvalMembre.value.ponctualite) +
+    parseFloat(formEvalMembre.value.motivation) +
+    parseFloat(formEvalMembre.value.capacite_apprendre) +
+    parseFloat(formEvalMembre.value.qualite_travail) +
+    parseFloat(formEvalMembre.value.rapidite_execution) +
+    parseFloat(formEvalMembre.value.jugement) +
+    parseFloat(formEvalMembre.value.esprit_motivation) +
+    parseFloat(formEvalMembre.value.esprit_collaboration) +
+    parseFloat(formEvalMembre.value.sens_responsabilite) +
+    parseFloat(formEvalMembre.value.communication)
+  ).toFixed(1));
+};
+
+const soumettreEvaluationMembre = async () => {
+  if (!membreAevaluer.value) return;
+  try {
+    await axios.post(`/agent/ms/stages/${props.stage.id}/noter`, {
+      ...formEvalMembre.value,
+      note_totale: getTotalEvalMembre(),
+      membre_id: membreAevaluer.value.user.id
+    });
+    // Rafraîchir l'évaluation du membre (idéalement, re-fetch ou maj locale)
+    membreAevaluer.value.evaluationMembre = {
+      ...formEvalMembre.value,
+      note_totale: getTotalEvalMembre()
+    };
+    fermerModalEval();
+  } catch (error) {
+    alert('Erreur lors de la soumission de l\'évaluation');
+  }
+};
+
+// Calculer la liste des membres à évaluer (principal + membres)
+const membresEvaluation = computed(() => {
+  const membres = [];
+  // Ajouter le stagiaire principal
+  if (props.stage.demandeStage && props.stage.demandeStage.stagiaire && props.stage.demandeStage.stagiaire.user) {
+    membres.push({
+      id: 'principal',
+      user: props.stage.demandeStage.stagiaire.user,
+      evaluationMembre: props.stage.evaluation || null,
+      statutStage: props.stage.statut
+    });
+  }
+  // Ajouter les membres du groupe (hors principal)
+  if (props.stage.demandeStage && props.stage.demandeStage.membres) {
+    props.stage.demandeStage.membres.forEach(membre => {
+      if (!membres.find(m => m.user.id === membre.user.id)) {
+        membres.push({
+          id: membre.id,
+          user: membre.user,
+          evaluationMembre: membre.evaluationMembre || null,
+          statutStage: membre.statutStage || 'En cours'
+        });
+      }
+    });
+  }
+  return membres;
+});
+
+const confirmerFinStage = async () => {
+  if (!confirm('Êtes-vous sûr de vouloir confirmer la fin de ce stage ?')) {
+    return;
+  }
+  try {
+    const response = await axios.post(`/agent/ms/stages/${props.stage.id}/confirmer-fin`);
+    if (response.data.success) {
+      if (toast.value) toast.value.show({ type: 'success', message: response.data.message });
+      // Recharge la page ou les données du stage
+      window.location.reload();
+    }
+  } catch (error) {
+    if (toast.value) toast.value.show({ type: 'error', message: error.response?.data?.message || 'Erreur' });
   }
 };
 </script>

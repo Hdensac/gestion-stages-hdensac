@@ -218,6 +218,7 @@ class StageController extends Controller
             // Charger les relations nécessaires
             $stage->load([
                 'demandeStage.stagiaire.user',
+                'demandeStage.membres.user',
                 'structure',
                 'themeStage',
                 'evaluation'
@@ -267,7 +268,19 @@ class StageController extends Controller
 
             return Inertia::render('Agent/MS/Stages/Show', [
                 'stage' => array_merge($stage->toArray(), [
-                    'themeStage' => $stage->themeStage ? $stage->themeStage->toArray() : null
+                    'themeStage' => $stage->themeStage ? $stage->themeStage->toArray() : null,
+                    'demandeStage' => array_merge(
+                        $stage->demandeStage ? $stage->demandeStage->toArray() : [],
+                        [
+                            'membres' => $stage->demandeStage && $stage->demandeStage->relationLoaded('membres')
+                                ? $stage->demandeStage->membres->map(function($m) {
+                                    return array_merge($m->toArray(), [
+                                        'user' => $m->relationLoaded('user') ? $m->user->toArray() : null
+                                    ]);
+                                })->toArray()
+                                : []
+                        ]
+                    )
                 ]),
                 'openContact' => $request->boolean('openContact'),
                 'success' => session('success'),
@@ -397,6 +410,23 @@ class StageController extends Controller
                     }
                 }
 
+                // Envoyer un mail à tous les membres du groupe et au MS
+                if ($stage->demandeStage) {
+                    $membres = $stage->demandeStage->membres;
+                    foreach ($membres as $membre) {
+                        if ($membre->user && $membre->user->email) {
+                            Mail::to($membre->user->email)
+                                ->send(new ThemeProposeMail($membre, $stage, $theme));
+                        }
+                    }
+                    // Envoyer un mail au MS
+                    $msUser = $stage->affectationsMaitreStage->whereIn('statut', ['En cours', 'Acceptée'])->first()?->maitreStage?->user;
+                    if ($msUser && $msUser->email) {
+                        Mail::to($msUser->email)
+                            ->send(new ThemeProposeMail($msUser, $stage, $theme));
+                    }
+                }
+
                 // Après l'envoi de l'email lors de la création ou modification du thème
                 if ($stage->demandeStage && $stage->demandeStage->stagiaire && $stage->demandeStage->stagiaire->user) {
                     $stagiaireUser = $stage->demandeStage->stagiaire->user;
@@ -455,6 +485,23 @@ class StageController extends Controller
                             'error' => $e->getMessage(),
                             'stage_id' => $stage->id
                         ]);
+                    }
+                }
+
+                // Envoyer un mail à tous les membres du groupe et au MS
+                if ($stage->demandeStage) {
+                    $membres = $stage->demandeStage->membres;
+                    foreach ($membres as $membre) {
+                        if ($membre->user && $membre->user->email) {
+                            Mail::to($membre->user->email)
+                                ->send(new ThemeProposeMail($membre, $stage, $theme));
+                        }
+                    }
+                    // Envoyer un mail au MS
+                    $msUser = $stage->affectationsMaitreStage->whereIn('statut', ['En cours', 'Acceptée'])->first()?->maitreStage?->user;
+                    if ($msUser && $msUser->email) {
+                        Mail::to($msUser->email)
+                            ->send(new ThemeProposeMail($msUser, $stage, $theme));
                     }
                 }
 
@@ -657,6 +704,75 @@ class StageController extends Controller
         $agent = $user->agent;
 
         try {
+            // Si on veut évaluer un membre du groupe (membre_id fourni)
+            $membreUserId = $request->input('membre_id');
+            if ($membreUserId) {
+                // Chercher le stage du membre dans le même groupe
+                $stageMembre = Stage::where('demande_stage_id', $stage->demande_stage_id)
+                    ->where('stagiaire_id', function($query) use ($membreUserId) {
+                        $query->select('id_stagiaire')
+                            ->from('stagiaires')
+                            ->where('user_id', $membreUserId)
+                            ->limit(1);
+                    })
+                    ->first();
+                if (!$stageMembre) {
+                    return response()->json(['success' => false, 'message' => 'Aucun stage trouvé pour ce membre.'], 404);
+                }
+                // Vérifier que le MS est bien affecté à ce stage
+                $affectation = AffectationMaitreStage::where('stage_id', $stageMembre->id)
+                    ->where('maitre_stage_id', $user->id)
+                    ->whereIn('statut', ['En cours', 'Acceptée'])
+                    ->first();
+                if (!$affectation) {
+                    return response()->json(['success' => false, 'message' => 'Non autorisé.'], 403);
+                }
+                // Vérifier que le stage est terminé
+                if ($stageMembre->statut !== 'Terminé') {
+                    return response()->json(['success' => false, 'message' => 'Vous ne pouvez noter que les stages terminés.'], 403);
+                }
+                // Vérifier si une évaluation existe déjà
+                $evaluationExistante = Evaluation::where('stage_id', $stageMembre->id)
+                    ->where('agent_id', $agent->id)
+                    ->first();
+                if ($evaluationExistante) {
+                    return response()->json(['success' => false, 'message' => 'Déjà évalué.'], 409);
+                }
+                // Valider les critères
+                $validated = $request->validate([
+                    'ponctualite' => 'required|numeric|min:0|max:2',
+                    'motivation' => 'required|numeric|min:0|max:2',
+                    'capacite_apprendre' => 'required|numeric|min:0|max:2',
+                    'qualite_travail' => 'required|numeric|min:0|max:2',
+                    'rapidite_execution' => 'required|numeric|min:0|max:2',
+                    'jugement' => 'required|numeric|min:0|max:2',
+                    'esprit_motivation' => 'required|numeric|min:0|max:2',
+                    'esprit_collaboration' => 'required|numeric|min:0|max:2',
+                    'sens_responsabilite' => 'required|numeric|min:0|max:2',
+                    'communication' => 'required|numeric|min:0|max:2',
+                    'note_totale' => 'required|numeric|min:0|max:20',
+                    'commentaire_general' => 'nullable|string|max:1000',
+                ]);
+                $evaluation = Evaluation::updateOrCreate(
+                    [
+                        'stage_id' => $stageMembre->id,
+                        'agent_id' => $agent->id
+                    ],
+                    array_merge($validated, [
+                        'date_evaluation' => now()
+                    ])
+                );
+                // Notifier le stagiaire
+                if ($stageMembre->demandeStage && $stageMembre->demandeStage->stagiaire && $stageMembre->demandeStage->stagiaire->user) {
+                    $stagiaireUser = $stageMembre->demandeStage->stagiaire->user;
+                    $stagiaireUser->notify(new \App\Notifications\StagiaireNotification(
+                        'Votre stage a été évalué par votre maître de stage.',
+                        route('stagiaire.stages.show', $stageMembre->id)
+                    ));
+                }
+                return response()->json(['success' => true, 'message' => 'Évaluation enregistrée.']);
+            }
+            // ... sinon, comportement classique (stagiaire principal)
             // Vérifier que l'utilisateur est bien le maître de stage assigné à ce stage
             $affectation = AffectationMaitreStage::where('stage_id', $stage->id)
                 ->where('maitre_stage_id', $user->id)
@@ -892,7 +1008,7 @@ class StageController extends Controller
                 $demande = $stage->demandeStage;
                 if ($demande && $demande->nature === 'Groupe' && $demande->membres) {
                     foreach ($demande->membres as $membre) {
-                        if ($membre->user && $stagiaire && $stagiaire->user->id !== $membre->user->id) {
+                        if ($membre->user && $membre->user->id !== $stagiaire->user->id) {
                             $membre->user->notify(new StagiaireNotification(
                                 'Votre groupe a été réaffecté à un nouveau maître de stage.',
                                 route('stagiaire.stages')
@@ -999,5 +1115,112 @@ class StageController extends Controller
         $stage->theme_stage_id = $theme->id;
         $stage->save();
         return response()->json(['success' => true, 'theme' => $theme]);
+    }
+
+    /**
+     * Récupérer l'évaluation individuelle d'un membre du groupe pour un stage (lecture seule)
+     */
+    public function getEvaluationMembre(Stage $stage, $membreId)
+    {
+        $this->checkMSRole();
+        // On cherche le stage du membre dans le même groupe
+        $stageMembre = Stage::where('demande_stage_id', $stage->demande_stage_id)
+            ->where('stagiaire_id', function($query) use ($membreId) {
+                $query->select('id_stagiaire')
+                    ->from('stagiaires')
+                    ->where('user_id', $membreId)
+                    ->limit(1);
+            })
+            ->first();
+        if (!$stageMembre) {
+            return response()->json(['success' => false, 'message' => 'Aucun stage trouvé pour ce membre.'], 404);
+        }
+        $evaluation = $stageMembre->evaluation;
+        if (!$evaluation) {
+            return response()->json(['success' => true, 'evaluation' => null]);
+        }
+        return response()->json(['success' => true, 'evaluation' => $evaluation]);
+    }
+
+    public function confirmerFinStage(Stage $stage)
+    {
+        Log::info('APPEL confirmerFinStage', [
+            'id' => $stage->id,
+            'statut' => $stage->statut,
+            'date_fin' => $stage->date_fin,
+            'termine_par_ms' => $stage->termine_par_ms,
+            'date_confirmation_ms' => $stage->date_confirmation_ms,
+        ]);
+
+        // Vérifier que le stage est bien en cours
+        if ($stage->statut !== 'En cours') {
+            return response()->json([
+                'success' => false,
+                'message' => 'Le stage doit être en cours pour être terminé.'
+            ], 400);
+        }
+
+        // Vérifier que la date de fin est atteinte
+        if (now()->lt($stage->date_fin)) {
+            return response()->json([
+                'success' => false,
+                'message' => 'La date de fin du stage n\'est pas encore atteinte.'
+            ], 400);
+        }
+
+        // Mettre à jour le stage
+        $stage->update([
+            'termine_par_ms' => true,
+            'date_confirmation_ms' => now(),
+            'statut' => 'Terminé'
+        ]);
+
+        // Envoyer une notification au stagiaire principal
+        if ($stage->demandeStage && $stage->demandeStage->stagiaire && $stage->demandeStage->stagiaire->user) {
+            $stage->demandeStage->stagiaire->user->notify(new \App\Notifications\StagiaireNotification(
+                'Votre stage a été marqué comme terminé par le Maître de Stage.',
+                route('stagiaire.stages.show', $stage->id)
+            ));
+
+            // Envoyer un email au stagiaire principal
+            try {
+                Mail::to($stage->demandeStage->stagiaire->user->email)
+                    ->send(new \App\Mail\StageTermineMail($stage));
+            } catch (\Exception $e) {
+                Log::error('Erreur lors de l\'envoi du mail de fin de stage', [
+                    'error' => $e->getMessage(),
+                    'stage_id' => $stage->id
+                ]);
+            }
+        }
+
+        // Notifier tous les membres du groupe
+        if ($stage->demandeStage && $stage->demandeStage->membres) {
+            foreach ($stage->demandeStage->membres as $membre) {
+                if ($membre->user && $membre->user->id !== $stage->demandeStage->stagiaire->user->id) {
+                    $membre->user->notify(new \App\Notifications\StagiaireNotification(
+                        'Le stage a été marqué comme terminé par le Maître de Stage.',
+                        route('stagiaire.stages.show', $stage->id)
+                    ));
+
+                    // Envoyer un email à chaque membre
+                    try {
+                        Mail::to($membre->user->email)
+                            ->send(new \App\Mail\StageTermineMail($stage));
+                    } catch (\Exception $e) {
+                        Log::error('Erreur lors de l\'envoi du mail de fin de stage', [
+                            'error' => $e->getMessage(),
+                            'stage_id' => $stage->id,
+                            'membre_id' => $membre->id
+                        ]);
+                    }
+                }
+            }
+        }
+
+        return response()->json([
+            'success' => true,
+            'message' => 'Le stage a été marqué comme terminé avec succès.'
+        ]);
     }
 }

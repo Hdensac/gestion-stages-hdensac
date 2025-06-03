@@ -261,23 +261,23 @@
                         <div>
                           <h4 class="text-xl font-bold text-gray-900 mb-2">{{ theme.intitule }}</h4>
                           <p class="text-gray-600">{{ theme.description }}</p>
-                        </div>
+                  </div>
                         <span class="px-3 py-1 rounded-full text-sm font-semibold"
-                              :class="{
+                    :class="{
                                 'bg-emerald-100 text-emerald-700': theme.etat === 'Validé',
                                 'bg-amber-100 text-amber-700': theme.etat === 'Proposé',
                                 'bg-red-100 text-red-700': theme.etat === 'Refusé'
-                              }">
+                    }">
                           {{ theme.etat }}
-                        </span>
-                      </div>
+                  </span>
+                </div>
                       <div class="space-y-3">
                         <div v-if="theme.mots_cles" class="flex flex-wrap gap-2">
                           <span v-for="(motCle, index) in theme.mots_cles.split(',')" :key="index"
                                 class="px-2 py-1 bg-blue-50 text-blue-700 rounded-full text-sm">
                             {{ motCle.trim() }}
-                          </span>
-                        </div>
+                    </span>
+                  </div>
                         <div class="text-sm text-gray-500">
                           Proposé le {{ formatDate(theme.created_at) }}
                           <span v-if="theme.user">par {{ theme.user.nom }} {{ theme.user.prenom }}</span>
