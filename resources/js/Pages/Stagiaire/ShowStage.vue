@@ -255,24 +255,41 @@
                 <div v-else>
                   <div v-if="themesProposes.length === 0" class="text-gray-500 italic">Aucune proposition de thème pour ce stage.</div>
                   <ul v-else class="space-y-4">
-                    <li v-for="theme in themesProposes" :key="theme.id" class="p-4 rounded-lg border bg-white shadow-sm flex flex-col gap-2">
-                      <div class="flex justify-between items-center">
-                        <span class="font-bold text-lg">{{ theme.intitule }}</span>
-                        <span
-                          class="px-2 py-1 rounded-full text-xs font-semibold"
-                          :class="{
-                            'bg-emerald-100 text-emerald-700': theme.etat === 'Validé',
-                            'bg-amber-100 text-amber-700': theme.etat === 'Proposé',
-                            'bg-red-100 text-red-700': theme.etat === 'Refusé'
-                          }"
-                        >
+                    <li v-for="theme in themesProposes" :key="theme.id" 
+                        class="p-6 rounded-lg border bg-white shadow-sm hover:shadow-md transition-shadow duration-200">
+                      <div class="flex justify-between items-start mb-4">
+                        <div>
+                          <h4 class="text-xl font-bold text-gray-900 mb-2">{{ theme.intitule }}</h4>
+                          <p class="text-gray-600">{{ theme.description }}</p>
+                        </div>
+                        <span class="px-3 py-1 rounded-full text-sm font-semibold"
+                              :class="{
+                                'bg-emerald-100 text-emerald-700': theme.etat === 'Validé',
+                                'bg-amber-100 text-amber-700': theme.etat === 'Proposé',
+                                'bg-red-100 text-red-700': theme.etat === 'Refusé'
+                              }">
                           {{ theme.etat }}
                         </span>
                       </div>
-                      <div class="text-gray-700">{{ theme.description }}</div>
-                      <div v-if="theme.mots_cles" class="text-xs text-blue-700">Mots-clés : {{ theme.mots_cles }}</div>
-                      <div class="text-xs text-gray-400">Proposé le : {{ formatDate(theme.created_at) }}</div>
-                      <div v-if="theme.etat === 'Refusé' && theme.motif_refus" class="text-xs text-red-600">Motif du refus : {{ theme.motif_refus }}</div>
+                      <div class="space-y-3">
+                        <div v-if="theme.mots_cles" class="flex flex-wrap gap-2">
+                          <span v-for="(motCle, index) in theme.mots_cles.split(',')" :key="index"
+                                class="px-2 py-1 bg-blue-50 text-blue-700 rounded-full text-sm">
+                            {{ motCle.trim() }}
+                          </span>
+                        </div>
+                        <div class="text-sm text-gray-500">
+                          Proposé le {{ formatDate(theme.created_at) }}
+                          <span v-if="theme.user">par {{ theme.user.nom }} {{ theme.user.prenom }}</span>
+                          <span v-else>par le stagiaire</span>
+                        </div>
+                        <div v-if="theme.etat === 'Refusé' && theme.motif_refus" 
+                             class="mt-2 p-3 bg-red-50 rounded-lg">
+                          <p class="text-sm font-medium text-red-700">Motif du refus :</p>
+                          <p class="text-sm text-red-600">{{ theme.motif_refus }}</p>
+                        </div>
+                        <!-- Actions pour les thèmes en attente -->
+                      </div>
                     </li>
                   </ul>
                 </div>
@@ -299,7 +316,7 @@
                     </button>
                     <span v-if="formSuccess" class="text-emerald-600 text-sm">{{ formSuccess }}</span>
                     <span v-if="formError" class="text-red-600 text-sm">{{ formError }}</span>
-                  </div>
+                </div>
                 </form>
               </div>
               <div v-else class="bg-emerald-50 border border-emerald-200 text-emerald-700 p-4 rounded-lg my-4">

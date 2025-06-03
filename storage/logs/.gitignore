@@ -1,2 +1,7 @@
 *
 !.gitignore
+.storybook
+.stories
+# Ignore all files in the logs directory
+# except this .gitignore file
+# Ignore all files in the logs directory

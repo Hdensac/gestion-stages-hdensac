@@ -299,38 +299,59 @@ class DemandeController extends Controller
                     $demande->structure_id = $structure->id;
                 }
 
-                // Vérifier si un stage existe déjà pour cette demande
-                $existingStage = \App\Models\Stage::where('demande_stage_id', $demande->id)->first();
+                // Convertir le type au format attendu par la base de données
+                $typeFormatted = strtolower(str_replace('é', 'e', $demande->type));
 
-                if ($existingStage) {
-                    Log::info('Un stage existe déjà pour cette demande', [
-                        'stage_id' => $existingStage->id,
-                        'demande_id' => $demande->id
-                    ]);
-                    $stage = $existingStage;
+                if ($demande->nature === 'Groupe') {
+                    // Pour une demande en groupe, créer un stage pour chaque membre
+                    $membres = $demande->membres;
+                    
+                    foreach ($membres as $membre) {
+                        // Vérifier si un stage existe déjà pour ce membre
+                        $existingStage = \App\Models\Stage::where('demande_stage_id', $demande->id)
+                            ->where('stagiaire_id', $membre->user->stagiaire->id_stagiaire)
+                            ->first();
+
+                        if (!$existingStage) {
+                            // Créer un nouveau stage pour ce membre
+                            $stage = \App\Models\Stage::create([
+                                'demande_stage_id' => $demande->id,
+                                'structure_id' => $demande->structure_id,
+                                'date_debut' => $demande->date_debut,
+                                'date_fin' => $demande->date_fin,
+                                'statut' => 'En cours',
+                                'type' => $typeFormatted,
+                                'stagiaire_id' => $membre->user->stagiaire->id_stagiaire
+                            ]);
+
+                            Log::info('Stage créé pour un membre du groupe', [
+                                'stage_id' => $stage->id,
+                                'demande_stage_id' => $demande->id,
+                                'stagiaire_id' => $membre->user->stagiaire->id_stagiaire
+                            ]);
+                        }
+                    }
                 } else {
-                    // Convertir le type au format attendu par la base de données
-                    $typeFormatted = strtolower(str_replace('é', 'e', $demande->type));
+                    // Pour une demande individuelle, créer un seul stage
+                    $existingStage = \App\Models\Stage::where('demande_stage_id', $demande->id)->first();
 
-                    Log::info('Type formaté pour la création du stage', [
-                        'type_original' => $demande->type,
-                        'type_formatted' => $typeFormatted
-                    ]);
+                    if (!$existingStage) {
+                        $stage = \App\Models\Stage::create([
+                            'demande_stage_id' => $demande->id,
+                            'structure_id' => $demande->structure_id,
+                            'date_debut' => $demande->date_debut,
+                            'date_fin' => $demande->date_fin,
+                            'statut' => 'En cours',
+                            'type' => $typeFormatted,
+                            'stagiaire_id' => $demande->stagiaire_id
+                        ]);
 
-                    // Créer le stage directement avec create() au lieu de firstOrCreate()
-                    $stage = \App\Models\Stage::create([
-                        'demande_stage_id' => $demande->id,
-                        'structure_id' => $demande->structure_id,
-                        'date_debut' => $demande->date_debut,
-                        'date_fin' => $demande->date_fin,
-                        'statut' => 'En cours',
-                        'type' => $typeFormatted
-                    ]);
-
-                    Log::info('Stage créé avec la méthode create()', [
-                        'stage_id' => $stage->id,
-                        'demande_stage_id' => $demande->id
-                    ]);
+                        Log::info('Stage créé pour une demande individuelle', [
+                            'stage_id' => $stage->id,
+                            'demande_stage_id' => $demande->id,
+                            'stagiaire_id' => $demande->stagiaire_id
+                        ]);
+                    }
                 }
 
                 // Vérifier que le stage a bien été créé

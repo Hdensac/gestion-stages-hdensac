@@ -362,38 +362,38 @@
                 </div>
                 <!-- Liste des thèmes proposés -->
                 <div>
-                  <h3 class="text-lg font-semibold mb-4 flex items-center">
-                    <svg class="w-5 h-5 mr-2 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
-                    </svg>
+                <h3 class="text-lg font-semibold mb-4 flex items-center">
+                  <svg class="w-5 h-5 mr-2 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
+                  </svg>
                     Propositions de thèmes
-                  </h3>
-                  
+                </h3>
+
                   <div v-if="loadingThemes" class="text-center py-4">
                     <div class="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-600 mx-auto"></div>
                     <p class="mt-2 text-gray-600">Chargement des propositions...</p>
-                  </div>
-                  
+                    </div>
+
                   <div v-else>
                     <div v-if="errorThemes" class="mb-4 bg-red-50 border border-red-200 text-red-700 px-4 py-3 rounded-lg">
                       {{ errorThemes }}
                     </div>
-                    
+
                     <div v-if="themesProposes.length === 0" class="text-center py-8 bg-gray-50 rounded-lg">
                       <svg class="w-12 h-12 text-gray-400 mx-auto mb-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9.663 17h4.673M12 3v1m6.364 1.636l-.707.707M21 12h-1M4 12H3m3.343-5.657l-.707-.707m2.828 9.9a5 5 0 117.072 0l-.548.547A3.374 3.374 0 0014 18.469V19a2 2 0 11-4 0v-.531c0-.895-.356-1.754-.988-2.386l-.548-.547z" />
                       </svg>
                       <p class="text-gray-500">Aucune proposition de thème pour ce stage.</p>
                     </div>
-                    
+
                     <ul v-else class="space-y-4">
                       <li v-for="theme in themesProposes" :key="theme.id" 
                           class="p-6 rounded-lg border bg-white shadow-sm hover:shadow-md transition-shadow duration-200">
                         <div class="flex justify-between items-start mb-4">
-                          <div>
+                    <div>
                             <h4 class="text-xl font-bold text-gray-900 mb-2">{{ theme.intitule }}</h4>
                             <p class="text-gray-600">{{ theme.description }}</p>
-                          </div>
+                    </div>
                           <span class="px-3 py-1 rounded-full text-sm font-semibold"
                                 :class="{
                                   'bg-emerald-100 text-emerald-700': theme.etat === 'Validé',
@@ -402,22 +402,22 @@
                                 }">
                             {{ theme.etat }}
                           </span>
-                        </div>
-                        
+                    </div>
+
                         <div class="space-y-3">
                           <div v-if="theme.mots_cles" class="flex flex-wrap gap-2">
                             <span v-for="(motCle, index) in theme.mots_cles.split(',')" :key="index"
                                   class="px-2 py-1 bg-blue-50 text-blue-700 rounded-full text-sm">
                               {{ motCle.trim() }}
-                            </span>
-                          </div>
+                        </span>
+                      </div>
                           
                           <div class="text-sm text-gray-500">
                             Proposé le {{ formatDate(theme.created_at) }}
                             <span v-if="theme.propose_par === 'stagiaire'">par le stagiaire</span>
                             <span v-else>par vous</span>
-                          </div>
-                          
+                    </div>
+
                           <div v-if="theme.etat === 'Refusé' && theme.motif_refus" 
                                class="mt-2 p-3 bg-red-50 rounded-lg">
                             <p class="text-sm font-medium text-red-700">Motif du refus :</p>
@@ -428,20 +428,20 @@
                           <div v-if="theme.etat === 'Proposé'" class="flex gap-3 mt-4">
                             <button @click="validerTheme(theme)"
                                     class="px-4 py-2 bg-emerald-600 text-white rounded-lg hover:bg-emerald-700 transition-colors duration-200 flex items-center">
-                              <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7" />
-                              </svg>
+                        </svg>
                               Valider
-                            </button>
+                      </button>
                             <button @click="refuserTheme(theme)"
                                     class="px-4 py-2 bg-red-600 text-white rounded-lg hover:bg-red-700 transition-colors duration-200 flex items-center">
-                              <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
-                              </svg>
+                        </svg>
                               Refuser
-                            </button>
-                          </div>
-                        </div>
+                      </button>
+                    </div>
+                  </div>
                       </li>
                     </ul>
                   </div>

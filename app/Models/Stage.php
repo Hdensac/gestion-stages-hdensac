@@ -22,6 +22,7 @@ class Stage extends Model
         'documents_stage',
         'note',
         'type',
+        'stagiaire_id',
     ];
 
     protected $casts = [
@@ -43,6 +44,14 @@ class Stage extends Model
     public function structure(): BelongsTo
     {
         return $this->belongsTo(Structure::class);
+    }
+
+    /**
+     * Get the stagiaire associated with this stage.
+     */
+    public function stagiaire(): BelongsTo
+    {
+        return $this->belongsTo(Stagiaire::class, 'stagiaire_id', 'id_stagiaire');
     }
 
     /**

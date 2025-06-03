@@ -11,9 +11,8 @@ use App\Mail\ThemeProposeMail;
 use App\Mail\EvaluationNotifieeMail;
 use Illuminate\Support\Facades\Mail;
 use Illuminate\Support\Facades\Log;
-
-use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Http\Request;
 use Inertia\Inertia;
 use App\Notifications\StagiaireNotification;
 
@@ -138,7 +137,11 @@ class StageController extends Controller
             ]);
 
             // Convertir en tableau indexé numériquement pour s'assurer que JavaScript le traite comme un tableau
-            $stagesArray = array_values($stagesWithStagiaires->toArray());
+            $stagesArray = array_values($stagesWithStagiaires->map(function ($stage) {
+                $stageArray = $stage->toArray();
+                $stageArray['themeStage'] = $stage->themeStage ? $stage->themeStage->toArray() : null;
+                return $stageArray;
+            })->toArray());
 
             return Inertia::render('Agent/MS/Stages/Index', [
                 'stages' => $stagesArray
@@ -937,7 +940,7 @@ class StageController extends Controller
                 $themeValide->save();
             }
         }
-        $themes = $stage->themesProposes()->orderByDesc('created_at')->get();
+        $themes = $stage->themesProposes()->with('user')->orderByDesc('created_at')->get();
         return response()->json(['success' => true, 'themes' => $themes]);
     }
 

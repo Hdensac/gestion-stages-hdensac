@@ -39,18 +39,29 @@ class StageController extends Controller
                 ->whereIn('statut', ['Acceptée', 'Approuvée'])
                 ->pluck('id');
             
+            // Récupérer les stages où le stagiaire est membre du groupe
+            $stagesMembreGroupe = Stage::whereHas('demandeStage', function($q) use ($user) {
+                $q->whereIn('statut', ['Acceptée', 'Approuvée'])
+                  ->whereHas('membres', function($query) use ($user) {
+                      $query->where('user_id', $user->id);
+                  });
+            })->pluck('id');
+
             // Récupérer les stages associés à ces demandes
-            $stages = Stage::whereIn('demande_stage_id', $demandeIds)
-                ->with([
-                    'structure',
-                    'demandeStage',
-                    'themeStage',
-                    'affectationsMaitreStage' => function($query) {
-                        $query->orderBy('date_affectation', 'desc');
-                    },
-                    'affectationsMaitreStage.maitreStage',
-                ])
-                ->get();
+            $stages = Stage::where(function($query) use ($demandeIds, $stagesMembreGroupe) {
+                $query->whereIn('demande_stage_id', $demandeIds)
+                    ->orWhereIn('id', $stagesMembreGroupe);
+            })
+            ->with([
+                'structure',
+                'demandeStage',
+                'themeStage',
+                'affectationsMaitreStage' => function($query) {
+                    $query->orderBy('date_affectation', 'desc');
+                },
+                'affectationsMaitreStage.maitreStage',
+            ])
+            ->get();
             
             // Ajouter des informations supplémentaires pour chaque stage
             $stages = $stages->map(function ($stage) {
@@ -116,12 +127,12 @@ class StageController extends Controller
                 return redirect()->route('stagiaire.stages')->with('error', 'Aucun profil de stagiaire trouvé pour cet utilisateur.');
             }
             
-            // Vérifier que le stage appartient bien au stagiaire
-            $demandeStage = DemandeStage::where('id', $stage->demande_stage_id)
-                ->where('stagiaire_id', $stagiaire->id_stagiaire)
-                ->first();
+            // Vérifier que le stage appartient bien au stagiaire principal OU à un membre du groupe
+            $demandeStage = DemandeStage::where('id', $stage->demande_stage_id)->first();
+            $isPrincipal = $demandeStage && $demandeStage->stagiaire_id == $stagiaire->id_stagiaire;
+            $isMembre = $demandeStage && $demandeStage->membres()->where('user_id', $user->id)->exists();
             
-            if (!$demandeStage) {
+            if (!$isPrincipal && !$isMembre) {
                 return redirect()->route('stagiaire.stages')->with('error', 'Vous n\'êtes pas autorisé à accéder à ce stage.');
             }
             
@@ -198,11 +209,11 @@ class StageController extends Controller
         if (!$stagiaire) {
             return response()->json(['success' => false, 'message' => 'Aucun profil de stagiaire trouvé.'], 403);
         }
-        // Vérifier que le stage appartient bien au stagiaire
-        $demandeStage = DemandeStage::where('id', $stage->demande_stage_id)
-            ->where('stagiaire_id', $stagiaire->id_stagiaire)
-            ->first();
-        if (!$demandeStage) {
+        // Vérifier que le stage appartient bien au stagiaire principal OU à un membre du groupe
+        $demandeStage = DemandeStage::where('id', $stage->demande_stage_id)->first();
+        $isPrincipal = $demandeStage && $demandeStage->stagiaire_id == $stagiaire->id_stagiaire;
+        $isMembre = $demandeStage && $demandeStage->membres()->where('user_id', $user->id)->exists();
+        if (!$isPrincipal && !$isMembre) {
             return response()->json(['success' => false, 'message' => 'Non autorisé.'], 403);
         }
         $validated = $request->validate([
@@ -216,6 +227,7 @@ class StageController extends Controller
             'etat' => 'Proposé',
             'mots_cles' => $validated['mots_cles'] ?? null,
             'propose_par' => 'stagiaire',
+            'user_id' => $user->id,
         ]);
         return response()->json(['success' => true, 'theme' => $theme]);
     }

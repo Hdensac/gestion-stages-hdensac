@@ -16,6 +16,7 @@ class ThemeStage extends Model
         'etat',
         'description',
         'mots_cles',
+        'user_id',
     ];
 
     /**
@@ -32,6 +33,14 @@ class ThemeStage extends Model
     public function stage(): BelongsTo
     {
         return $this->belongsTo(Stage::class, 'stage_id');
+    }
+
+    /**
+     * L'utilisateur qui a proposé ce thème.
+     */
+    public function user(): BelongsTo
+    {
+        return $this->belongsTo(User::class, 'user_id');
     }
 
     // Définir d'autres relations Eloquent ici ultérieurement (propositions, etc.)
