@@ -14,6 +14,7 @@ use Illuminate\Support\Facades\Mail;
 use Inertia\Inertia;
 use Illuminate\Support\Facades\Log;
 use App\Notifications\StagiaireNotification;
+use Illuminate\Support\Facades\DB;
 
 class DemandeController extends Controller
 {
@@ -303,31 +304,41 @@ class DemandeController extends Controller
                     $typeFormatted = strtolower(str_replace('é', 'e', $demande->type));
 
                 if ($demande->nature === 'Groupe') {
-                    // Pour une demande en groupe, créer un stage pour chaque membre
-                    $membres = $demande->membres;
-                    
-                    foreach ($membres as $membre) {
-                        // Vérifier si un stage existe déjà pour ce membre
-                        $existingStage = \App\Models\Stage::where('demande_stage_id', $demande->id)
-                            ->where('stagiaire_id', $membre->user->stagiaire->id_stagiaire)
-                            ->first();
+                    // Récupérer tous les user_id des membres du groupe (table membre_groupes)
+                    $userIds = \DB::table('membre_groupes')
+                        ->where('demande_stage_id', $demande->id)
+                        ->pluck('user_id')
+                        ->toArray();
 
+                    // Ajouter le demandeur principal s'il n'est pas déjà dans la liste
+                    if (!in_array($demande->stagiaire->user_id, $userIds)) {
+                        $userIds[] = $demande->stagiaire->user_id;
+                    }
+
+                    \Log::info('Liste des user_id pour création des stages', [
+                        'demande_id' => $demande->id,
+                        'userIds' => $userIds,
+                        'demandeur_principal' => $demande->stagiaire->user_id,
+                    ]);
+
+                    // Récupérer les infos du demandeur principal pour les membres
+                    $refStagiaire = $demande->stagiaire;
+
+                    foreach ($userIds as $userId) {
+                        $stagiaire = \App\Models\Stagiaire::where('user_id', $userId)->first();
+                        if (!$stagiaire) continue;
+                        $existingStage = \App\Models\Stage::where('demande_stage_id', $demande->id)
+                            ->where('stagiaire_id', $stagiaire->id_stagiaire)
+                            ->first();
                         if (!$existingStage) {
-                            // Créer un nouveau stage pour ce membre
-                            $stage = \App\Models\Stage::create([
+                            \App\Models\Stage::create([
                                 'demande_stage_id' => $demande->id,
+                                'stagiaire_id' => $stagiaire->id_stagiaire,
                                 'structure_id' => $demande->structure_id,
                                 'date_debut' => $demande->date_debut,
                                 'date_fin' => $demande->date_fin,
+                                'type' => $demande->type,
                                 'statut' => 'En cours',
-                                'type' => $typeFormatted,
-                                'stagiaire_id' => $membre->user->stagiaire->id_stagiaire
-                            ]);
-
-                            Log::info('Stage créé pour un membre du groupe', [
-                                'stage_id' => $stage->id,
-                                'demande_stage_id' => $demande->id,
-                                'stagiaire_id' => $membre->user->stagiaire->id_stagiaire
                             ]);
                         }
                     }
@@ -434,15 +445,15 @@ class DemandeController extends Controller
                 // Si c'est une demande de groupe, envoyer aux membres aussi
                 if ($demande->nature === 'Groupe' && $demande->membres) {
                     foreach ($demande->membres as $membre) {
-                        if ($membre->user && $membre->user->email && $demande->stagiaire && $demande->stagiaire->user && $membre->user->email !== $demande->stagiaire->user->email) {
+                        if ($membre['user'] && $membre['user']['email'] && $demande->stagiaire && $demande->stagiaire->user && $membre['user']['email'] !== $demande->stagiaire->user->email) {
                             Log::info('Envoi d\'email d\'acceptation à un membre du groupe', [
-                                'email' => $membre->user->email,
-                                'nom' => $membre->user->nom,
-                                'prenom' => $membre->user->prenom
+                                'email' => $membre['user']['email'],
+                                'nom' => $membre['user']['nom'],
+                                'prenom' => $membre['user']['prenom']
                             ]);
 
-                            Mail::to($membre->user->email)
-                                ->send(new DemandeAcceptationMail($demande, $membre->user));
+                            Mail::to($membre['user']['email'])
+                                ->send(new DemandeAcceptationMail($demande, $membre['user']));
                         }
                     }
                 }
@@ -465,8 +476,8 @@ class DemandeController extends Controller
                 }
                 if ($demande->nature === 'Groupe' && $demande->membres) {
                     foreach ($demande->membres as $membre) {
-                        if ($membre->user && $demande->stagiaire && $demande->stagiaire->user && $membre->user->id !== $demande->stagiaire->user->id) {
-                            $membre->user->notify(new StagiaireNotification(
+                        if ($membre['user'] && $demande->stagiaire && $demande->stagiaire->user && $membre['user']['id'] !== $demande->stagiaire->user->id) {
+                            $membre['user']->notify(new StagiaireNotification(
                                 'Votre demande de stage a été acceptée (groupe) !',
                                 route('stagiaire.stages')
                             ));
@@ -607,9 +618,9 @@ class DemandeController extends Controller
                 // Si c'est une demande de groupe, envoyer aux membres aussi
                 if ($demande->nature === 'Groupe') {
                     foreach ($demande->membres as $membre) {
-                        if ($membre->user && $membre->user->email !== $demande->stagiaire->user->email) {
-                            Mail::to($membre->user->email)
-                                ->send(new DemandeRefusMail($demande, $membre->user, $validated['motif_refus']));
+                        if ($membre['user'] && $membre['user']['email'] !== $demande->stagiaire->user->email) {
+                            Mail::to($membre['user']['email'])
+                                ->send(new DemandeRefusMail($demande, $membre['user'], $validated['motif_refus']));
                         }
                     }
                 }
@@ -631,8 +642,8 @@ class DemandeController extends Controller
                 }
                 if ($demande->nature === 'Groupe' && $demande->membres) {
                     foreach ($demande->membres as $membre) {
-                        if ($membre->user && $demande->stagiaire && $demande->stagiaire->user && $membre->user->id !== $demande->stagiaire->user->id) {
-                            $membre->user->notify(new StagiaireNotification(
+                        if ($membre['user'] && $demande->stagiaire && $demande->stagiaire->user && $membre['user']['id'] !== $demande->stagiaire->user->id) {
+                            $membre['user']->notify(new StagiaireNotification(
                                 'La demande de stage de votre groupe a été refusée.',
                                 route('mes.demandes')
                             ));
@@ -923,11 +934,11 @@ class DemandeController extends Controller
                 if ($demande->nature === 'Groupe' && $demande->membres) {
                     foreach ($demande->membres as $membre) {
                         if (
-                            $membre->user &&
-                            $membre->user->email &&
-                            $stagiaire->user->email !== $membre->user->email
+                            $membre['user'] &&
+                            $membre['user']['email'] &&
+                            $stagiaire->user->email !== $membre['user']['email']
                         ) {
-                            \Mail::to($membre->user->email)
+                            \Mail::to($membre['user']['email'])
                                 ->send(new \App\Mail\AffectationMaitreStageMail($membre, $stage, $maitreStage->user, false));
                         }
                     }
@@ -956,8 +967,8 @@ class DemandeController extends Controller
                 }
                 if ($demande->nature === 'Groupe' && $demande->membres) {
                     foreach ($demande->membres as $membre) {
-                        if ($membre->user && $stagiaire->user->id !== $membre->user->id) {
-                            $membre->user->notify(new StagiaireNotification(
+                        if ($membre['user'] && $stagiaire->user->id !== $membre['user']['id']) {
+                            $membre['user']->notify(new StagiaireNotification(
                                 'Votre groupe a été affecté à un maître de stage.',
                                 route('stagiaire.stages')
                             ));

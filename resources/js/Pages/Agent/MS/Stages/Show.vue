@@ -701,6 +701,70 @@
       </div>
     </div>
   </MSLayout>
+
+  <!-- Modal d'évaluation d'un membre -->
+  <div v-if="modalEvalOuvert" class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+    <div class="bg-white rounded-lg p-8 max-w-lg w-full shadow-lg">
+      <h3 class="text-lg font-bold mb-4">
+        Évaluation de {{ membreAevaluer?.user?.prenom }} {{ membreAevaluer?.user?.nom }}
+      </h3>
+      <form @submit.prevent="soumettreEvaluationMembre">
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+          <div class="mb-3">
+            <label class="block text-sm font-medium mb-1">Ponctualité</label>
+            <input type="number" v-model="formEvalMembre.ponctualite" min="1" max="2" class="w-full border rounded px-2 py-1" required />
+          </div>
+          <div class="mb-3">
+            <label class="block text-sm font-medium mb-1">Motivation</label>
+            <input type="number" v-model="formEvalMembre.motivation" min="1" max="2" class="w-full border rounded px-2 py-1" required />
+          </div>
+          <div class="mb-3">
+            <label class="block text-sm font-medium mb-1">Capacité à apprendre</label>
+            <input type="number" v-model="formEvalMembre.capacite_apprendre" min="1" max="2" class="w-full border rounded px-2 py-1" required />
+          </div>
+          <div class="mb-3">
+            <label class="block text-sm font-medium mb-1">Qualité du travail</label>
+            <input type="number" v-model="formEvalMembre.qualite_travail" min="1" max="2" class="w-full border rounded px-2 py-1" required />
+          </div>
+          <div class="mb-3">
+            <label class="block text-sm font-medium mb-1">Rapidité d'exécution</label>
+            <input type="number" v-model="formEvalMembre.rapidite_execution" min="1" max="2" class="w-full border rounded px-2 py-1" required />
+          </div>
+          <div class="mb-3">
+            <label class="block text-sm font-medium mb-1">Jugement</label>
+            <input type="number" v-model="formEvalMembre.jugement" min="1" max="2" class="w-full border rounded px-2 py-1" required />
+          </div>
+          <div class="mb-3">
+            <label class="block text-sm font-medium mb-1">Esprit d'initiative / motivation</label>
+            <input type="number" v-model="formEvalMembre.esprit_motivation" min="1" max="2" class="w-full border rounded px-2 py-1" required />
+          </div>
+          <div class="mb-3">
+            <label class="block text-sm font-medium mb-1">Esprit de collaboration</label>
+            <input type="number" v-model="formEvalMembre.esprit_collaboration" min="1" max="2" class="w-full border rounded px-2 py-1" required />
+          </div>
+          <div class="mb-3">
+            <label class="block text-sm font-medium mb-1">Sens des responsabilités</label>
+            <input type="number" v-model="formEvalMembre.sens_responsabilite" min="1" max="2" class="w-full border rounded px-2 py-1" required />
+          </div>
+          <div class="mb-3">
+            <label class="block text-sm font-medium mb-1">Communication</label>
+            <input type="number" v-model="formEvalMembre.communication" min="1" max="2" class="w-full border rounded px-2 py-1" required />
+          </div>
+        </div>
+        <div class="mb-3">
+          <label class="block text-sm font-medium mb-1">Commentaire général</label>
+          <textarea v-model="formEvalMembre.commentaire_general" class="w-full border rounded px-2 py-1"></textarea>
+        </div>
+        <div class="mb-3 text-right">
+          <span class="font-semibold text-blue-700">Note totale : {{ getTotalEvalMembre() }}/20</span>
+        </div>
+        <div class="flex justify-end gap-2 mt-4">
+          <button type="button" @click="fermerModalEval" class="px-4 py-2 bg-gray-200 rounded">Annuler</button>
+          <button type="submit" class="px-4 py-2 bg-blue-600 text-white rounded">Enregistrer</button>
+        </div>
+      </form>
+    </div>
+  </div>
 </template>
 
 <script setup>
@@ -1379,6 +1443,9 @@ const formEvalMembre = ref({
 });
 
 const ouvrirModalEvaluation = (membre) => {
+  console.log('Évaluation pour:', membre.user.nom, membre.statutStage);
+  modalEvalOuvert.value = true;
+  console.log('modalEvalOuvert:', modalEvalOuvert.value);
   membreAevaluer.value = membre;
   formEvalMembre.value = {
     ponctualite: 1,
@@ -1393,7 +1460,6 @@ const ouvrirModalEvaluation = (membre) => {
     communication: 1,
     commentaire_general: ''
   };
-  modalEvalOuvert.value = true;
 };
 
 const fermerModalEval = () => {
@@ -1418,8 +1484,10 @@ const getTotalEvalMembre = () => {
 
 const soumettreEvaluationMembre = async () => {
   if (!membreAevaluer.value) return;
+  console.log('DEBUG soumission membreAevaluer:', membreAevaluer.value); // Ajout du log
   try {
-    await axios.post(`/agent/ms/stages/${props.stage.id}/noter`, {
+    // Utiliser l'id du stage du membre à évaluer (à injecter côté backend)
+    await axios.post(`/agent/ms/stages/${membreAevaluer.value.stage_id}/noter`, {
       ...formEvalMembre.value,
       note_totale: getTotalEvalMembre(),
       membre_id: membreAevaluer.value.user.id
@@ -1444,7 +1512,8 @@ const membresEvaluation = computed(() => {
       id: 'principal',
       user: props.stage.demandeStage.stagiaire.user,
       evaluationMembre: props.stage.evaluation || null,
-      statutStage: props.stage.statut
+      statutStage: props.stage.statut,
+      stage_id: props.stage.id // Correction : on ajoute le stage_id du principal
     });
   }
   // Ajouter les membres du groupe (hors principal)
@@ -1455,7 +1524,8 @@ const membresEvaluation = computed(() => {
           id: membre.id,
           user: membre.user,
           evaluationMembre: membre.evaluationMembre || null,
-          statutStage: membre.statutStage || 'En cours'
+          statutStage: membre.statutStage || 'En cours',
+          stage_id: membre.stage_id // Correction : on ajoute le stage_id du membre (injecté par le backend)
         });
       }
     });

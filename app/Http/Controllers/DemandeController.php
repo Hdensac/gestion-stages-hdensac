@@ -115,10 +115,15 @@ class DemandeController extends Controller
                 'date_soumission' => now(),
             ]);
 
-            // Si demande en groupe, associer les membres
-            if ($validated['nature'] === 'Groupe' && !empty($validated['membres'])) {
-                foreach ($validated['membres'] as $membreId) {
-                    MembreGroupe::create([
+            // Si demande en groupe, associer les membres + le demandeur principal
+            if ($validated['nature'] === 'Groupe') {
+                $membres = $validated['membres'] ?? [];
+                // Ajouter le demandeur principal s'il n'est pas déjà dans la liste
+                if (!in_array(Auth::id(), $membres)) {
+                    $membres[] = Auth::id();
+                }
+                foreach ($membres as $membreId) {
+                    \App\Models\MembreGroupe::firstOrCreate([
                         'demande_stage_id' => $demande->id,
                         'user_id' => $membreId,
                     ]);

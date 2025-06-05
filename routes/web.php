@@ -230,6 +230,9 @@ Route::get('/dashboard', function () {
 
             Route::post('/stages/{stage}/confirmer-fin', [App\Http\Controllers\Agent\MS\StageController::class, 'confirmerFinStage'])
                 ->name('ms.stages.confirmer-fin');
+
+            // Route pour permettre au maître de stage de proposer un thème
+            Route::post('/stages/{stage}/themes', [App\Http\Controllers\Agent\MS\StageController::class, 'proposerTheme'])->name('stages.proposer-theme');
         });
     });
 
@@ -242,6 +245,12 @@ Route::get('/dashboard', function () {
         Route::get('/stages', [App\Http\Controllers\Stagiaire\StageController::class, 'index'])->name('stages');
         Route::get('/stages/{stage}', [App\Http\Controllers\Stagiaire\StageController::class, 'show'])->name('stages.show');
         Route::post('/stages/{stage}/themes', [App\Http\Controllers\Stagiaire\StageController::class, 'proposerTheme'])->name('stages.proposer-theme');
+
+        // Routes pour les notifications des agents MS
+        Route::prefix('notifications')->name('notifications.')->group(function () {
+            Route::get('/', [App\Http\Controllers\Agent\NotificationController::class, 'index'])->name('index');
+            // Ajoutez ici d'autres routes pour marquer comme lu, etc. si nécessaire
+        });
     });
 
     // Route pour télécharger le rapport mensuel

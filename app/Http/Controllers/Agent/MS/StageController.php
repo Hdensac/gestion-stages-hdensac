@@ -273,14 +273,34 @@ class StageController extends Controller
                         $stage->demandeStage ? $stage->demandeStage->toArray() : [],
                         [
                             'membres' => $stage->demandeStage && $stage->demandeStage->relationLoaded('membres')
-                                ? $stage->demandeStage->membres->map(function($m) {
+                                ? $stage->demandeStage->membres->map(function($m) use ($stage) {
+                                    $stagiaire = \App\Models\Stagiaire::where('user_id', $m->user_id)->first();
+                                    $statutStage = null;
+                                    $stageId = null;
+                                    $evaluationMembre = null;
+                                    if ($stagiaire) {
+                                        $stageMembre = \App\Models\Stage::where('demande_stage_id', $stage->demande_stage_id)
+                                            ->where('stagiaire_id', $stagiaire->id_stagiaire)
+                                            ->first();
+                                        $statutStage = $stageMembre ? $stageMembre->statut : null;
+                                        $stageId = $stageMembre ? $stageMembre->id : null;
+                                        if ($stageMembre) {
+                                            $evaluationMembre = \App\Models\Evaluation::where('stage_id', $stageMembre->id)
+                                                ->where('agent_id', \Auth::user()->agent->id)
+                                                ->first();
+                                        }
+                                    }
                                     return array_merge($m->toArray(), [
-                                        'user' => $m->relationLoaded('user') ? $m->user->toArray() : null
+                                        'user' => $m->relationLoaded('user') ? $m->user->toArray() : null,
+                                        'statutStage' => $statutStage,
+                                        'stage_id' => $stageId,
+                                        'evaluationMembre' => $evaluationMembre ? $evaluationMembre->toArray() : null
                                     ]);
                                 })->toArray()
                                 : []
                         ]
-                    )
+                    ),
+                    'evaluation' => $stage->evaluation ? $stage->evaluation->toArray() : null
                 ]),
                 'openContact' => $request->boolean('openContact'),
                 'success' => session('success'),
@@ -704,23 +724,39 @@ class StageController extends Controller
         $agent = $user->agent;
 
         try {
+            // Log des données reçues pour debug
+            \Log::info('DEBUG_EVALUATION_SUBMIT', [
+                'stage_id' => $stage->id,
+                'demande_stage_id' => $stage->demande_stage_id,
+                'request_all' => $request->all(),
+                'route_params' => $request->route()->parameters(),
+                'user_id' => $user->id,
+                'agent_id' => $agent->id,
+            ]);
+
             // Si on veut évaluer un membre du groupe (membre_id fourni)
             $membreUserId = $request->input('membre_id');
             if ($membreUserId) {
                 // Chercher le stage du membre dans le même groupe
+                $stagiaireMembre = \App\Models\Stagiaire::where('user_id', $membreUserId)->first();
                 $stageMembre = Stage::where('demande_stage_id', $stage->demande_stage_id)
-                    ->where('stagiaire_id', function($query) use ($membreUserId) {
-                        $query->select('id_stagiaire')
-                            ->from('stagiaires')
-                            ->where('user_id', $membreUserId)
-                            ->limit(1);
-                    })
+                    ->where('stagiaire_id', $stagiaireMembre ? $stagiaireMembre->id_stagiaire : null)
                     ->first();
+                \Log::info('DEBUG_EVAL_MAPPING', [
+                    'demande_stage_id' => $stage->demande_stage_id,
+                    'membre_user_id' => $membreUserId,
+                    'stagiaire_id' => $stagiaireMembre ? $stagiaireMembre->id_stagiaire : null,
+                    'stage_membre_id' => $stageMembre ? $stageMembre->id : null,
+                ]);
                 if (!$stageMembre) {
                     return response()->json(['success' => false, 'message' => 'Aucun stage trouvé pour ce membre.'], 404);
                 }
-                // Vérifier que le MS est bien affecté à ce stage
-                $affectation = AffectationMaitreStage::where('stage_id', $stageMembre->id)
+                // Vérifier que le MS est bien affecté à un stage du groupe (même demande_stage_id)
+                $affectation = AffectationMaitreStage::whereIn('stage_id', function($query) use ($stageMembre) {
+                        $query->select('id')
+                            ->from('stages')
+                            ->where('demande_stage_id', $stageMembre->demande_stage_id);
+                    })
                     ->where('maitre_stage_id', $user->id)
                     ->whereIn('statut', ['En cours', 'Acceptée'])
                     ->first();
@@ -763,8 +799,8 @@ class StageController extends Controller
                     ])
                 );
                 // Notifier le stagiaire
-                if ($stageMembre->demandeStage && $stageMembre->demandeStage->stagiaire && $stageMembre->demandeStage->stagiaire->user) {
-                    $stagiaireUser = $stageMembre->demandeStage->stagiaire->user;
+                if ($stageMembre->stagiaire && $stageMembre->stagiaire->user) {
+                    $stagiaireUser = $stageMembre->stagiaire->user;
                     $stagiaireUser->notify(new \App\Notifications\StagiaireNotification(
                         'Votre stage a été évalué par votre maître de stage.',
                         route('stagiaire.stages.show', $stageMembre->id)
@@ -773,10 +809,14 @@ class StageController extends Controller
                 return response()->json(['success' => true, 'message' => 'Évaluation enregistrée.']);
             }
             // ... sinon, comportement classique (stagiaire principal)
-            // Vérifier que l'utilisateur est bien le maître de stage assigné à ce stage
-            $affectation = AffectationMaitreStage::where('stage_id', $stage->id)
+            // Vérifier que le MS est bien affecté à un stage du groupe (même demande_stage_id)
+            $affectation = AffectationMaitreStage::whereIn('stage_id', function($query) use ($stage) {
+                    $query->select('id')
+                        ->from('stages')
+                        ->where('demande_stage_id', $stage->demande_stage_id);
+                })
                 ->where('maitre_stage_id', $user->id)
-                ->whereIn('statut', ['En cours', 'Acceptée']) // Vérifier que l'affectation est active
+                ->whereIn('statut', ['En cours', 'Acceptée'])
                 ->first();
 
             if (!$affectation) {
@@ -1168,12 +1208,13 @@ class StageController extends Controller
             ], 400);
         }
 
-        // Mettre à jour le stage
-        $stage->update([
-            'termine_par_ms' => true,
-            'date_confirmation_ms' => now(),
-            'statut' => 'Terminé'
-        ]);
+        // Mettre à jour tous les stages du même groupe (y compris celui-ci)
+        \App\Models\Stage::where('demande_stage_id', $stage->demande_stage_id)
+            ->update([
+                'termine_par_ms' => true,
+                'date_confirmation_ms' => now(),
+                'statut' => 'Terminé'
+            ]);
 
         // Envoyer une notification au stagiaire principal
         if ($stage->demandeStage && $stage->demandeStage->stagiaire && $stage->demandeStage->stagiaire->user) {
