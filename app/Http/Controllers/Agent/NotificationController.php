@@ -4,7 +4,6 @@ namespace App\Http\Controllers\Agent;
 
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Auth;
 
 class NotificationController extends Controller
 {
@@ -13,17 +12,7 @@ class NotificationController extends Controller
      */
     public function index()
     {
-        $user = Auth::user();
-        
-        // Retrieve unread notifications first, then read ones
-        $notifications = $user->notifications()
-                            ->orderBy('read_at') // Unread first
-                            ->orderByDesc('created_at')
-                            ->get();
-
-        return response()->json([
-            'notifications' => $notifications
-        ]);
+        //
     }
 
     /**

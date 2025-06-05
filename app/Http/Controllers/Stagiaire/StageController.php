@@ -10,9 +10,6 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Log;
 use Inertia\Inertia;
-use App\Notifications\StagiaireNotification;
-use Illuminate\Support\Facades\Notification;
-use App\Models\User;
 
 class StageController extends Controller
 {
@@ -176,10 +173,6 @@ class StageController extends Controller
             } else {
                 $stage->statut_calculé = 'Terminé';
             }
-
-            // Injection de la note et du commentaire d'évaluation
-            $stage->note = optional($stage->evaluation)->note_totale;
-            $stage->commentaire_evaluation = optional($stage->evaluation)->commentaire_general;
             
             \Log::info('DEBUG_STAGIAIRE_STAGE_SHOW', [
                 'stage_id' => $stage->id,
@@ -216,10 +209,17 @@ class StageController extends Controller
         if (!$stagiaire) {
             return response()->json(['success' => false, 'message' => 'Aucun profil de stagiaire trouvé.'], 403);
         }
-        // Vérifier que le stage appartient bien à ce stagiaire
-        if ($stage->stagiaire_id !== $stagiaire->id_stagiaire) {
-            return response()->json(['success' => false, 'message' => 'Non autorisé.'], 403);
+
+        $demandeStage = DemandeStage::where('id', $stage->demande_stage_id)->with('membres')->first();
+
+        // Vérifier que le stagiaire est le principal ou un membre du groupe associé à ce stage
+        $isPrincipal = $demandeStage && $demandeStage->stagiaire_id == $stagiaire->id_stagiaire;
+        $isMembre = $demandeStage && $demandeStage->membres->contains('user_id', $user->id);
+
+        if (!$isPrincipal && !$isMembre) {
+            return response()->json(['success' => false, 'message' => 'Non autorisé à proposer un thème pour ce stage.'], 403);
         }
+
         $validated = $request->validate([
             'intitule' => 'required|string|max:255',
             'description' => 'required|string|max:2000',
@@ -233,9 +233,6 @@ class StageController extends Controller
             'propose_par' => 'stagiaire',
             'user_id' => $user->id,
         ]);
-
-        // Récupérer la demande de stage associée
-        $demandeStage = $stage->demandeStage;
 
         // Envoyer une notification in-app au MS et à tous les membres du groupe
         if ($demandeStage) {

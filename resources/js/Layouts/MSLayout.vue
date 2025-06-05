@@ -173,10 +173,7 @@
                         </div>
                         <!-- Cloche de notifications modernisée -->
                         <div class="relative">
-                            <button 
-                                class="notification-button bg-gradient-to-br from-blue-50 to-indigo-50 p-3 rounded-xl border border-blue-200/50 shadow-sm hover:shadow-md transition-all duration-200 hover:scale-105 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-opacity-50"
-                                @click="toggleNotifications"
-                            >
+                            <button class="notification-button bg-gradient-to-br from-blue-50 to-indigo-50 p-3 rounded-xl border border-blue-200/50 shadow-sm hover:shadow-md transition-all duration-200 hover:scale-105 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-opacity-50">
                                 <svg class="w-5 h-5 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 17h5l-5 5v-5zM10.07 2.82l3.93 3.93-8.49 8.49a2 2 0 01-1.42.59H1v-3.09a2 2 0 01.59-1.41l8.48-8.5zM15 6l3-3" />
                                 </svg>
@@ -227,48 +224,11 @@
             </footer>
         </div>
     </div>
-
-    <!-- Conteneur pour les notifications (à positionner absolument/fixement) -->
-    <div v-if="showNotifications" class="fixed top-20 right-8 w-80 bg-white rounded-lg shadow-lg border border-gray-200 z-50 max-h-[calc(100vh-120px)] overflow-y-auto animate__animated animate__fadeInDown animate__faster">
-        <div class="p-4 border-b border-gray-200 flex justify-between items-center">
-            <h4 class="text-md font-semibold text-gray-800">Notifications ({{ notificationCount }})</h4>
-            <button @click="markAllAsRead" class="text-sm text-blue-600 hover:underline disabled:text-gray-400" :disabled="!hasUnreadNotifications">
-                Tout marquer comme lu
-            </button>
-        </div>
-        <div v-if="notifications.length > 0">
-            <div v-for="notification in notifications" :key="notification.id" class="p-4 border-b border-gray-100 hover:bg-gray-50 transition-colors cursor-pointer">
-                <a :href="notification.url" class="block">
-                    <div class="flex items-start">
-                         <div :class="['flex-shrink-0 p-2 rounded-full mr-3', getNotificationIconClass(notification.type)]">
-                            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" :d="getNotificationIconPath(notification.type)" />
-                            </svg>
-                        </div>
-                        <div class="flex-1">
-                            <p class="text-sm font-medium text-gray-900">{{ notification.title }}</p>
-                            <p class="text-sm text-gray-600 mt-1">{{ notification.message }}</p>
-                            <p class="text-xs text-gray-400 mt-1">{{ formatTime(notification.created_at) }}</p>
-                        </div>
-                    </div>
-                </a>
-            </div>
-        </div>
-        <div v-else class="p-4 text-center text-gray-500 text-sm">
-            Aucune nouvelle notification.
-        </div>
-    </div>
-
-     <!-- Overlay pour fermer les notifications en cliquant ailleurs -->
-    <div v-if="showNotifications" @click="closeNotifications" class="fixed inset-0 z-40 bg-black opacity-0"></div>
-
 </template>
 
 <script setup>
 import { ref, computed, onMounted } from 'vue'
 import { Link, usePage, router } from '@inertiajs/vue3'
-import 'animate.css'; // Importez la bibliothèque Animate.css
-import axios from 'axios'
 
 const expanded = ref(true)
 const showUserMenu = ref(false)
@@ -281,8 +241,33 @@ const hasNewNotifications = ref(true) // Example initial state
 const notificationCount = ref(3) // Example initial count
 const hasUnreadNotifications = ref(true) // Example initial state
 
-// Données des notifications (exemple - à remplacer par le chargement depuis le backend)
-const notifications = ref([]) // Initialiser avec un tableau vide
+// Données des notifications (exemple)
+const notifications = ref([
+    {
+        id: 1,
+        type: 'stage',
+        title: 'Nouveau stage assigné',
+        message: 'Un nouveau stagiaire a été assigné à votre encadrement',
+        created_at: '2024-06-01T10:30:00Z',
+        read: false
+    },
+    {
+        id: 2,
+        type: 'evaluation',
+        title: 'Évaluation en attente',
+        message: 'L\'évaluation du stage de Marie Dupont est due dans 2 jours',
+        created_at: '2024-06-01T09:15:00Z',
+        read: false
+    },
+    {
+        id: 3,
+        type: 'system',
+        title: 'Mise à jour système',
+        message: 'La plateforme sera mise à jour ce soir de 22h à 23h',
+        created_at: '2024-05-31T16:45:00Z',
+        read: true
+    }
+])
 
 const page = usePage()
 
@@ -294,11 +279,7 @@ const getUserName = () => {
     if (user.agent && user.agent.user) {
         return `${user.agent.user.prenom} ${user.agent.user.nom}`;
     }
-    // Si l'utilisateur est un simple utilisateur (pas d'agent)
-     if (user) {
     return `${user.prenom} ${user.nom}`;
-    }
-    return 'Utilisateur'; // Fallback si aucune info n'est trouvée
 };
 
 const toggleSidebar = () => {
@@ -322,9 +303,6 @@ const logout = () => {
 const toggleNotifications = () => {
     showNotifications.value = !showNotifications.value
     if (showNotifications.value) {
-        // Optionnel: Marquer les notifications comme lues quand le panneau s'ouvre
-        //markAllAsRead(); // Décommentez si vous voulez marquer comme lu à l'ouverture
-        // Déclencher l'animation si vous le souhaitez
         triggerBellRing()
     }
 }
@@ -333,16 +311,14 @@ const closeNotifications = () => {
     showNotifications.value = false
 }
 
-// Fonctions d'animation (optionnel)
 const onNotificationHover = () => {
-    // Peut être utilisé pour pré-visualiser l'animation
     if (!showNotifications.value) {
-        //triggerBellRing() // Décommentez si vous voulez l'effet au survol
+        triggerBellRing()
     }
 }
 
 const onNotificationLeave = () => {
-     //isRinging.value = false // Décommentez si vous voulez arrêter l'effet au survol
+    isRinging.value = false
 }
 
 const triggerBellRing = () => {
@@ -352,21 +328,15 @@ const triggerBellRing = () => {
     }, 600)
 }
 
-// Marquer toutes les notifications affichées comme lues (à adapter avec une vraie API)
 const markAllAsRead = () => {
-     // Logique pour appeler votre API backend pour marquer les notifications comme lues
-     console.log('Marquer toutes les notifications comme lues (API Call Needed)');
-     notifications.value.forEach(n => n.read = true);
-
-     // Mettre à jour les états locaux après l'appel API réussi (ou en attendant la réponse)
-     notificationCount.value = 0;
-     hasNewNotifications.value = false;
-     hasUnreadNotifications.value = false;
-     // Optionnel: Recharger les notifications depuis le backend si nécessaire
-     // loadNotifications();
+    notifications.value.forEach(n => n.read = true)
+    // Ici, vous devrez probablement faire une requête API pour marquer les notifications comme lues en base de données
+    // hasNewNotifications et hasUnreadNotifications devraient être calculés en fonction de l'état réel des notifications après l'API call
+    hasNewNotifications.value = false // Exemple, à adapter
+    hasUnreadNotifications.value = false // Exemple, à adapter
+    notificationCount.value = 0 // Exemple, à adapter
 }
 
-// Helper pour les classes d'icônes (déjà présent)
 const getNotificationIconClass = (type) => {
     switch (type) {
         case 'stage':
@@ -380,7 +350,6 @@ const getNotificationIconClass = (type) => {
     }
 }
 
-// Helper pour les chemins d'icônes SVG (déjà présent)
 const getNotificationIconPath = (type) => {
     // Chemins d'icônes SVG pour chaque type
     switch (type) {
@@ -389,13 +358,12 @@ const getNotificationIconPath = (type) => {
         case 'evaluation':
             return 'M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z'; // Icône de coche/succès
         case 'system':
-            return 'M8 9l3 3-3 3m5 0h3M5 20h14a2 2 0 002-2V6a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z'; // Icône d\'ordinateur/système
+            return 'M8 9l3 3-3 3m5 0h3M5 20h14a2 2 0 002-2V6a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z'; // Icône d'ordinateur/système
         default:
-            return 'M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z'; // Icône d\'information
+            return 'M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z'; // Icône d'information
     }
 }
 
-// Helper pour formater l'heure (déjà présent)
 const formatTime = (dateString) => {
     const date = new Date(dateString);
     // Formate l'heure et les minutes
@@ -409,52 +377,25 @@ const formatTime = (dateString) => {
     return `${day}/${month}/${year} ${hours}:${minutes}`;
 }
 
-// Fonction pour charger les notifications (Exemple - À implémenter)
-const loadNotifications = async () => {
-     console.log('Chargement des notifications (API Call Needed)');
+// Vous devrez probablement charger les notifications réelles depuis votre backend au montage du composant
+// Exemple (pseudocode - à adapter à votre API) :
+/*
+onMounted(async () => {
     try {
-         const response = await axios.get(route('agent.notifications.index')); // Utilisez la nouvelle route
-         notifications.value = response.data.notifications; // Mettez à jour avec les données réelles
-         notificationCount.value = notifications.value.filter(n => !n.read_at).length; // Compter les non lues (basé sur read_at null)
+        const response = await axios.get(route('agent.ms.notifications')); // Adaptez la route
+        notifications.value = response.data.notifications; // Adaptez la structure de la réponse
+        notificationCount.value = notifications.value.filter(n => !n.read).length;
+        hasNewNotifications.value = notificationCount.value > 0; // Ou selon un autre critère 'new' si différent de 'unread'
         hasUnreadNotifications.value = notificationCount.value > 0;
     } catch (error) {
         console.error('Erreur lors du chargement des notifications:', error);
-         // Gérer l'erreur (afficher un message, etc.)
-     }
     }
-
-
-// Charger les notifications au montage du composant
-onMounted(() => {
-    loadNotifications();
 });
-
+*/
 
 const isDpafResponsable = computed(() => {
     return page.props.auth.user?.role === 'dpaf' || page.props.auth.user?.is_dpaf_responsable
 })
-
-// Optionnel: Fermer les notifications si l'utilisateur clique en dehors du panneau
-// (L'overlay gère déjà cela, mais vous pourriez vouloir une logique supplémentaire)
-/*
-onMounted(() => {
-    document.addEventListener('click', handleClickOutside);
-});
-
-onUnmounted(() => {
-    document.removeEventListener('click', handleClickOutside);
-});
-
-const handleClickOutside = (event) => {
-    const notificationPanel = document.querySelector('.notification-panel'); // Ajoutez une classe à votre panneau
-    const notificationButton = document.querySelector('.notification-button'); // Sélectionnez votre bouton
-    if (notificationPanel && !notificationPanel.contains(event.target) && notificationButton && !notificationButton.contains(event.target)) {
-        closeNotifications();
-    }
-};
-*/
-
-
 </script>
 
 <style scoped>
