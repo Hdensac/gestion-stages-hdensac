@@ -236,12 +236,22 @@ class StageController extends Controller
 
         // Envoyer une notification in-app au MS et à tous les membres du groupe
         if ($demandeStage) {
-            // Notification au MS
-            $msUser = $stage->affectationsMaitreStage->whereIn('statut', ['En cours', 'Acceptée'])->first()?->maitreStage?->user;
+            $affectation = $stage->affectationsMaitreStage->whereIn('statut', ['En cours', 'Acceptée'])->first();
+            $msUser = $affectation ? $affectation->maitreStage : null; // c'est un User
+            \Log::info('DEBUG_NOTIFICATION_MS', [
+                'affectation' => $affectation,
+                'msUser' => $msUser,
+                'stage_id' => $stage->id,
+            ]);
             if ($msUser) {
+                \Log::info('NOTIF DEBUG', [
+                    'msUser_id' => $msUser->id,
+                    'msUser_email' => $msUser->email,
+                    'stage_id' => $stage->id,
+                ]);
                 $msUser->notify(new \App\Notifications\StagiaireNotification(
                     'Un nouveau thème a été proposé pour le stage.',
-                    route('ms.stages.show', $stage->id)
+                    route('agent.ms.stages.show', $stage->id)
                 ));
             }
 

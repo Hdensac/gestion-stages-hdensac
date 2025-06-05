@@ -173,13 +173,62 @@
                         </div>
                         <!-- Cloche de notifications modernisée -->
                         <div class="relative">
-                            <button class="notification-button bg-gradient-to-br from-blue-50 to-indigo-50 p-3 rounded-xl border border-blue-200/50 shadow-sm hover:shadow-md transition-all duration-200 hover:scale-105 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-opacity-50">
+                            <button @click="toggleNotifications" class="notification-button bg-gradient-to-br from-blue-50 to-indigo-50 p-3 rounded-xl border border-blue-200/50 shadow-sm hover:shadow-md transition-all duration-200 hover:scale-105 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-opacity-50">
                                 <svg class="w-5 h-5 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 17h5l-5 5v-5zM10.07 2.82l3.93 3.93-8.49 8.49a2 2 0 01-1.42.59H1v-3.09a2 2 0 01.59-1.41l8.48-8.5zM15 6l3-3" />
                                 </svg>
                             </button>
                             <div class="notification-badge absolute -top-1 -right-1 w-5 h-5 bg-gradient-to-r from-red-500 to-red-600 rounded-full flex items-center justify-center">
-                                <span class="text-xs font-bold text-white">1</span>
+                                <span class="text-xs font-bold text-white">{{ notifications.length }}</span>
+                            </div>
+
+                            <!-- Panneau de notifications -->
+                            <div v-if="showNotifications" class="absolute right-0 mt-4 w-96 bg-white rounded-xl shadow-2xl border border-gray-200 overflow-hidden animate-fade-in z-50">
+                                <div class="bg-gradient-to-r from-blue-50 to-blue-100 p-4 border-b border-blue-200">
+                                    <div class="flex items-center justify-between">
+                                        <div class="flex items-center space-x-2">
+                                            <svg class="w-5 h-5 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 17h5l-5 5v-5zM10.07 2.82l3.93 3.93-8.49 8.49a2 2 0 01-1.42.59H1v-3.09a2 2 0 01.59-1.41l8.48-8.5zM15 6l3-3" />
+                                            </svg>
+                                            <span class="font-semibold text-gray-800">Notifications</span>
+                                            <span v-if="notifications.length" class="bg-blue-600 text-white text-xs px-2 py-1 rounded-full">{{ notifications.length }}</span>
+                                        </div>
+                                        <button @click="showNotifications = false" class="text-gray-400 hover:text-gray-600 p-1 rounded-full hover:bg-white/50 transition-colors">
+                                            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
+                                            </svg>
+                                        </button>
+                                    </div>
+                                </div>
+                                <div v-if="notifications.length === 0" class="p-8 text-center">
+                                    <svg class="w-12 h-12 text-gray-300 mx-auto mb-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20 13V6a2 2 0 00-2-2H6a2 2 0 00-2 2v7m16 0v5a2 2 0 01-2 2H6a2 2 0 01-2-2v-5m16 0h-2.586a1 1 0 00-.707.293l-2.414 2.414a1 1 0 01-.707.293h-3.172a1 1 0 01-.707-.293l-2.414-2.414A1 1 0 006.586 13H4" />
+                                    </svg>
+                                    <p class="text-gray-500 font-medium">Aucune notification</p>
+                                    <p class="text-sm text-gray-400 mt-1">Vous êtes à jour !</p>
+                                </div>
+                                <ul v-else class="divide-y divide-gray-100 max-h-96 overflow-y-auto">
+                                    <li v-for="notif in notifications" :key="notif.id" class="p-4 hover:bg-gray-50 transition-colors">
+                                        <div class="flex items-start gap-3">
+                                            <div class="pt-1">
+                                                <svg class="w-6 h-6 text-blue-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M12 20a8 8 0 100-16 8 8 0 000 16z" />
+                                                </svg>
+                                            </div>
+                                            <div class="flex-1 min-w-0">
+                                                <div class="text-sm text-gray-800 font-medium">
+                                                    {{ notif.data.message }}
+                                                </div>
+                                                <div v-if="notif.data.url" class="mt-1">
+                                                    <a :href="notif.data.url" class="text-xs text-blue-600 hover:underline">Voir le stage</a>
+                                                </div>
+                                                <div class="text-xs text-gray-400 mt-1">
+                                                    {{ formatDate(notif.created_at) }}
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </li>
+                                </ul>
                             </div>
                         </div>
                     </div>
@@ -241,35 +290,8 @@ const hasNewNotifications = ref(true) // Example initial state
 const notificationCount = ref(3) // Example initial count
 const hasUnreadNotifications = ref(true) // Example initial state
 
-// Données des notifications (exemple)
-const notifications = ref([
-    {
-        id: 1,
-        type: 'stage',
-        title: 'Nouveau stage assigné',
-        message: 'Un nouveau stagiaire a été assigné à votre encadrement',
-        created_at: '2024-06-01T10:30:00Z',
-        read: false
-    },
-    {
-        id: 2,
-        type: 'evaluation',
-        title: 'Évaluation en attente',
-        message: 'L\'évaluation du stage de Marie Dupont est due dans 2 jours',
-        created_at: '2024-06-01T09:15:00Z',
-        read: false
-    },
-    {
-        id: 3,
-        type: 'system',
-        title: 'Mise à jour système',
-        message: 'La plateforme sera mise à jour ce soir de 22h à 23h',
-        created_at: '2024-05-31T16:45:00Z',
-        read: true
-    }
-])
-
 const page = usePage()
+const notifications = computed(() => page.props.notifications || [])
 
 const getUserName = () => {
     const user = page.props.auth.user;
@@ -375,6 +397,16 @@ const formatTime = (dateString) => {
     const year = date.getFullYear();
 
     return `${day}/${month}/${year} ${hours}:${minutes}`;
+}
+
+function formatDate(date) {
+    const d = new Date(date);
+    const now = new Date();
+    const diff = Math.floor((now - d) / 1000);
+    if (diff < 60) return 'À l’instant';
+    if (diff < 3600) return `Il y a ${Math.floor(diff/60)} min`;
+    if (diff < 86400) return `Il y a ${Math.floor(diff/3600)} h`;
+    return d.toLocaleDateString('fr-FR', { day: '2-digit', month: 'short', year: 'numeric' });
 }
 
 // Vous devrez probablement charger les notifications réelles depuis votre backend au montage du composant

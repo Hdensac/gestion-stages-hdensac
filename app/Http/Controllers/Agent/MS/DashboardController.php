@@ -271,6 +271,7 @@ class DashboardController extends Controller
                 'derniersStages' => $stagesArray,
                 'agent' => $agent->load('user'),
                 'structureResponsable' => $structureResponsable,
+                'notifications' => $user->notifications()->latest()->take(20)->get(),
             ]);
 
         } catch (\Exception $e) {
