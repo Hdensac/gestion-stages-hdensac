@@ -7,6 +7,7 @@ use App\Models\DemandeStage;
 use App\Models\Structure;
 use Illuminate\Http\Request;
 use Inertia\Inertia;
+use Illuminate\Support\Facades\Mail;
 use Illuminate\Support\Facades\Log;
 use App\Models\AffectationResponsableStructure;
 
@@ -208,5 +209,73 @@ class DemandeController extends Controller
 
             return back()->with('error', 'Une erreur est survenue lors de l\'affectation de la structure.');
         }
+    }
+
+    public function refuseDefinitivement(Request $request, DemandeStage $demande)
+    {
+        // Vérifier que la demande est bien en attente de réaffectation
+        if ($demande->statut !== 'A réaffecter') {
+            return back()->with('error', 'Seules les demandes à réaffecter peuvent être refusées définitivement.');
+        }
+
+        $validated = $request->validate([
+            'motif_refus' => 'required|string|max:500'
+        ]);
+
+        $demande->update([
+            'statut' => 'Refusée',
+            'date_traitement' => now(),
+            'motif_refus' => $validated['motif_refus'],
+        ]);
+
+        // Charger les relations nécessaires pour l'email
+        $demande->load(['stagiaire.user', 'structure', 'membres.user']);
+
+        // Envoyer le mail au stagiaire
+        try {
+            Mail::to($demande->stagiaire->user->email)
+                ->send(new \App\Mail\DemandeRefusMail($demande, $demande->stagiaire->user, $validated['motif_refus']));
+            if ($demande->nature === 'Groupe') {
+                foreach ($demande->membres as $membre) {
+                    if ($membre['user'] && $membre['user']['email'] !== $demande->stagiaire->user->email) {
+                        Mail::to($membre['user']['email'])
+                            ->send(new \App\Mail\DemandeRefusMail($demande, $membre['user'], $validated['motif_refus']));
+                    }
+                }
+            }
+        } catch (\Exception $e) {
+            Log::error('Erreur lors de l\'envoi de l\'email de refus définitif', [
+                'error' => $e->getMessage(),
+                'demande_id' => $demande->id
+            ]);
+        }
+
+        // Envoyer la notification au stagiaire et membres
+        try {
+            if ($demande->stagiaire && $demande->stagiaire->user) {
+                $demande->stagiaire->user->notify(new \App\Notifications\StagiaireNotification(
+                    'Votre demande de stage a été refusée définitivement.',
+                    route('mes.demandes')
+                ));
+            }
+            if ($demande->nature === 'Groupe' && $demande->membres) {
+                foreach ($demande->membres as $membre) {
+                    if ($membre['user'] && $demande->stagiaire && $demande->stagiaire->user && $membre['user']['id'] !== $demande->stagiaire->user->id) {
+                        $membre['user']->notify(new \App\Notifications\StagiaireNotification(
+                            'La demande de stage de votre groupe a été refusée définitivement.',
+                            route('mes.demandes')
+                        ));
+                    }
+                }
+            }
+        } catch (\Exception $e) {
+            Log::error('Erreur lors de l\'envoi de la notification Laravel (refus définitif)', [
+                'error' => $e->getMessage(),
+                'demande_id' => $demande->id
+            ]);
+        }
+
+        return redirect()->route('agent.demandes.show', $demande)
+            ->with('success', 'La demande a été refusée définitivement et le stagiaire a été notifié.');
     }
 }

@@ -35,17 +35,18 @@ class DemandeController extends Controller
                 return redirect()->back()->with('error', 'Vous n\'êtes responsable d\'aucune structure.');
             }
 
-            // Récupérer les IDs des demandes affectées à cette structure via la table d'affectation
-            $demandesAffecteesIds = \App\Models\AffectationResponsableStructure::where('structure_id', $structure->id)
+            // Récupérer les IDs des demandes dont la dernière affectation pointe vers la structure du RS courant
+            $dernieresAffectations = \App\Models\AffectationResponsableStructure::select('id_demande_stages', DB::raw('MAX(id) as max_id'))
+                ->groupBy('id_demande_stages');
+
+            $idsDemandesActivesPourRS = \App\Models\AffectationResponsableStructure::whereIn('id', $dernieresAffectations->pluck('max_id'))
+                ->where('structure_id', $structure->id)
                 ->pluck('id_demande_stages')
                 ->toArray();
 
-            // Construction de la requête de base (demandes directes + affectées)
+            // Construction de la requête de base (demandes dont la dernière affectation est pour ce RS)
             $query = DemandeStage::with(['stagiaire.user'])
-                ->where(function($q) use ($structure, $demandesAffecteesIds) {
-                    $q->where('structure_id', $structure->id)
-                      ->orWhereIn('id', $demandesAffecteesIds);
-                });
+                ->whereIn('id', $idsDemandesActivesPourRS);
 
             // Ajouter la relation avec les affectations pour récupérer la date d'affectation
             $query->with(['affectations' => function($query) use ($structure) {
@@ -560,139 +561,20 @@ class DemandeController extends Controller
                 'motif_refus' => 'required|string|max:500'
             ]);
 
-            // Charger les relations nécessaires pour l'email
-            $demande->load(['stagiaire.user', 'structure', 'affectations.structure']);
+            // Mettre à jour le statut et le motif de refus, sans notification ni mail
+            $demande->statut = 'A réaffecter';
+            $demande->motif_refus = $validated['motif_refus'];
+            $demande->date_traitement = now();
+            $demande->traite_par = $agent->id;
+            $demande->save();
 
-            // Si la demande est affectée mais n'a pas de structure directe, utiliser la structure de l'affectation
-            if (!$demande->structure && $estAffectee) {
-                $affectation = \App\Models\AffectationResponsableStructure::where('structure_id', $structure->id)
-                    ->where('id_demande_stages', $demande->id)
-                    ->with('structure')
-                    ->first();
-
-                if ($affectation && $affectation->structure) {
-                    // Attacher temporairement la structure de l'affectation à la demande
-                    $demande->structure = $affectation->structure;
-                }
-            }
-
-            // Journaliser l'état actuel de la demande
-            Log::info('État actuel de la demande avant rejet', [
+            \Log::info('Demande refusée par RS, en attente de réaffectation', [
                 'demande_id' => $demande->id,
-                'statut_actuel' => $demande->statut,
-                'structure_id' => $demande->structure_id
+                'statut' => $demande->statut,
+                'motif_refus' => $demande->motif_refus
             ]);
 
-            // Vérifier si le statut est "Encours" et le corriger en "En cours"
-            if ($demande->statut === 'Encours') {
-                Log::info('Correction du statut "Encours" en "En cours"', [
-                    'demande_id' => $demande->id
-                ]);
-
-                try {
-                    \Illuminate\Support\Facades\DB::table('demande_stages')
-                        ->where('id', $demande->id)
-                        ->update([
-                            'statut' => 'En cours',
-                            'updated_at' => now()
-                        ]);
-
-                    $demande->refresh();
-                } catch (\Exception $e) {
-                    Log::error('Erreur lors de la correction du statut', [
-                        'demande_id' => $demande->id,
-                        'error' => $e->getMessage()
-                    ]);
-                }
-            }
-
-            // Mettre à jour la demande avec une requête SQL directe
-            try {
-                $updateResult = \Illuminate\Support\Facades\DB::table('demande_stages')
-                    ->where('id', $demande->id)
-                    ->update([
-                        'statut' => 'Refusée',
-                        'date_traitement' => now(),
-                        'traite_par' => $agent->id,
-                        'motif_refus' => $validated['motif_refus'],
-                        'updated_at' => now()
-                    ]);
-
-                Log::info('Résultat de la mise à jour directe (rejet)', [
-                    'demande_id' => $demande->id,
-                    'update_result' => $updateResult
-                ]);
-
-                if ($updateResult === 0) {
-                    Log::error('Échec de la mise à jour du statut de la demande (SQL direct - rejet)', [
-                        'demande_id' => $demande->id
-                    ]);
-                    return redirect()->back()->with('error', 'Une erreur est survenue lors de la mise à jour du statut de la demande.');
-                }
-            } catch (\Exception $e) {
-                Log::error('Exception lors de la mise à jour du statut de la demande (rejet)', [
-                    'demande_id' => $demande->id,
-                    'error' => $e->getMessage()
-                ]);
-                return redirect()->back()->with('error', 'Une erreur est survenue lors de la mise à jour du statut de la demande: ' . $e->getMessage());
-            }
-
-            // Vérifier que la mise à jour a bien été effectuée
-            $demande->refresh();
-            Log::info('État de la demande après rejet', [
-                'demande_id' => $demande->id,
-                'nouveau_statut' => $demande->statut
-            ]);
-
-            // Envoyer l'email au stagiaire
-            try {
-                Mail::to($demande->stagiaire->user->email)
-                    ->send(new DemandeRefusMail($demande, $demande->stagiaire->user, $validated['motif_refus']));
-
-                // Si c'est une demande de groupe, envoyer aux membres aussi
-                if ($demande->nature === 'Groupe') {
-                    foreach ($demande->membres as $membre) {
-                        if ($membre['user'] && $membre['user']['email'] !== $demande->stagiaire->user->email) {
-                            Mail::to($membre['user']['email'])
-                                ->send(new DemandeRefusMail($demande, $membre['user'], $validated['motif_refus']));
-                        }
-                    }
-                }
-            } catch (\Exception $e) {
-                Log::error('Erreur lors de l\'envoi de l\'email de refus', [
-                    'error' => $e->getMessage(),
-                    'demande_id' => $demande->id
-                ]);
-                // On continue même si l'email échoue
-            }
-
-            // Après l'envoi de l'email de refus, notifier le stagiaire et les membres du groupe
-            try {
-                if ($demande->stagiaire && $demande->stagiaire->user) {
-                    $demande->stagiaire->user->notify(new StagiaireNotification(
-                        'Votre demande de stage a été refusée.',
-                        route('mes.demandes')
-                    ));
-                }
-                if ($demande->nature === 'Groupe' && $demande->membres) {
-                    foreach ($demande->membres as $membre) {
-                        if ($membre['user'] && $demande->stagiaire && $demande->stagiaire->user && $membre['user']['id'] !== $demande->stagiaire->user->id) {
-                            $membre['user']->notify(new StagiaireNotification(
-                                'La demande de stage de votre groupe a été refusée.',
-                                route('mes.demandes')
-                            ));
-                        }
-                    }
-                }
-            } catch (\Exception $e) {
-                \Log::error('Erreur lors de l\'envoi de la notification Laravel (refus)', [
-                    'error' => $e->getMessage(),
-                    'demande_id' => $demande->id
-                ]);
-            }
-
-            return redirect()->back()->with('success', 'La demande a été refusée avec succès.');
-
+            return redirect()->back()->with('success', 'La demande a été refusée par le RS et envoyée à l\'agent pour réaffectation.');
         } catch (\Exception $e) {
             Log::error('Erreur lors du refus de la demande RS', [
                 'error' => $e->getMessage(),

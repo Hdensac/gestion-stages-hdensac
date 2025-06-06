@@ -184,6 +184,7 @@ Route::get('/dashboard', function () {
         Route::get('/stagiaires', [App\Http\Controllers\Agent\StagiaireController::class, 'index'])->name('stagiaires.index');
         Route::get('/stagiaires/{stagiaire}', [App\Http\Controllers\Agent\StagiaireController::class, 'show'])->name('stagiaires.show');
         Route::post('/demandes/{demande}/affecter', [App\Http\Controllers\Agent\DemandeController::class, 'affecter'])->name('demandes.affecter');
+        Route::post('/demandes/{demande}/refuse-definitivement', [App\Http\Controllers\Agent\DemandeController::class, 'refuseDefinitivement'])->name('demandes.refuseDefinitivement');
 
         // Routes pour les agents RS
         Route::prefix('rs')->name('rs.')->middleware(['auth'])->group(function () {

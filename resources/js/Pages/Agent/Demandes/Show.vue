@@ -4,6 +4,7 @@ import { router } from '@inertiajs/vue3';
 import AgentDPAF from '@/Layouts/AgentDPAF.vue';
 import { ref } from 'vue';
 import AdminToast from '@/Components/AdminToast.vue';
+import Modal from '@/Components/Modal.vue';
 
 const props = defineProps({
     demande: Object,
@@ -63,6 +64,37 @@ const submitAffectation = () => {
     });
 };
 
+const showRefusDefModal = ref(false);
+const motifRefusDef = ref('');
+
+const openRefusDefModal = () => {
+    motifRefusDef.value = '';
+    showRefusDefModal.value = true;
+};
+const closeRefusDefModal = () => {
+    showRefusDefModal.value = false;
+};
+const submitRefusDef = () => {
+    if (!motifRefusDef.value.trim()) {
+        alert('Veuillez indiquer un motif de refus définitif.');
+        return;
+    }
+    router.post(route('agent.demandes.refuseDefinitivement', props.demande.id), {
+        motif_refus: motifRefusDef.value
+    }, {
+        onSuccess: () => {
+            closeRefusDefModal();
+            if (toast.value) {
+                toast.value.addToast({
+                    type: 'success',
+                    title: 'Succès',
+                    message: 'La demande a été refusée définitivement.'
+                });
+            }
+        }
+    });
+};
+
 const submit = (action) => {
     if (!confirm(`Êtes-vous sûr de vouloir ${action === 'approve' ? 'approuver' : 'refuser'} cette demande ?`)) {
         return;
@@ -70,6 +102,12 @@ const submit = (action) => {
 
     router.post(route(`agent.demandes.${action}`, props.demande.id));
 };
+
+function getInitials(nom, prenom) {
+    const n = nom ? nom.charAt(0) : '';
+    const p = prenom ? prenom.charAt(0) : '';
+    return (n + p).toUpperCase() || '?';
+}
 </script>
 
 <template>
@@ -284,38 +322,16 @@ const submit = (action) => {
                             </div>
 
                             <!-- Actions sur la demande - commenté mais amélioré visuellement -->
-                            <!-- <div class="mt-8 bg-gradient-to-br from-amber-50 via-orange-50 to-amber-50 p-8 rounded-3xl shadow-xl border-2 border-amber-200/50" v-if="demande.statut === 'En attente'">
-                                <div class="flex items-center gap-3 mb-6">
-                                    <div class="p-2 bg-gradient-to-br from-amber-500 to-orange-600 rounded-xl shadow-lg">
-                                        <svg class="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
-                                        </svg>
-                                    </div>
-                                    <h2 class="text-xl font-bold text-amber-900">Actions</h2>
-                                </div>
-                                
-                                <div class="flex gap-4">
-                                    <button 
-                                        @click="submit('approve')"
-                                        class="px-6 py-3 bg-gradient-to-r from-green-600 to-emerald-600 text-white rounded-xl hover:from-green-700 hover:to-emerald-700 transition-all duration-300 shadow-lg hover:shadow-xl font-bold flex items-center gap-2 transform hover:scale-105"
-                                    >
-                                        <svg class="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
-                                            <path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd" />
-                                        </svg>
-                                        Approuver
+                            <div v-if="demande.statut === 'A réaffecter'" class="flex gap-4 mt-8">
+                                <button @click="openAffectationModal" class="px-6 py-3 bg-gradient-to-r from-blue-600 to-indigo-600 text-white rounded-xl font-bold flex items-center gap-2 shadow-lg hover:scale-105">
+                                    <svg class="h-5 w-5" viewBox="0 0 20 20" fill="currentColor"><path d="M8 9a3 3 0 100-6 3 3 0 000 6zM8 11a6 6 0 016 6H2a6 6 0 016-6zM16 7a1 1 0 10-2 0v1h-1a1 1 0 100 2h1v1a1 1 0 102 0v-1h1a1 1 0 100-2h-1V7z"/></svg>
+                                    Réaffecter à une structure
                                     </button>
-                                    
-                                    <button 
-                                        @click="submit('reject')"
-                                        class="px-6 py-3 bg-gradient-to-r from-red-600 to-rose-600 text-white rounded-xl hover:from-red-700 hover:to-rose-700 transition-all duration-300 shadow-lg hover:shadow-xl font-bold flex items-center gap-2 transform hover:scale-105"
-                                    >
-                                        <svg class="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
-                                            <path fill-rule="evenodd" d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z" clip-rule="evenodd" />
-                                        </svg>
-                                        Refuser
+                                <button @click="openRefusDefModal" class="px-6 py-3 bg-gradient-to-r from-red-600 to-rose-600 text-white rounded-xl font-bold flex items-center gap-2 shadow-lg hover:scale-105">
+                                    <svg class="h-5 w-5" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z" clip-rule="evenodd"/></svg>
+                                    Refuser définitivement
                                     </button>
                                 </div>
-                            </div> -->
                         </div>
                     </div>
                 </div>
@@ -385,6 +401,26 @@ const submit = (action) => {
                 </div>
             </div>
         </div>
+
+        <!-- Modal refus définitif -->
+        <Modal :show="showRefusDefModal" @close="closeRefusDefModal">
+            <div class="p-8 bg-white/95 rounded-3xl shadow-2xl border-2 border-slate-200/50 max-w-md mx-auto">
+                <h2 class="text-2xl font-bold text-gray-900 mb-6 flex items-center gap-3">
+                    <div class="p-3 bg-gradient-to-br from-red-500 to-rose-600 rounded-2xl shadow-lg">
+                        <svg class="h-6 w-6 text-white" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z" clip-rule="evenodd"/></svg>
+                    </div>
+                    Refuser définitivement la demande
+                </h2>
+                <div class="mb-6">
+                    <label class="block text-sm font-bold text-gray-700 mb-3 uppercase tracking-wide">Motif du refus définitif</label>
+                    <textarea v-model="motifRefusDef" class="w-full rounded-2xl border-2 border-gray-200 shadow-sm focus:border-red-500 focus:ring-2 focus:ring-red-200 focus:ring-opacity-50 text-gray-900 font-medium p-4" rows="4" placeholder="Saisir le motif du refus définitif..."></textarea>
+                </div>
+                <div class="flex justify-end gap-3">
+                    <button @click="closeRefusDefModal" class="px-4 py-2 bg-gray-100 text-gray-700 rounded-lg hover:bg-gray-200">Annuler</button>
+                    <button @click="submitRefusDef" class="px-4 py-2 bg-red-600 text-white rounded-lg hover:bg-red-700">Confirmer le refus</button>
+                </div>
+            </div>
+        </Modal>
     </AgentDPAF>
     
     <!-- Composant Toast pour les notifications -->

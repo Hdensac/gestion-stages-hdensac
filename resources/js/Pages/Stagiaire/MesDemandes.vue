@@ -232,6 +232,11 @@ const toggleSort = (column) => {
 watch(searchQuery, () => {
   // Débounce la recherche si nécessaire
 }, { debounce: 300 });
+
+function getStatutAffichage(statut) {
+    if (statut === 'A réaffecter') return 'En cours';
+    return statut;
+}
 </script>
 
 <template>
@@ -584,7 +589,7 @@ watch(searchQuery, () => {
                           class="inline-flex items-center px-2.5 py-1 rounded-full font-semibold text-sm"
                           :class="getStatusConfig(demande.statut).bg + ' ' + getStatusConfig(demande.statut).text + ' ' + getStatusConfig(demande.statut).border"
                         >
-                          {{ demande.statut }}
+                          {{ getStatutAffichage(demande.statut) }}
                         </span>
                       </td>
                       <td class="px-6 py-4 text-sm">{{ formatDate(demande.date_soumission) }}</td>
@@ -621,7 +626,7 @@ watch(searchQuery, () => {
                       class="inline-flex items-center px-2.5 py-1 rounded-full font-semibold text-sm"
                       :class="getStatusConfig(demande.statut).bg + ' ' + getStatusConfig(demande.statut).text + ' ' + getStatusConfig(demande.statut).border"
                     >
-                      {{ demande.statut }}
+                      {{ getStatutAffichage(demande.statut) }}
                     </span>
                   </div>
                   <div class="mt-2">

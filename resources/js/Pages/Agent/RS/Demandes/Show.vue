@@ -57,7 +57,7 @@
                   <span class="text-sm text-blue-700 font-bold block mb-3">Statut</span>
                   <span class="px-4 py-2 text-sm font-bold rounded-2xl inline-flex items-center shadow-lg" :class="getEnhancedStatusColor(demande.statut)">
                     <span class="h-2 w-2 rounded-full mr-2" :class="getStatusDotColor(demande.statut)"></span>
-                  {{ demande.statut }}
+                  {{ getStatutAffichageRS(demande.statut) }}
                 </span>
               </div>
 
@@ -553,6 +553,11 @@ function getStatusDotColor(status) {
 function getInitials(nom, prenom) {
   if (!nom || !prenom) return '?';
   return `${nom.charAt(0)}${prenom.charAt(0)}`.toUpperCase();
+}
+
+function getStatutAffichageRS(statut) {
+    if (statut === 'A réaffecter') return 'Refusée';
+    return statut;
 }
 
 function closeRejectModal() {

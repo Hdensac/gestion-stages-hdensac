@@ -289,7 +289,7 @@
                         <td class="px-8 py-6 whitespace-nowrap">
                           <span :class="getStatusColor(demande.statut) + ' px-4 py-2 rounded-full text-sm font-semibold inline-flex items-center shadow-sm hover:shadow-md transition-all duration-200'">
                             <span class="h-2 w-2 rounded-full mr-2 animate-pulse" :class="getStatusDotColor(demande.statut)"></span>
-                            {{ demande.statut }}
+                            {{ getStatutAffichageRS(demande.statut) }}
                           </span>
                         </td>
                        
@@ -462,6 +462,11 @@ function getStatusDotColor(status) {
 function getInitials(nom, prenom) {
   if (!nom || !prenom) return '?';
   return `${nom.charAt(0)}${prenom.charAt(0)}`.toUpperCase();
+}
+
+function getStatutAffichageRS(statut) {
+  if (statut === 'A réaffecter') return 'Refusée';
+  return statut;
 }
 </script>
 
