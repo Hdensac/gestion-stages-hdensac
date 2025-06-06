@@ -244,6 +244,7 @@
                         <th scope="col" class="px-8 py-5 text-left text-xs font-bold text-gray-600 uppercase tracking-wider">Date de soumission</th>
                         <th scope="col" class="px-8 py-5 text-left text-xs font-bold text-gray-600 uppercase tracking-wider">Date d'affectation</th>
                         <th scope="col" class="px-8 py-5 text-left text-xs font-bold text-gray-600 uppercase tracking-wider">Statut</th>
+<!--                         <th scope="col" class="px-8 py-5 text-left text-xs font-bold text-gray-600 uppercase tracking-wider">Structure</th> -->
                         <th scope="col" class="px-8 py-5 text-left text-xs font-bold text-gray-600 uppercase tracking-wider">Actions</th>
                       </tr>
                     </thead>
@@ -291,6 +292,7 @@
                             {{ demande.statut }}
                           </span>
                         </td>
+                       
                         <td class="px-8 py-6 whitespace-nowrap text-sm font-medium">
                           <Link
                             :href="route('agent.rs.demandes.show', demande.id)"
@@ -326,7 +328,7 @@
 import RSLayout from '@/Layouts/RSLayout.vue';
 import Pagination from '@/Components/Pagination.vue';
 import { ref, watch } from 'vue';
-import { router } from '@inertiajs/vue3';
+import { router, Link } from '@inertiajs/vue3';
 import debounce from 'lodash/debounce';
 
 const props = defineProps({

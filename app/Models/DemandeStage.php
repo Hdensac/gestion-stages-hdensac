@@ -43,6 +43,7 @@ class DemandeStage extends Model
         'traite_par',
         'motif_refus',
         'agent_id',
+        'visage_path',
     ];
 
     /**

@@ -59,6 +59,7 @@ class DemandeController extends Controller
             'diplomes_path' => 'nullable|file|mimes:pdf,doc,docx|max:2048',
             'membres' => 'nullable|array',
             'membres.*' => 'exists:users,id',
+            'visage_path' => 'nullable|file|image|max:2048',
         ]);
 
         // Début de la transaction pour assurer l'intégrité des données
@@ -87,6 +88,7 @@ class DemandeController extends Controller
             // Upload des fichiers s'ils existent
             $cv_path = null;
             $diplomes_path = null;
+            $visage_path = null;
 
             if ($request->hasFile('lettre_cv_path') && $request->file('lettre_cv_path')->isValid()) {
                 $cv_path = $request->file('lettre_cv_path')->store('documents/cv', 'public');
@@ -94,6 +96,21 @@ class DemandeController extends Controller
 
             if ($request->hasFile('diplomes_path') && $request->file('diplomes_path')->isValid()) {
                 $diplomes_path = $request->file('diplomes_path')->store('documents/diplomes', 'public');
+            }
+
+            // Log de diagnostic pour vérifier la réception du fichier visage_path
+            // Removed after fixing fillable issue
+            // \Log::info('Diagnostic visage_path', [
+            //     'hasFile' => $request->hasFile('visage_path'),
+            //     'file' => $request->file('visage_path'),
+            //     'all_files' => $request->allFiles(),
+            // ]);
+
+            if ($request->hasFile('visage_path') && $request->file('visage_path')->isValid()) {
+                $visage_path = $request->file('visage_path')->store('documents/visages', 'public');
+                // Log pour vérifier le chemin enregistré
+                // Removed after fixing fillable issue
+                // \Log::info('Chemin visage_path enregistré', ['visage_path' => $visage_path]);
             }
 
             // Générer un code de suivi unique
@@ -110,6 +127,7 @@ class DemandeController extends Controller
                 'nature' => $validated['nature'],
                 'lettre_cv_path' => $cv_path,
                 'diplomes_path' => $diplomes_path,
+                'visage_path' => $visage_path,
                 'code_suivi' => $codeSuivi,
                 'statut' => 'En attente',
                 'date_soumission' => now(),

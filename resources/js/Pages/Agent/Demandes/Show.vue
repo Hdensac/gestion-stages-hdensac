@@ -17,18 +17,19 @@ const formatDate = (date) => {
     return new Date(date).toLocaleDateString('fr-FR');
 };
 
+// Fonction améliorée pour les couleurs de statut - plus vives
 const getStatusColor = (statut) => {
     switch (statut) {
         case 'En attente':
-            return 'text-yellow-600 bg-yellow-100';
+            return 'text-amber-800 bg-gradient-to-r from-amber-100 to-orange-100 border-2 border-amber-300 shadow-lg shadow-amber-200/50';
         case 'En cours':
-            return 'text-blue-600 bg-blue-100';
+            return 'text-blue-800 bg-gradient-to-r from-blue-100 to-sky-100 border-2 border-blue-300 shadow-lg shadow-blue-200/50';
         case 'Approuvée':
-            return 'text-green-600 bg-green-100';
+            return 'text-emerald-800 bg-gradient-to-r from-emerald-100 to-green-100 border-2 border-emerald-300 shadow-lg shadow-emerald-200/50';
         case 'Refusée':
-            return 'text-red-600 bg-red-100';
+            return 'text-red-800 bg-gradient-to-r from-red-100 to-rose-100 border-2 border-red-300 shadow-lg shadow-red-200/50';
         default:
-            return 'text-gray-600 bg-gray-100';
+            return 'text-slate-800 bg-gradient-to-r from-slate-100 to-gray-100 border-2 border-slate-300 shadow-lg shadow-slate-200/50';
     }
 };
 
@@ -75,191 +76,268 @@ const submit = (action) => {
     <Head title="Détails de la demande" />
     <AgentDPAF>
         <template #header>
-            <h2 class="text-xl font-semibold text-gray-800">Détails de la demande</h2>
+            <h2 class="text-xl font-semibold text-slate-800">Détails de la demande</h2>
         </template>
 
-        <div class="py-12">
-            <div class="mx-auto max-w-7xl sm:px-6 lg:px-8">
-                <div class="overflow-hidden bg-white shadow-sm sm:rounded-lg">
-                    <div class="p-6">
-                        <div class="mb-6 flex justify-between items-center">
-                            <h1 class="text-2xl font-bold text-gray-800">Détails de la demande #{{ demande.code_suivi }}</h1>
-                            <Link :href="route('agent.demandes')" class="px-4 py-2 bg-gray-200 text-gray-700 rounded hover:bg-gray-300 transition-colors flex items-center gap-2">
-                                <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
-                                    <path fill-rule="evenodd" d="M9.707 16.707a1 1 0 01-1.414 0l-6-6a1 1 0 010-1.414l6-6a1 1 0 011.414 1.414L5.414 9H17a1 1 0 110 2H5.414l4.293 4.293a1 1 0 010 1.414z" clip-rule="evenodd" />
-                                </svg>
-                                Retour
-                            </Link>
-                        </div>
+        <!-- Arrière-plan grisé -->
+        <div class="min-h-screen bg-gradient-to-br from-gray-100 via-slate-100 to-gray-200">
+            <div class="py-12">
+                <div class="mx-auto max-w-7xl sm:px-6 lg:px-8">
+                    <div class="overflow-hidden bg-white rounded-3xl shadow-xl border-2 border-slate-200/50">
+                        <div class="p-8">
+                            <!-- Header amélioré avec plus de couleurs -->
+                            <div class="mb-8 flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
+                                <div class="flex items-center gap-4">
+                                    <div class="p-4 bg-gradient-to-br from-blue-500 via-blue-600 to-indigo-600 rounded-2xl shadow-xl shadow-blue-500/30">
+                                        <svg class="w-7 h-7 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
+                                        </svg>
+                                    </div>
+                                    <div>
+                                        <h1 class="text-3xl font-black bg-gradient-to-r from-slate-800 to-slate-600 bg-clip-text text-transparent">Détails de la demande #{{ demande.code_suivi }}</h1>
+                                        <p class="text-slate-600 font-mono text-base mt-1 bg-slate-200/70 px-3 py-1 rounded-lg inline-block">{{ demande.code_suivi }}</p>
+                                    </div>
+                                </div>
+                                <Link :href="route('agent.demandes')" 
+                                    class="inline-flex items-center gap-2 px-6 py-3 bg-gradient-to-r from-slate-600 to-slate-700 text-white rounded-xl hover:from-slate-700 hover:to-slate-800 transition-all duration-300 shadow-lg hover:shadow-xl font-medium text-base transform hover:scale-105">
+                                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 20 20">
+                                        <path fill-rule="evenodd" d="M9.707 16.707a1 1 0 01-1.414 0l-6-6a1 1 0 010-1.414l6-6a1 1 0 011.414 1.414L5.414 9H17a1 1 0 110 2H5.414l4.293 4.293a1 1 0 010 1.414z" clip-rule="evenodd" />
+                                    </svg>
+                                    Retour
+                                </Link>
+                            </div>
 
-                        <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
-                            <!-- Informations sur la demande -->
-                            <div class="bg-gray-50 p-6 rounded-lg shadow-sm">
-                                <h2 class="text-xl font-semibold mb-4 text-gray-800 border-b pb-2">Informations de la demande</h2>
-                                
-                                <div class="space-y-3">
-                                    <div class="flex flex-col">
-                                        <span class="text-sm text-gray-500">Statut</span>
-                                        <span class="px-3 py-1 text-sm font-semibold rounded-full inline-block w-fit" :class="getStatusColor(demande.statut)">
-                                            {{ demande.statut }}
-                                        </span>
+                            <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
+                                <!-- Informations sur la demande - plus coloré -->
+                                <div class="bg-gradient-to-br from-blue-50 via-indigo-50 to-blue-50 p-8 rounded-3xl shadow-xl border-2 border-blue-200/50">
+                                    <div class="flex items-center gap-3 mb-6">
+                                        <div class="p-2 bg-gradient-to-br from-blue-500 to-indigo-600 rounded-xl shadow-lg">
+                                            <svg class="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+                                            </svg>
+                                        </div>
+                                        <h2 class="text-xl font-bold text-blue-900">Informations de la demande</h2>
                                     </div>
                                     
-                                    <div class="flex flex-col">
-                                        <span class="text-sm text-gray-500">Structure</span>
-                                        <div class="flex items-center gap-4">
-                                            <div class="font-medium">
-                                                {{ props.demande.structure ? props.demande.structure.libelle : 'Non spécifiée' }}
+                                    <div class="space-y-5">
+                                        <div class="bg-white/80 p-4 rounded-2xl border border-blue-200/50 shadow-sm">
+                                            <span class="text-sm text-blue-700 font-semibold block mb-2">Statut</span>
+                                            <span class="px-4 py-2 text-sm font-bold rounded-2xl inline-block" :class="getStatusColor(demande.statut)">
+                                                {{ demande.statut }}
+                                            </span>
+                                        </div>
+                                        
+                                        <div class="bg-white/80 p-4 rounded-2xl border border-blue-200/50 shadow-sm">
+                                            <span class="text-sm text-blue-700 font-semibold block mb-2">Structure</span>
+                                            <div class="flex flex-col gap-3">
+                                                <div class="font-bold text-slate-800 text-lg">
+                                                    {{ props.demande.structure ? props.demande.structure.libelle : 'Non spécifiée' }}
+                                                </div>
+                                                <button 
+                                                    v-if="demande.statut === 'En attente'"
+                                                    @click="openAffectationModal"
+                                                    class="px-5 py-3 bg-gradient-to-r from-blue-600 to-indigo-600 text-white rounded-xl hover:from-blue-700 hover:to-indigo-700 transition-all duration-300 shadow-lg hover:shadow-xl font-bold flex items-center gap-2 transform hover:scale-105"
+                                                >
+                                                    <svg class="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
+                                                        <path d="M8 9a3 3 0 100-6 3 3 0 000 6zM8 11a6 6 0 016 6H2a6 6 0 016-6zM16 7a1 1 0 10-2 0v1h-1a1 1 0 100 2h1v1a1 1 0 102 0v-1h1a1 1 0 100-2h-1V7z"/>
+                                                    </svg>
+                                                    Affecter une structure
+                                                </button>
                                             </div>
-                                            <button 
-                                                v-if="demande.statut === 'En attente'"
-                                                @click="openAffectationModal"
-                                                class="px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700 transition-colors flex items-center gap-2"
-                                            >
-                                                <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
-                                                    <path d="M8 9a3 3 0 100-6 3 3 0 000 6zM8 11a6 6 0 016 6H2a6 6 0 016-6zM16 7a1 1 0 10-2 0v1h-1a1 1 0 100 2h1v1a1 1 0 102 0v-1h1a1 1 0 100-2h-1V7z"/>
-                                                </svg>
-                                                Affecter une structure
-                                            </button>
+                                        </div>
+                                        
+                                        <div class="bg-white/80 p-4 rounded-2xl border border-blue-200/50 shadow-sm">
+                                            <span class="text-sm text-blue-700 font-semibold block mb-1">Type de stage</span>
+                                            <span class="font-bold text-slate-800">{{ demande.type }}</span>
+                                        </div>
+                                        
+                                        <div class="bg-white/80 p-4 rounded-2xl border border-blue-200/50 shadow-sm">
+                                            <span class="text-sm text-blue-700 font-semibold block mb-1">Nature</span>
+                                            <span class="font-bold text-slate-800">{{ demande.nature }}</span>
+                                        </div>
+                                        
+                                        <div class="bg-white/80 p-4 rounded-2xl border border-blue-200/50 shadow-sm">
+                                            <span class="text-sm text-blue-700 font-semibold block mb-1">Période</span>
+                                            <span class="font-bold text-slate-800">Du {{ formatDate(demande.date_debut) }} au {{ formatDate(demande.date_fin) }}</span>
+                                        </div>
+                                        
+                                        <div class="bg-white/80 p-4 rounded-2xl border border-blue-200/50 shadow-sm">
+                                            <span class="text-sm text-blue-700 font-semibold block mb-1">Date de soumission</span>
+                                            <span class="font-bold text-slate-800">{{ formatDate(demande.created_at) }}</span>
                                         </div>
                                     </div>
-                                    
-                                    <div class="flex flex-col">
-                                        <span class="text-sm text-gray-500">Type de stage</span>
-                                        <span class="font-medium">{{ demande.type }}</span>
-                                    </div>
-                                    
-                                    <div class="flex flex-col">
-                                        <span class="text-sm text-gray-500">Nature</span>
-                                        <span class="font-medium">{{ demande.nature }}</span>
-                                    </div>
-                                    
-                                    <div class="flex flex-col">
-                                        <span class="text-sm text-gray-500">Période</span>
-                                        <span class="font-medium">Du {{ formatDate(demande.date_debut) }} au {{ formatDate(demande.date_fin) }}</span>
-                                    </div>
-                                    
-                                    <div class="flex flex-col">
-                                        <span class="text-sm text-gray-500">Date de soumission</span>
-                                        <span class="font-medium">{{ formatDate(demande.created_at) }}</span>
-                                    </div>
                                 </div>
-                            </div>
-                            
-                            <!-- Informations du stagiaire -->
-                            <div class="bg-gray-50 p-6 rounded-lg shadow-sm">
-                                <h2 class="text-xl font-semibold mb-4 text-gray-800 border-b pb-2">Informations du stagiaire</h2>
                                 
-                                <div class="space-y-3">
-                                    <div class="flex flex-col">
-                                        <span class="text-sm text-gray-500">Nom complet</span>
-                                        <span class="font-medium">{{ demande.stagiaire?.user?.nom }} {{ demande.stagiaire?.user?.prenom }}</span>
+                                <!-- Informations du stagiaire - plus coloré -->
+                                <div class="bg-gradient-to-br from-purple-50 via-pink-50 to-purple-50 p-8 rounded-3xl shadow-xl border-2 border-purple-200/50">
+                                    <div class="flex items-center gap-3 mb-6">
+                                        <div class="p-2 bg-gradient-to-br from-purple-500 to-pink-600 rounded-xl shadow-lg">
+                                            <svg class="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
+                                            </svg>
+                                        </div>
+                                        <h2 class="text-xl font-bold text-purple-900">Informations du stagiaire</h2>
                                     </div>
                                     
-                                    <div class="flex flex-col">
-                                        <span class="text-sm text-gray-500">Email</span>
-                                        <span class="font-medium">{{ demande.stagiaire?.user?.email }}</span>
+                                    <div class="space-y-4">
+                                        <div class="bg-white/80 p-4 rounded-2xl border border-purple-200/50 shadow-sm">
+                                            <span class="text-sm text-purple-700 font-semibold block mb-1">Nom complet</span>
+                                            <div class="mb-6 flex items-center">
+                                                <!-- Condition pour afficher l'image si visage_path existe, sinon afficher les initiales -->
+                                                <div class="h-16 w-16 rounded-full flex items-center justify-center text-xl font-bold shadow-md mr-4 overflow-hidden bg-blue-600 text-white">
+                                                    <img v-if="demande.visage_path"
+                                                         :src="'/storage/' + demande.visage_path"
+                                                         alt="Photo du stagiaire"
+                                                         class="object-cover w-full h-full">
+                                                    <div v-else class="w-full h-full flex items-center justify-center">
+                                                        {{ getInitials(demande.stagiaire?.user?.nom, demande.stagiaire?.user?.prenom) }}
+                                                    </div>
+                                                </div>
+                                                <div>
+                                                    <h4 class="text-lg font-semibold text-slate-800">{{ demande.stagiaire?.user?.nom }} {{ demande.stagiaire?.user?.prenom }}</h4>
+                                                    <p class="text-sm text-slate-600">{{ demande.stagiaire?.user?.email }}</p>
+                                                </div>
+                                        </div>
+                                        </div>
+                                        
+                                        <div class="bg-white/80 p-4 rounded-2xl border border-purple-200/50 shadow-sm">
+                                            <span class="text-sm text-purple-700 font-semibold block mb-1">Téléphone</span>
+                                            <span class="font-bold text-slate-800">{{ demande.stagiaire?.user?.telephone }}</span>
+                                        </div>
+                                        
+                                        <div class="bg-white/80 p-4 rounded-2xl border border-purple-200/50 shadow-sm">
+                                            <span class="text-sm text-purple-700 font-semibold block mb-1">Université</span>
+                                            <span class="font-bold text-slate-800">{{ demande.stagiaire?.universite }}</span>
+                                        </div>
+                                        
+                                        <div class="bg-white/80 p-4 rounded-2xl border border-purple-200/50 shadow-sm">
+                                            <span class="text-sm text-purple-700 font-semibold block mb-1">Filière</span>
+                                            <span class="font-bold text-slate-800">{{ demande.stagiaire?.filiere }}</span>
+                                        </div>
+                                        
+                                        <div class="bg-white/80 p-4 rounded-2xl border border-purple-200/50 shadow-sm">
+                                            <span class="text-sm text-purple-700 font-semibold block mb-1">Niveau d'étude</span>
+                                            <span class="font-bold text-slate-800">{{ demande.stagiaire?.niveau_etude }}</span>
+                                        </div>
                                     </div>
-                                    
-                                    <div class="flex flex-col">
-                                        <span class="text-sm text-gray-500">Téléphone</span>
-                                        <span class="font-medium">{{ demande.stagiaire?.user?.telephone }}</span>
+
+                                    <!-- Membres du groupe - coloré -->
+                                    <div v-if="demande.nature === 'Groupe' && membres && membres.length > 0" class="mt-8">
+                                        <div class="flex items-center gap-3 mb-4">
+                                            <div class="p-2 bg-gradient-to-br from-emerald-500 to-teal-600 rounded-xl shadow-lg">
+                                                <svg class="w-5 h-5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z" />
+                                                </svg>
+                                            </div>
+                                            <h3 class="text-lg font-bold text-emerald-800">Autres membres du groupe</h3>
+                                        </div>
+                                        <ul class="space-y-4">
+                                            <li v-for="membre in membres" :key="membre.id" 
+                                                class="p-5 bg-gradient-to-r from-emerald-100 to-teal-100 rounded-2xl border-2 border-emerald-200/50 shadow-lg flex flex-col md:flex-row md:items-center gap-4">
+                                                <div class="font-bold text-emerald-800 text-lg">{{ membre.user?.nom }} {{ membre.user?.prenom }}</div>
+                                                <div class="text-sm text-emerald-700 font-medium">Email : {{ membre.user?.email }}</div>
+                                                <div class="text-sm text-emerald-700 font-medium">Téléphone : {{ membre.user?.telephone }}</div>
+                                            </li>
+                                        </ul>
                                     </div>
-                                    
-                                    <div class="flex flex-col">
-                                        <span class="text-sm text-gray-500">Université</span>
-                                        <span class="font-medium">{{ demande.stagiaire?.universite }}</span>
-                                    </div>
-                                    
-                                    <div class="flex flex-col">
-                                        <span class="text-sm text-gray-500">Filière</span>
-                                        <span class="font-medium">{{ demande.stagiaire?.filiere }}</span>
-                                    </div>
-                                    
-                                    <div class="flex flex-col">
-                                        <span class="text-sm text-gray-500">Niveau d'étude</span>
-                                        <span class="font-medium">{{ demande.stagiaire?.niveau_etude }}</span>
-                                    </div>
-                                </div>
-                                <div v-if="demande.nature === 'Groupe' && membres && membres.length > 0" class="mt-8">
-                                    <h3 class="text-lg font-semibold text-blue-700 mb-2">Autres membres du groupe</h3>
-                                    <ul class="space-y-4">
-                                        <li v-for="membre in membres" :key="membre.id" class="p-4 bg-white rounded shadow flex flex-col md:flex-row md:items-center md:gap-8">
-                                            <div class="font-bold text-gray-800">{{ membre.user?.nom }} {{ membre.user?.prenom }}</div>
-                                            <div class="text-sm text-gray-500">Email : {{ membre.user?.email }}</div>
-                                            <div class="text-sm text-gray-500">Téléphone : {{ membre.user?.telephone }}</div>
-                                        </li>
-                                    </ul>
                                 </div>
                             </div>
-                        </div>
-                        
-                        <!-- Documents attachés -->
-                        <div class="mt-6 bg-gray-50 p-6 rounded-lg shadow-sm">
-                            <h2 class="text-xl font-semibold mb-4 text-gray-800 border-b pb-2">Documents attachés</h2>
                             
-                            <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
-                                <!-- Document principal (CV ou Lettre de recommandation) -->
-                                <div v-if="demande.lettre_cv_path" class="flex flex-col gap-2">
-                                    <span class="text-sm text-gray-500">{{ demande.type === 'Académique' ? 'Lettre de recommandation' : 'CV' }}</span>
-                                    <a :href="'/storage/' + demande.lettre_cv_path"
-                                        target="_blank"
-                                        class="flex items-center justify-center gap-2 px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700 transition-colors">
-                                        <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
-                                            <path fill-rule="evenodd" d="M3 17a1 1 0 011-1h12a1 1 0 110 2H4a1 1 0 01-1-1zm3.293-7.707a1 1 0 011.414 0L9 10.586V3a1 1 0 112 0v7.586l1.293-1.293a1 1 0 111.414 1.414l-3 3a1 1 0 01-1.414 0l-3-3a1 1 0 010-1.414z" clip-rule="evenodd" />
+                            <!-- Documents attachés - plus coloré -->
+                            <div class="mt-8 bg-gradient-to-br from-green-50 via-emerald-50 to-green-50 p-8 rounded-3xl shadow-xl border-2 border-green-200/50">
+                                <div class="flex items-center gap-3 mb-6">
+                                    <div class="p-2 bg-gradient-to-br from-green-500 to-emerald-600 rounded-xl shadow-lg">
+                                        <svg class="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
                                         </svg>
-                                        Télécharger le {{ demande.type === 'Académique' ? 'document' : 'CV' }}
-                                    </a>
+                                    </div>
+                                    <h2 class="text-xl font-bold text-green-900">Documents attachés</h2>
+                                </div>
+                                
+                                <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+                                    <!-- Document principal (CV ou Lettre de recommandation) -->
+                                    <div v-if="demande.lettre_cv_path" class="bg-white/80 p-6 rounded-2xl border-2 border-green-200/50 shadow-lg">
+                                        <span class="text-sm text-green-700 font-semibold block mb-4">{{ demande.type === 'Académique' ? 'Lettre de recommandation' : 'CV' }}</span>
+                                        <a :href="'/storage/' + demande.lettre_cv_path"
+                                            target="_blank"
+                                            class="flex items-center justify-center gap-2 px-5 py-3 bg-gradient-to-r from-green-600 to-emerald-600 text-white rounded-xl hover:from-green-700 hover:to-emerald-700 transition-all duration-300 shadow-lg hover:shadow-xl font-bold transform hover:scale-105">
+                                            <svg class="h-5 w-5" fill="currentColor" viewBox="0 0 20 20">
+                                                <path fill-rule="evenodd" d="M3 17a1 1 0 011-1h12a1 1 0 110 2H4a1 1 0 01-1-1zm3.293-7.707a1 1 0 011.414 0L9 10.586V3a1 1 0 112 0v7.586l1.293-1.293a1 1 0 111.414 1.414l-3 3a1 1 0 01-1.414 0l-3-3a1 1 0 010-1.414z" clip-rule="evenodd" />
+                                            </svg>
+                                            Télécharger le {{ demande.type === 'Académique' ? 'document' : 'CV' }}
+                                        </a>
+                                    </div>
+                                </div>
+
+                                <!-- Message si aucun document -->
+                                <div v-if="!demande.lettre_cv_path" 
+                                    class="text-center bg-white/80 p-8 rounded-2xl border-2 border-green-200/50 shadow-lg">
+                                    <div class="flex flex-col items-center gap-3">
+                                        <div class="p-3 bg-gradient-to-br from-gray-400 to-gray-500 rounded-xl shadow-lg">
+                                            <svg class="w-8 h-8 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
+                                            </svg>
+                                        </div>
+                                        <span class="text-gray-600 font-medium text-lg">Aucun document n'a été attaché à cette demande</span>
+                                    </div>
                                 </div>
                             </div>
 
-                            <!-- Message si aucun document -->
-                            <div v-if="!demande.lettre_cv_path" 
-                                class="text-center text-gray-500 py-4">
-                                Aucun document n'a été attaché à cette demande
-                            </div>
-                        </div>
-
-                        <!-- Actions sur la demande -->
-                        <!-- <div class="mt-6 bg-gray-50 p-6 rounded-lg shadow-sm" v-if="demande.statut === 'En attente'">
-                            <h2 class="text-xl font-semibold mb-4 text-gray-800 border-b pb-2">Actions</h2>
-                            
-                            <div class="flex gap-4">
-                                <button 
-                                    @click="submit('approve')"
-                                    class="px-4 py-2 bg-green-600 text-white rounded hover:bg-green-700 transition-colors flex items-center gap-2"
-                                >
-                                    <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
-                                        <path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd" />
-                                    </svg>
-                                    Approuver
-                                </button>
+                            <!-- Actions sur la demande - commenté mais amélioré visuellement -->
+                            <!-- <div class="mt-8 bg-gradient-to-br from-amber-50 via-orange-50 to-amber-50 p-8 rounded-3xl shadow-xl border-2 border-amber-200/50" v-if="demande.statut === 'En attente'">
+                                <div class="flex items-center gap-3 mb-6">
+                                    <div class="p-2 bg-gradient-to-br from-amber-500 to-orange-600 rounded-xl shadow-lg">
+                                        <svg class="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
+                                        </svg>
+                                    </div>
+                                    <h2 class="text-xl font-bold text-amber-900">Actions</h2>
+                                </div>
                                 
-                                <button 
-                                    @click="submit('reject')"
-                                    class="px-4 py-2 bg-red-600 text-white rounded hover:bg-red-700 transition-colors flex items-center gap-2"
-                                >
-                                    <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
-                                        <path fill-rule="evenodd" d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z" clip-rule="evenodd" />
-                                    </svg>
-                                    Refuser
-                                </button>
-                            </div>
-                        </div> -->
+                                <div class="flex gap-4">
+                                    <button 
+                                        @click="submit('approve')"
+                                        class="px-6 py-3 bg-gradient-to-r from-green-600 to-emerald-600 text-white rounded-xl hover:from-green-700 hover:to-emerald-700 transition-all duration-300 shadow-lg hover:shadow-xl font-bold flex items-center gap-2 transform hover:scale-105"
+                                    >
+                                        <svg class="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
+                                            <path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd" />
+                                        </svg>
+                                        Approuver
+                                    </button>
+                                    
+                                    <button 
+                                        @click="submit('reject')"
+                                        class="px-6 py-3 bg-gradient-to-r from-red-600 to-rose-600 text-white rounded-xl hover:from-red-700 hover:to-rose-700 transition-all duration-300 shadow-lg hover:shadow-xl font-bold flex items-center gap-2 transform hover:scale-105"
+                                    >
+                                        <svg class="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
+                                            <path fill-rule="evenodd" d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z" clip-rule="evenodd" />
+                                        </svg>
+                                        Refuser
+                                    </button>
+                                </div>
+                            </div> -->
+                        </div>
                     </div>
                 </div>
             </div>
         </div>
 
-        <!-- Modal d'affectation -->
-        <div v-if="showAffectationModal" class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
-            <div class="bg-white rounded-lg shadow-xl max-w-md w-full mx-4">
-                <div class="px-6 py-4 border-b border-gray-200">
+        <!-- Modal d'affectation - amélioré -->
+        <div v-if="showAffectationModal" class="fixed inset-0 bg-black/60 backdrop-blur-sm flex items-center justify-center z-50">
+            <div class="bg-white rounded-3xl shadow-2xl max-w-md w-full mx-4 border-2 border-slate-200/50">
+                <div class="px-6 py-5 border-b-2 border-slate-100 bg-gradient-to-r from-blue-50 to-indigo-50">
                     <div class="flex items-center justify-between">
-                        <h3 class="text-lg font-medium text-gray-900">
-                            Affecter une structure
-                        </h3>
-                        <button @click="closeAffectationModal" class="text-gray-400 hover:text-gray-500">
+                        <div class="flex items-center gap-3">
+                            <div class="p-2 bg-gradient-to-br from-blue-500 to-indigo-600 rounded-xl shadow-lg">
+                                <svg class="w-5 h-5 text-white" fill="currentColor" viewBox="0 0 20 20">
+                                    <path d="M8 9a3 3 0 100-6 3 3 0 000 6zM8 11a6 6 0 016 6H2a6 6 0 016-6zM16 7a1 1 0 10-2 0v1h-1a1 1 0 100 2h1v1a1 1 0 102 0v-1h1a1 1 0 100-2h-1V7z"/>
+                                </svg>
+                            </div>
+                            <h3 class="text-lg font-bold text-blue-900">
+                                Affecter une structure
+                            </h3>
+                        </div>
+                        <button @click="closeAffectationModal" class="text-gray-400 hover:text-gray-600 p-2 rounded-xl hover:bg-gray-100 transition-all duration-200">
                             <svg class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
                             </svg>
@@ -267,12 +345,12 @@ const submit = (action) => {
                     </div>
                 </div>
 
-                <div class="px-6 py-4">
+                <div class="px-6 py-6">
                     <div class="mb-4">
-                        <label class="block text-sm font-medium text-gray-700">Structure</label>
+                        <label class="block text-sm font-bold text-slate-700 mb-3">Structure</label>
                         <select 
                             v-model="selectedStructure"
-                            class="mt-1 block w-full pl-3 pr-10 py-2 text-base border-gray-300 focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm rounded-md"
+                            class="w-full px-4 py-3 text-base border-2 border-slate-200 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 rounded-xl font-medium bg-white shadow-sm"
                         >
                             <option value="">Sélectionner une structure</option>
                             <option v-for="structure in structures" :key="structure.id" :value="structure.id">
@@ -282,10 +360,10 @@ const submit = (action) => {
                     </div>
                 </div>
 
-                <div class="px-6 py-4 bg-gray-50 flex justify-end gap-3">
+                <div class="px-6 py-5 bg-gradient-to-r from-slate-50 to-gray-50 flex justify-end gap-3 rounded-b-3xl">
                     <button 
                         @click="closeAffectationModal"
-                        class="px-4 py-2 bg-gray-100 text-gray-700 rounded-lg hover:bg-gray-200 transition-colors"
+                        class="px-5 py-3 bg-gradient-to-r from-gray-200 to-gray-300 text-gray-700 rounded-xl hover:from-gray-300 hover:to-gray-400 transition-all duration-300 font-bold transform hover:scale-105"
                     >
                         Annuler
                     </button>
@@ -293,13 +371,13 @@ const submit = (action) => {
                         @click="submitAffectation"
                         :disabled="!selectedStructure"
                         :class="[
-                            'px-4 py-2 rounded-lg transition-colors flex items-center gap-2',
+                            'px-5 py-3 rounded-xl transition-all duration-300 flex items-center gap-2 font-bold transform',
                             selectedStructure 
-                                ? 'bg-blue-600 text-white hover:bg-blue-700' 
+                                ? 'bg-gradient-to-r from-blue-600 to-indigo-600 text-white hover:from-blue-700 hover:to-indigo-700 shadow-lg hover:shadow-xl hover:scale-105' 
                                 : 'bg-gray-300 text-gray-500 cursor-not-allowed'
                         ]"
                     >
-                        <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
+                        <svg class="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
                             <path fill-rule="evenodd" d="M10 3a1 1 0 00-1 1v5H4a1 1 0 100 2h5v5a1 1 0 102 0v-5h5a1 1 0 100-2h-5V4a1 1 0 00-1-1z" clip-rule="evenodd" />
                         </svg>
                         Affecter
@@ -311,4 +389,4 @@ const submit = (action) => {
     
     <!-- Composant Toast pour les notifications -->
     <AdminToast ref="toast" />
-</template> 
+</template>

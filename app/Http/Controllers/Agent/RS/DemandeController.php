@@ -105,6 +105,16 @@ class DemandeController extends Controller
             // Récupération des demandes avec pagination
             $demandes = $query->latest()->paginate(10)->withQueryString();
 
+            // Injecter la date d'affectation (created_at de la dernière affectation) pour chaque demande
+            $demandes->getCollection()->transform(function ($demande) {
+                $affectation = \App\Models\AffectationResponsableStructure::where('id_demande_stages', $demande->id)
+                    ->orderByDesc('created_at')
+                    ->orderByDesc('id')
+                    ->first();
+                $demande->date_affectation = $affectation ? $affectation->created_at : null;
+                return $demande;
+            });
+
             return Inertia::render('Agent/RS/Demandes/Index', [
                 'demandes' => $demandes,
                 'structure' => $structure,
@@ -123,6 +133,9 @@ class DemandeController extends Controller
 
     public function show(DemandeStage $demande)
     {
+        // Log pour vérifier si la méthode show est appelée
+        \Log::info('Agent RS Demande Show Method Called', ['demande_id' => $demande]);
+
         $user = Auth::user();
         $agent = $user->agent;
 
@@ -138,24 +151,45 @@ class DemandeController extends Controller
                 return redirect()->back()->with('error', 'Vous n\'avez pas accès à cette demande.');
             }
 
+            // Charger les relations nécessaires
             $demande->load(['stagiaire.user', 'structure', 'membres.user', 'affectations.structure']);
 
-            // Si la demande est affectée mais n'a pas de structure directe, utiliser la structure de l'affectation
-            if (!$demande->structure && $estAffectee) {
-                $affectation = \App\Models\AffectationResponsableStructure::where('structure_id', $structure->id)
-                    ->where('id_demande_stages', $demande->id)
-                    ->with('structure')
-                    ->first();
+            // Toujours utiliser la structure d'affectation la plus récente si elle existe
+            $affectation = \App\Models\AffectationResponsableStructure::where('id_demande_stages', $demande->id)
+                ->orderByDesc('date_affectation')
+                ->orderByDesc('id')
+                ->with('structure')
+                ->first();
 
-                if ($affectation && $affectation->structure) {
-                    // Attacher temporairement la structure de l'affectation à la demande
-                    $demande->structure = $affectation->structure;
-                }
+            if ($affectation && $affectation->structure) {
+                $demande->setRelation('structure', $affectation->structure);
+                \Log::info('Structure d\'affectation utilisée', [
+                    'demande_id' => $demande->id,
+                    'structure_id' => $affectation->structure->id,
+                    'structure_libelle' => $affectation->structure->libelle
+                ]);
+            } else {
+                \Log::info('Structure d\'origine utilisée', [
+                    'demande_id' => $demande->id,
+                    'structure_id' => $demande->structure ? $demande->structure->id : null,
+                    'structure_libelle' => $demande->structure ? $demande->structure->libelle : null
+                ]);
             }
 
+            // Ajout : vérifier si un maître de stage est déjà affecté
+            $stage = \App\Models\Stage::where('demande_stage_id', $demande->id)->first();
+            $maitre_stage_deja_affecte = false;
+            if ($stage) {
+                $maitre_stage_deja_affecte = \App\Models\AffectationMaitreStage::where('stage_id', $stage->id)
+                    ->whereIn('statut', ['En cours', 'Acceptée'])
+                    ->exists();
+            }
+
+            // Après avoir potentiellement modifié $demande->structure, convertir en tableau pour Inertia
             return Inertia::render('Agent/RS/Demandes/Show', [
-                'demande' => $demande,
-                'membres' => $demande->nature === 'Groupe' ? $demande->membres : []
+                'demande' => $demande->toArray(),
+                'membres' => $demande->nature === 'Groupe' ? $demande->membres : [],
+                'maitre_stage_deja_affecte' => $maitre_stage_deja_affecte,
             ]);
 
         } catch (\Exception $e) {
@@ -872,17 +906,26 @@ class DemandeController extends Controller
             // Charger les relations nécessaires
             $demande->load(['structure', 'affectations.structure']);
 
-            // Si la demande est affectée mais n'a pas de structure directe, utiliser la structure de l'affectation
-            if (!$demande->structure && $estAffectee) {
-                $affectation = \App\Models\AffectationResponsableStructure::where('structure_id', $structure->id)
-                    ->where('id_demande_stages', $demande->id)
-                    ->with('structure')
-                    ->first();
+            // Toujours utiliser la structure d'affectation la plus récente si elle existe
+            $affectation = \App\Models\AffectationResponsableStructure::where('id_demande_stages', $demande->id)
+                ->orderByDesc('date_affectation')
+                ->orderByDesc('id')
+                ->with('structure')
+                ->first();
 
-                if ($affectation && $affectation->structure) {
-                    // Attacher temporairement la structure de l'affectation à la demande
-                    $demande->structure = $affectation->structure;
-                }
+            if ($affectation && $affectation->structure) {
+                $demande->structure = $affectation->structure;
+                \Log::info('Structure d\'affectation utilisée', [
+                    'demande_id' => $demande->id,
+                    'structure_id' => $affectation->structure->id,
+                    'structure_libelle' => $affectation->structure->libelle
+                ]);
+            } else {
+                \Log::info('Structure d\'origine utilisée', [
+                    'demande_id' => $demande->id,
+                    'structure_id' => $demande->structure ? $demande->structure->id : null,
+                    'structure_libelle' => $demande->structure ? $demande->structure->libelle : null
+                ]);
             }
 
             // Récupérer le stage associé à la demande (qui a été créé lors de l'acceptation)

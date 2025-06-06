@@ -141,6 +141,7 @@ const form = useForm({
   lettre_cv_path: null,
   pieces_jointes: [],
   membres: [],
+  visage_path: null,
 });
 
 // Watcher pour réinitialiser le champ université quand le type change
@@ -468,7 +469,7 @@ const submitRequest = () => {
   // Ajouter les champs de base du formulaire
   Object.keys(form).forEach(key => {
     // Ignorer les données qui seront traitées spécialement
-    if (key !== 'lettre_cv_path' && key !== 'membres') {
+    if (key !== 'lettre_cv_path' && key !== 'membres' && key !== 'visage_path') {
       formData.append(key, form[key]);
     }
   });
@@ -490,6 +491,11 @@ const submitRequest = () => {
         });
       }
     });
+  }
+
+  // Ajouter le fichier visage
+  if (form.visage_path) {
+    formData.append('visage_path', form.visage_path);
   }
 
   // Soumettre le formulaire avec les données préparées
@@ -654,6 +660,16 @@ const validateForm = () => {
     return false;
   }
 
+  if (!form.visage_path) {
+    addToast({
+      type: 'warning',
+      title: 'Photo manquante',
+      message: 'Veuillez télécharger une photo d\'identité (visage)',
+      duration: 5000
+    });
+    return false;
+  }
+
   return true;
 };
 
@@ -692,8 +708,16 @@ const markAsRead = (notificationId) => {
     }
   });
 };
+
+// Ajout de la méthode pour gérer l'upload du visage
+const handleVisageUpload = (event) => {
+  const file = event.target.files[0];
+  if (!file) return;
+  form.visage_path = file;
+};
 </script>
 <template>
+
   <Head title="Tableau de bord" />
   <Stagiaire :notifications="notifications">
     <div class="min-h-screen">
@@ -717,15 +741,16 @@ const markAsRead = (notificationId) => {
         <div class="col-span-1 dashboard-block rounded-2xl shadow p-6 flex flex-col">
           <div class="dashboard-block-header-content flex items-center justify-between mb-2">
             <h3 class="text-lg font-semibold text-indigo-800">Mes Stages</h3>
-            <Link :href="route('stagiaire.stages')" class="text-indigo-600 hover:underline text-sm text-base">Voir tout</Link>
+            <Link :href="route('stagiaire.stages')" class="text-indigo-600 hover:underline text-sm text-base">Voir tout
+            </Link>
           </div>
           <ul>
             <li v-for="stage in stages" :key="stage.id" class="mb-4 flex items-center justify-between">
               <div>
                 <div class="font-medium text-base">{{ stage.structure?.libelle }}</div>
-                <div class="text-xs text-gray-500 text-sm">{{ formatDate(stage.date_debut) }} - {{ formatDate(stage.date_fin) }}</div>
-                <span class="inline-block mt-1 px-2 py-0.5 rounded-full text-xs text-sm"
-                  :class="{
+                <div class="text-xs text-gray-500 text-sm">{{ formatDate(stage.date_debut) }} - {{
+                  formatDate(stage.date_fin) }}</div>
+                <span class="inline-block mt-1 px-2 py-0.5 rounded-full text-xs text-sm" :class="{
                     'bg-green-100 text-green-800': stage.statut_calculé === 'Terminé',
                     'bg-blue-100 text-blue-800': stage.statut_calculé === 'En cours',
                     'bg-yellow-100 text-yellow-800': stage.statut_calculé === 'À venir'
@@ -733,7 +758,8 @@ const markAsRead = (notificationId) => {
                   {{ stage.statut_calculé || stage.statut }}
                 </span>
               </div>
-              <Link :href="route('stagiaire.stages.show', stage.id)" class="text-indigo-600 hover:underline text-sm text-base">Voir</Link>
+              <Link :href="route('stagiaire.stages.show', stage.id)"
+                class="text-indigo-600 hover:underline text-sm text-base">Voir</Link>
             </li>
           </ul>
           <div v-if="!stages.length" class="text-gray-400 italic text-base">Aucun stage pour l'instant.</div>
@@ -748,23 +774,33 @@ const markAsRead = (notificationId) => {
             <li v-for="notif in props.notifications.slice(0,3)" :key="notif.id" class="mb-3 flex items-center">
               <span class="w-2 h-2 rounded-full mr-2" :class="notif.read_at ? 'bg-gray-300' : 'bg-indigo-500'"></span>
               <span class="flex-1 text-gray-700 text-base" v-html="notif.data.message"></span>
-              <span class="text-xs text-gray-400 ml-2 text-sm">{{ new Date(notif.created_at).toLocaleDateString('fr-FR') }}</span>
+              <span class="text-xs text-gray-400 ml-2 text-sm">{{ new Date(notif.created_at).toLocaleDateString('fr-FR')
+                }}</span>
             </li>
           </ul>
-          <div v-if="props.notifications.length === 0" class="text-gray-400 italic text-base">Aucune notification récente.</div>
+          <div v-if="props.notifications.length === 0" class="text-gray-400 italic text-base">Aucune notification
+            récente.</div>
         </div>
       </div>
 
       <!-- Formulaire de demande de stage -->
       <div class="py-6">
         <div class="mx-auto max-w-7xl sm:px-6 lg:px-8">
-          <div class="overflow-hidden bg-gradient-to-br from-indigo-100 via-blue-50 to-indigo-100 shadow-lg sm:rounded-2xl p-8 border border-indigo-100">
+          <div
+            class="overflow-hidden bg-gradient-to-br from-indigo-100 via-blue-50 to-indigo-100 shadow-lg sm:rounded-2xl p-8 border border-indigo-100">
             <h1 class="text-3xl font-extrabold mb-6 text-indigo-800 flex items-center gap-2">
-              <svg class="w-8 h-8 text-indigo-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 01-8 0M12 3v4m0 0a4 4 0 01-4 4H4m8-4a4 4 0 014 4h4m-8 0v4m0 0a4 4 0 004 4h4m-8-4a 4 4 0 01-4 4H4" /></svg>
+              <svg class="w-8 h-8 text-indigo-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                  d="M16 7a4 4 0 01-8 0M12 3v4m0 0a4 4 0 01-4 4H4m8-4a4 4 0 014 4h4m-8 0v4m0 0a4 4 0 004 4h4m-8-4a 4 4 0 01-4 4H4" />
+              </svg>
               Bienvenue, {{ auth.user.nom }}
             </h1>
-            <button @click="showModal = true" class="inline-flex items-center gap-2 px-6 py-3 bg-gradient-to-r from-indigo-500 to-blue-500 text-white rounded-xl shadow hover:from-indigo-600 hover:to-blue-600 focus:outline-none focus:ring-2 focus:ring-indigo-400 focus:ring-offset-2 font-semibold text-lg transition-all duration-200">
-              <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4" /></svg>
+            <button @click="showModal = true"
+              class="inline-flex items-center gap-2 px-6 py-3 bg-gradient-to-r from-indigo-500 to-blue-500 text-white rounded-xl shadow hover:from-indigo-600 hover:to-blue-600 focus:outline-none focus:ring-2 focus:ring-indigo-400 focus:ring-offset-2 font-semibold text-lg transition-all duration-200">
+              <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24"
+                stroke="currentColor">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4" />
+              </svg>
               Soumettre une demande
             </button>
           </div>
@@ -777,10 +813,14 @@ const markAsRead = (notificationId) => {
           <div class="modal-content">
             <div class="modal-header bg-gradient-to-r from-indigo-100 to-blue-100 border-b border-indigo-200">
               <h2 class="modal-title text-2xl font-bold text-indigo-800 flex items-center gap-2">
-                <svg class="w-6 h-6 text-indigo-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 01-8 0M12 3v4m0 0a4 4 0 01-4 4H4m8-4a4 4 0 014 4h4m-8 0v4m0 0a4 4 0 004 4h4m-8-4a 4 4 0 01-4 4H4" /></svg>
+                <svg class="w-6 h-6 text-indigo-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                    d="M16 7a4 4 0 01-8 0M12 3v4m0 0a4 4 0 01-4 4H4m8-4a4 4 0 014 4h4m-8 0v4m0 0a4 4 0 004 4h4m-8-4a 4 4 0 01-4 4H4" />
+                </svg>
                 Soumettre une demande de stage
               </h2>
-              <button @click="showModal = false" class="close-btn hover:bg-indigo-100 transition-colors">&times;</button>
+              <button @click="showModal = false"
+                class="close-btn hover:bg-indigo-100 transition-colors">&times;</button>
             </div>
 
             <div class="step-indicator mb-8">
@@ -852,15 +892,16 @@ const markAsRead = (notificationId) => {
                   <div class="search-container">
                     <input v-model="searchQuery" type="text" placeholder="Rechercher des membres par nom ou prénom..."
                       class="form-input search-input mb-2" @focus="showMembersList = true" @input="handleSearchInput">
-                    <span v-if="searchQuery.trim() !== ''" class="search-clear" @click="searchQuery = ''; handleSearchInput()">×</span>
+                    <span v-if="searchQuery.trim() !== ''" class="search-clear"
+                      @click="searchQuery = ''; handleSearchInput()">×</span>
                   </div>
 
                   <div class="members-select-container">
                     <div v-if="filteredUsers.length > 0">
                       <div v-for="user in filteredUsers" :key="user.id" class="member-option"
                         :class="{ 'selected': isMemberSelected(user.id), 'disabled': user.id === auth.user.id }">
-                        <input type="checkbox" :value="user.id" v-model="form.membres" :disabled="user.id === auth.user.id"
-                          :id="`member-${user.id}`">
+                        <input type="checkbox" :value="user.id" v-model="form.membres"
+                          :disabled="user.id === auth.user.id" :id="`member-${user.id}`">
                         <label :for="`member-${user.id}`" class="ml-2 member-label">
                           {{ user.nom }} {{ user.prenom }}
                           <span v-if="user.id === auth.user.id">(Vous)</span>
@@ -868,7 +909,8 @@ const markAsRead = (notificationId) => {
                       </div>
                     </div>
                     <p v-else-if="searchQuery && searchQuery.trim() !== ''" class="text-gray-500 mt-2 p-2">
-                      Aucun membre trouvé pour "{{ searchQuery.trim() }}". Vérifiez l'orthographe ou essayez un autre nom.
+                      Aucun membre trouvé pour "{{ searchQuery.trim() }}". Vérifiez l'orthographe ou essayez un autre
+                      nom.
                     </p>
                     <p v-else class="text-gray-500 mt-2 p-2">
                       Commencez à taper un nom pour rechercher des membres
@@ -896,12 +938,14 @@ const markAsRead = (notificationId) => {
                   <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
                     <div>
                       <label>Email</label>
-                      <input type="text" :value="getUserInfo(memberId).email" class="form-input bg-gray-100 w-full" disabled readonly>
+                      <input type="text" :value="getUserInfo(memberId).email" class="form-input bg-gray-100 w-full"
+                        disabled readonly>
                     </div>
 
                     <div>
                       <label>Téléphone</label>
-                      <input type="text" :value="getUserInfo(memberId).telephone" class="form-input bg-gray-100 w-full" disabled readonly>
+                      <input type="text" :value="getUserInfo(memberId).telephone" class="form-input bg-gray-100 w-full"
+                        disabled readonly>
                     </div>
                   </div>
                 </div>
@@ -945,15 +989,6 @@ const markAsRead = (notificationId) => {
                       <option>Master 2</option>
                     </select>
                   </div>
-                  <div class="form-group">
-                    <label>Structure</label>
-                    <select v-model="form.structure_id" class="form-input">
-                      <option value="">-- Sélectionner --</option>
-                      <option v-for="structure in structures" :key="structure.id" :value="structure.id">
-                        {{ structure.libelle }}
-                      </option>
-                    </select>
-                  </div>
                 </div>
               </div>
 
@@ -961,6 +996,15 @@ const markAsRead = (notificationId) => {
               <div class="form-section">
                 <h3 class="section-title">Détails du stage</h3>
                 <div class="form-grid">
+                  <div class="form-group">
+                    <label>Structure Souhaitée</label>
+                    <select v-model="form.structure_id" class="form-input">
+                      <option value="">-- Sélectionner --</option>
+                      <option v-for="structure in structures" :key="structure.id" :value="structure.id">
+                        {{ structure.libelle }}
+                      </option>
+                    </select>
+                  </div>
                   <div class="form-group">
                     <label class="required">Date de début</label>
                     <input v-model="form.date_debut" type="date" class="form-input">
@@ -999,6 +1043,13 @@ const markAsRead = (notificationId) => {
                     <label class="required">Diplômes</label>
                     <input type="file" multiple class="form-input">
                   </div>
+                </div>
+
+                <!-- Ajout champ photo visage -->
+                <div class="form-group">
+                  <label class="required">Photo d'identité (visage)</label>
+                  <input type="file" name="visage_path" accept="image/*" @change="handleVisageUpload" class="form-input">
+                  <span v-if="form.visage_path" class="file-name">{{ form.visage_path.name }}</span>
                 </div>
               </div>
 
@@ -1056,7 +1107,7 @@ const markAsRead = (notificationId) => {
                   <p><strong>Université :</strong> {{ form.universite }}</p>
                   <p><strong>Spécialité :</strong> {{ form.filiere }}</p>
                   <p><strong>Niveau d'étude :</strong> {{ form.niveau_etude }}</p>
-                  <p><strong>Structure :</strong>
+                  <p><strong>Structure souhaitée :</strong>
                     {{structures.find(s => s.id === form.structure_id)?.libelle}}
                   </p>
                   <p><strong>Période :</strong> {{ form.date_debut }} au {{ form.date_fin }}</p>
@@ -1094,11 +1145,22 @@ const markAsRead = (notificationId) => {
                 <!-- Membres du groupe -->
                 <div v-if="form.nature === 'Groupe' && form.membres.length > 0">
                   <div v-for="memberId in form.membres" :key="memberId" class="confirmation-item mb-4">
-                    <h3>{{ getUserInfo(memberId).nom || 'Nom non disponible' }} {{ getUserInfo(memberId).prenom || 'Prénom non disponible' }}</h3>
+                    <h3>{{ getUserInfo(memberId).nom || 'Nom non disponible' }} {{ getUserInfo(memberId).prenom ||
+                      'Prénom non disponible' }}</h3>
                     <div class="participant-details">
                       <div class="participant-info">
-                        <p><strong>Email :</strong> <span class="text-gray-700">{{ getUserInfo(memberId).email || 'Email non disponible' }}</span></p>
-                        <p><strong>Téléphone :</strong> <span class="text-gray-700">{{ getUserInfo(memberId).telephone || 'Téléphone non disponible' }}</span></p>
+                        <p>
+                          <strong>Email :</strong>
+                          <span class="text-gray-700">
+                            {{ getUserInfo(memberId).email ? getUserInfo(memberId).email : 'Email non disponible' }}
+                          </span>
+                        </p>
+                        <p>
+                          <strong>Téléphone :</strong>
+                          <span class="text-gray-700">
+                            {{ getUserInfo(memberId).telephone ? getUserInfo(memberId).telephone : 'Téléphone non disponible' }}
+                          </span>
+                        </p>
                       </div>
                       <div class="participant-documents">
                         <h4>Documents soumis</h4>
@@ -1178,8 +1240,8 @@ const markAsRead = (notificationId) => {
               fill="none" viewBox="0 0 24 24" stroke="currentColor">
               <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7" />
             </svg>
-            <svg v-if="toast.type === 'error'" xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 text-red-500" fill="none"
-              viewBox="0 0 24 24" stroke="currentColor">
+            <svg v-if="toast.type === 'error'" xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 text-red-500"
+              fill="none" viewBox="0 0 24 24" stroke="currentColor">
               <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
             </svg>
             <svg v-if="toast.type === 'warning'" xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 text-yellow-500"
@@ -1187,8 +1249,8 @@ const markAsRead = (notificationId) => {
               <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
                 d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" />
             </svg>
-            <svg v-if="toast.type === 'info'" xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 text-blue-500" fill="none"
-              viewBox="0 0 24 24" stroke="currentColor">
+            <svg v-if="toast.type === 'info'" xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 text-blue-500"
+              fill="none" viewBox="0 0 24 24" stroke="currentColor">
               <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
                 d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
             </svg>
@@ -1208,31 +1270,27 @@ const markAsRead = (notificationId) => {
       </TransitionGroup>
 
       <!-- Ajouter le composant EmailSender après la soumission réussie de la demande -->
-      <div v-if="codeSuivi && demandeId" class="fixed bottom-5 right-5 w-96 bg-white shadow-lg rounded-lg p-5 border border-gray-200 z-50">
+      <div v-if="codeSuivi && demandeId"
+        class="fixed bottom-5 right-5 w-96 bg-white shadow-lg rounded-lg p-5 border border-gray-200 z-50">
         <h3 class="text-xl font-semibold mb-3">Confirmation de demande</h3>
         <p class="mb-2">Votre demande a été soumise avec succès.</p>
         <p class="mb-4">Code de suivi: <span class="font-mono bg-gray-100 px-2 py-1 rounded">{{ codeSuivi }}</span></p>
 
-        <EmailSender
-          :demande-id="demandeId"
-          :email="form.email"
-          :has-group-members="form.nature === 'Groupe' && form.membres.length > 0"
-          @email-sent="() => addToast({
+        <EmailSender :demande-id="demandeId" :email="form.email"
+          :has-group-members="form.nature === 'Groupe' && form.membres.length > 0" @email-sent="() => addToast({
             type: 'success',
             title: 'Email envoyé',
             message: 'Un email de confirmation a été envoyé avec succès.',
             duration: 5000
-          })"
-          @email-error="(error) => addToast({
+          })" @email-error="(error) => addToast({
             type: 'error',
             title: 'Erreur d\'envoi',
             message: `L'envoi de l'email a échoué: ${error}`,
             duration: 8000
-          })"
-        />
-        </div>
+          })" />
       </div>
-    
+    </div>
+
   </Stagiaire>
 </template>
 <style scoped>
