@@ -61,15 +61,21 @@ class DashboardController extends Controller
 
                 $stats['demandesTraitees'] = $stats['demandesAcceptees'] + $stats['demandesRejetees'];
 
-                // Récupérer les 5 dernières demandes (directes + affectées)
-                $dernieresDemandes = DemandeStage::with(['stagiaire.user'])
+                // Récupérer les 5 dernières demandes (directes + affectées) avec la date d'affectation
+                $dernieresDemandes = DemandeStage::with(['stagiaire.user', 'affectations'])
                     ->where(function($query) use ($structure, $demandesAffecteesIds) {
                         $query->where('structure_id', $structure->id)
                               ->orWhereIn('id', $demandesAffecteesIds);
                     })
                     ->latest()
                     ->take(5)
-                    ->get();
+                    ->get()
+                    ->map(function($demande) {
+                        // Récupérer la dernière affectation (si elle existe)
+                        $derniereAffectation = $demande->affectations->sortByDesc('created_at')->first();
+                        $demande->date_affectation = $derniereAffectation ? $derniereAffectation->created_at : null;
+                        return $demande;
+                    });
 
                 return Inertia::render('Agent/RS/Dashboard', [
                     'stats' => $stats,

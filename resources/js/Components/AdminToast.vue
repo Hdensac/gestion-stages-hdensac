@@ -185,7 +185,8 @@ onUnmounted(() => {
 // Exposer les méthodes
 defineExpose({
   addToast,
-  removeToast
+  removeToast,
+  show: addToast
 });
 </script>
 

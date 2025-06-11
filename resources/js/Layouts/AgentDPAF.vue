@@ -169,7 +169,7 @@
                         <div class="hidden lg:flex items-center space-x-3">
                             <div class="flex items-center space-x-2 bg-green-50 text-green-700 px-3 py-2 rounded-full text-sm font-medium border border-green-200">
                                 <div class="w-2 h-2 bg-green-500 rounded-full animate-pulse"></div>
-                                <span>Plateforme Active</span>
+                                <span>Espace DPAF</span>
                             </div>
                         </div>
                         <div class="lg:hidden bg-gradient-to-r from-blue-600 to-blue-700 text-white px-4 py-2 rounded-full text-sm font-medium shadow-md">

@@ -353,7 +353,10 @@
                             <p class="text-gray-600 font-medium">Aucune affectation trouvée</p>
                             <p class="text-gray-400 text-sm">Ce stage n'a pas encore de maître de stage assigné</p>
                           </div>
-                          <button class="px-6 py-3 bg-gradient-to-r from-purple-50 to-purple-100 text-purple-700 rounded-xl hover:from-purple-100 hover:to-purple-200 transition-all duration-200 font-medium flex items-center gap-2 shadow-sm hover:shadow-md transform hover:scale-105">
+                          <button 
+                            class="px-6 py-3 bg-gradient-to-r from-purple-50 to-purple-100 text-purple-700 rounded-xl hover:from-purple-100 hover:to-purple-200 transition-all duration-200 font-medium flex items-center gap-2 shadow-sm hover:shadow-md transform hover:scale-105"
+                            @click="affecterMaitreStage"
+                          >
                             <PlusIcon class="w-5 h-5" />
                             Affecter un maître de stage
                           </button>
@@ -373,7 +376,7 @@
 
 <script setup>
 import { ref } from 'vue';
-import { Link } from '@inertiajs/vue3';
+import { Link, router } from '@inertiajs/vue3';
 import RSLayout from '@/Layouts/RSLayout.vue';
 import Toast from '@/Components/Toast.vue';
 import { 
@@ -440,4 +443,8 @@ function getGradeDescription(note) {
   if (note >= 10) return 'Passable';
   return 'Insuffisant';
 }
+
+const affecterMaitreStage = () => {
+  router.visit(route('agent.rs.stages.affecter', props.stage.id));
+};
 </script>

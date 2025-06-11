@@ -9,7 +9,7 @@
           </div>
           <div class="flex-1">
             <h1 class="text-3xl font-bold bg-gradient-to-r from-slate-800 via-blue-800 to-indigo-800 bg-clip-text text-transparent leading-tight md:text-4xl">
-              Tableau de bord DPAF
+              Tableau de bord
             </h1>
             <p class="text-slate-600 mt-2 font-medium">Suivi intelligent des demandes et affectations</p>
           </div>
@@ -154,7 +154,7 @@
                 <!-- Filtre rapide -->
                 <div class="relative">
                   <select v-model="filtreStatut" 
-                          class="bg-white/20 text-white text-sm px-4 py-2 rounded-xl border border-white/30 backdrop-blur-sm focus:outline-none focus:ring-2 focus:ring-white/50 appearance-none pr-8">
+                          class="bg-white text-slate-700 text-sm px-4 py-2 rounded-xl border border-white/30 backdrop-blur-sm focus:outline-none focus:ring-2 focus:ring-blue-200 appearance-none pr-8">
                     <option value="">Tous les statuts</option>
                     <option value="En attente">En attente</option>
                     <option value="Acceptée">Acceptée</option>

@@ -16,7 +16,7 @@
 
     <!-- Fond gris léger pour toute la page -->
     <div class="min-h-screen bg-gray-50 py-8">
-      <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+      <div class="w-full mx-auto px-4 sm:px-6 lg:px-8">
         <!-- Carte principale avec design moderne -->
         <div class="bg-white rounded-2xl shadow-xl overflow-hidden border border-gray-100/50 backdrop-blur-sm">
           <!-- En-tête avec gradient amélioré -->
@@ -83,7 +83,7 @@
             <!-- Tableau moderne avec design amélioré -->
             <div class="bg-white rounded-2xl border border-gray-100 shadow-sm overflow-hidden">
               <div class="overflow-x-auto">
-                <table class="min-w-full divide-y divide-gray-100">
+                <table class="w-full min-w-full divide-y divide-gray-100">
                   <thead class="bg-gradient-to-r from-gray-50 to-gray-100/50">
                     <tr>
                       <th scope="col" class="px-6 py-4 text-left text-xs font-bold text-gray-600 uppercase tracking-wider">

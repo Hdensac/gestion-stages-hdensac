@@ -106,6 +106,7 @@
                 </Link>
 
                 <Link 
+                    v-if="isDpafResponsable"
                     :href="route('agent.dashboard')"
                     class="menu-link flex items-center px-3 py-2 text-sm font-medium rounded-lg transition-colors duration-200"
                     :class="[route().current('agent.dashboard*') ? 'active' : 'text-blue-100 hover:bg-blue-700 hover:text-white']"
@@ -115,7 +116,7 @@
                     <svg xmlns="http://www.w3.org/2000/svg" class="w-6 h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
                     </svg>
-                    <span v-if="expanded" class="ml-3">Tableau DPAF</span>
+                    <span v-if="expanded" class="ml-3">Espace DPAF</span>
                     <span v-else class="tooltip">Tableau DPAF</span>
                 </Link>
             </nav>
@@ -210,7 +211,7 @@
                         <div class="hidden lg:flex items-center space-x-3">
                             <div class="flex items-center space-x-2 bg-green-50 text-green-700 px-3 py-2 rounded-full text-sm font-medium border border-green-200">
                                 <div class="w-2 h-2 bg-green-500 rounded-full animate-pulse"></div>
-                                <span>Plateforme Active</span>
+                                <span>Espace RS</span>
                             </div>
                         </div>
                         <div class="lg:hidden bg-gradient-to-r from-blue-600 to-blue-700 text-white px-4 py-2 rounded-full text-sm font-medium shadow-md">
@@ -289,7 +290,7 @@ const showLogoutModal = ref(false)
 
 const page = usePage()
 const isDpafResponsable = computed(() => {
-    return page.props.auth.user?.role === 'dpaf' || page.props.auth.user?.is_dpaf_responsable
+    return page.props.structure?.sigle === 'DPAF';
 })
 
 const toggleSidebar = () => {

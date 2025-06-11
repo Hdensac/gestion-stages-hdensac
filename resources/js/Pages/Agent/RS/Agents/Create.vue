@@ -34,6 +34,7 @@
                       class="w-full border rounded-md p-2 shadow-sm focus:ring-2 focus:ring-blue-500 focus:border-blue-500" 
                       required 
                     />
+                    <div v-if="form.errors.nom" class="text-red-500 text-xs mt-1">{{ form.errors.nom }}</div>
                   </div>
                   <div>
                     <label class="block text-sm font-medium text-gray-700 mb-1">Prénom <span class="text-red-500">*</span></label>
@@ -43,6 +44,7 @@
                       class="w-full border rounded-md p-2 shadow-sm focus:ring-2 focus:ring-blue-500 focus:border-blue-500" 
                       required 
                     />
+                    <div v-if="form.errors.prenom" class="text-red-500 text-xs mt-1">{{ form.errors.prenom }}</div>
                   </div>
                   <div>
                     <label class="block text-sm font-medium text-gray-700 mb-1">Email <span class="text-red-500">*</span></label>
@@ -57,6 +59,7 @@
                         required 
                       />
                     </div>
+                    <div v-if="form.errors.email" class="text-red-500 text-xs mt-1">{{ form.errors.email }}</div>
                   </div>
                   <div>
                     <label class="block text-sm font-medium text-gray-700 mb-1">Téléphone <span class="text-red-500">*</span></label>
@@ -71,6 +74,7 @@
                         required 
                       />
                     </div>
+                    <div v-if="form.errors.telephone" class="text-red-500 text-xs mt-1">{{ form.errors.telephone }}</div>
                   </div>
                   <div>
                     <label class="block text-sm font-medium text-gray-700 mb-1">Date de naissance <span class="text-red-500">*</span></label>
@@ -85,6 +89,7 @@
                         required 
                       />
                     </div>
+                    <div v-if="form.errors.date_de_naissance" class="text-red-500 text-xs mt-1">{{ form.errors.date_de_naissance }}</div>
                   </div>
                   <div>
                     <label class="block text-sm font-medium text-gray-700 mb-1">Sexe <span class="text-red-500">*</span></label>
@@ -97,6 +102,7 @@
                       <option value="Homme">Homme</option>
                       <option value="Femme">Femme</option>
                     </select>
+                    <div v-if="form.errors.sexe" class="text-red-500 text-xs mt-1">{{ form.errors.sexe }}</div>
                   </div>
                 </div>
               </div>
@@ -113,6 +119,7 @@
                       class="w-full border rounded-md p-2 shadow-sm focus:ring-2 focus:ring-blue-500 focus:border-blue-500" 
                       required 
                     />
+                    <div v-if="form.errors.matricule" class="text-red-500 text-xs mt-1">{{ form.errors.matricule }}</div>
                   </div>
                   <div>
                     <label class="block text-sm font-medium text-gray-700 mb-1">Fonction <span class="text-red-500">*</span></label>
@@ -122,6 +129,7 @@
                       class="w-full border rounded-md p-2 shadow-sm focus:ring-2 focus:ring-blue-500 focus:border-blue-500" 
                       required 
                     />
+                    <div v-if="form.errors.fonction" class="text-red-500 text-xs mt-1">{{ form.errors.fonction }}</div>
                   </div>
                   <div>
                     <label class="block text-sm font-medium text-gray-700 mb-1">Date d'embauche</label>
@@ -149,6 +157,7 @@
                         required 
                       />
                     </div>
+                    <div v-if="form.errors.password" class="text-red-500 text-xs mt-1">{{ form.errors.password }}</div>
                   </div>
                   <div>
                     <label class="block text-sm font-medium text-gray-700 mb-1">Sous-structure <span class="text-red-500">*</span></label>
@@ -162,6 +171,7 @@
                         {{ s.libelle }}
                       </option>
                     </select>
+                    <div v-if="form.errors.structure_id" class="text-red-500 text-xs mt-1">{{ form.errors.structure_id }}</div>
                   </div>
                 </div>
               </div>

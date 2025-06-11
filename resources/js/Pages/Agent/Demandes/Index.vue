@@ -13,7 +13,7 @@
     </template>
 
     <div class="py-6">
-      <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+      <div class="w-full mx-auto px-4 sm:px-6 lg:px-8">
         <div class="bg-white rounded-lg shadow-md overflow-hidden">
           <div class="border-b border-gray-200 bg-gradient-to-r from-blue-600 to-blue-800 py-4 px-6">
             <h2 class="font-medium text-white text-lg flex items-center gap-2">
@@ -85,7 +85,7 @@
 
             <!-- Liste des demandes -->
             <div class="overflow-x-auto border border-gray-100 rounded-lg">
-              <table class="min-w-full divide-y divide-gray-200">
+              <table class="w-full min-w-full divide-y divide-gray-200">
                 <thead class="bg-gray-50">
                   <tr>
                     <th scope="col" class="px-6 py-3 text-left">

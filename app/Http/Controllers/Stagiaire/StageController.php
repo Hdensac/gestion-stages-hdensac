@@ -34,24 +34,8 @@ class StageController extends Controller
                 ]);
             }
             
-            // Récupérer les demandes de stage du stagiaire
-            $demandeIds = DemandeStage::where('stagiaire_id', $stagiaire->id_stagiaire)
-                ->whereIn('statut', ['Acceptée', 'Approuvée'])
-                ->pluck('id');
-            
-            // Récupérer les stages où le stagiaire est membre du groupe
-            $stagesMembreGroupe = Stage::whereHas('demandeStage', function($q) use ($user) {
-                $q->whereIn('statut', ['Acceptée', 'Approuvée'])
-                  ->whereHas('membres', function($query) use ($user) {
-                      $query->where('user_id', $user->id);
-                  });
-            })->pluck('id');
-
-            // Récupérer les stages associés à ces demandes
-            $stages = Stage::where(function($query) use ($demandeIds, $stagesMembreGroupe) {
-                $query->whereIn('demande_stage_id', $demandeIds)
-                    ->orWhereIn('id', $stagesMembreGroupe);
-            })
+            // Nouvelle logique : ne récupérer que les stages dont le stagiaire connecté est le bénéficiaire
+            $stages = Stage::where('stagiaire_id', $stagiaire->id_stagiaire)
                 ->with([
                     'structure',
                     'demandeStage',
@@ -78,7 +62,22 @@ class StageController extends Controller
                 $activeAffectation = $stage->affectationsMaitreStage
                     ->whereIn('statut', ['En cours', 'Acceptée'])
                     ->first();
-                if ($activeAffectation) {
+                if (!$activeAffectation) {
+                    // Si pas d'affectation sur ce stage, aller chercher celle du stage principal
+                    $demande = $stage->demandeStage;
+                    if ($demande) {
+                        $stagePrincipal = \App\Models\Stage::where('demande_stage_id', $demande->id)
+                            ->where('stagiaire_id', $demande->stagiaire_id)
+                            ->with(['affectationsMaitreStage' => function($query) {
+                                $query->whereIn('statut', ['En cours', 'Acceptée']);
+                            }, 'affectationsMaitreStage.maitreStage'])
+                            ->first();
+                        if ($stagePrincipal && $stagePrincipal->affectationsMaitreStage->count() > 0) {
+                            $activeAffectation = $stagePrincipal->affectationsMaitreStage->first();
+                        }
+                    }
+                }
+                if ($activeAffectation && $activeAffectation->maitreStage) {
                     $stage->maitre_stage_actuel = [
                         'id' => $activeAffectation->maitreStage->id,
                         'nom' => $activeAffectation->maitreStage->nom,
@@ -87,14 +86,28 @@ class StageController extends Controller
                     ];
                 }
                 // Aplatir la relation themeStage
+                $theme = $stage->themeStage;
+                if (!$theme || $theme->etat !== 'Validé') {
+                    // Si pas de thème validé sur ce stage, aller chercher celui du stage principal
+                    $demande = $stage->demandeStage;
+                    if ($demande) {
+                        $stagePrincipal = \App\Models\Stage::where('demande_stage_id', $demande->id)
+                            ->where('stagiaire_id', $demande->stagiaire_id)
+                            ->with('themeStage')
+                            ->first();
+                        if ($stagePrincipal && $stagePrincipal->themeStage && $stagePrincipal->themeStage->etat === 'Validé') {
+                            $theme = $stagePrincipal->themeStage;
+                        }
+                    }
+                }
                 $stageArray = $stage->toArray();
-                $stageArray['themeStage'] = $stage->themeStage ? $stage->themeStage->toArray() : null;
+                $stageArray['themeStage'] = $theme ? $theme->toArray() : null;
                 return $stageArray;
             });
             
             return Inertia::render('Stagiaire/MesStages', [
                 'stages' => $stages,
-                'notifications' => Auth::user()->notifications()->unread()->orderBy('created_at', 'desc')->take(10)->get(),
+                'notifications' => Auth::user()->unreadNotifications()->orderBy('created_at', 'desc')->take(10)->get(),
                 'message' => isset($message) ? $message : null,
                 'error' => isset($error) ? $error : null,
             ]);
@@ -126,6 +139,11 @@ class StageController extends Controller
             if (!$stagiaire) {
                 return redirect()->route('stagiaire.stages')->with('error', 'Aucun profil de stagiaire trouvé pour cet utilisateur.');
             }
+
+            // Correction : chaque stagiaire ne peut voir que SON propre stage
+            if ($stage->stagiaire_id !== $stagiaire->id_stagiaire) {
+                return redirect()->route('stagiaire.stages')->with('error', 'Vous ne pouvez voir que votre propre stage.');
+            }
             
             // Vérifier que le stage appartient bien au stagiaire principal OU à un membre du groupe
             $demandeStage = DemandeStage::where('id', $stage->demande_stage_id)->first();
@@ -145,15 +163,32 @@ class StageController extends Controller
                     $query->orderBy('date_affectation', 'desc');
                 },
                 'affectationsMaitreStage.maitreStage',
+                'evaluation',
             ]);
+
+            // Injecter la note et le commentaire d'évaluation s'ils existent
+            $evaluation = $stage->evaluation;
+            $note = $evaluation ? $evaluation->note_totale : null;
+            $commentaire = $evaluation ? $evaluation->commentaire_general : null;
 
             // Injecter le même champ maitre_stage_actuel que dans la liste
             $activeAffectation = $stage->affectationsMaitreStage
                 ->whereIn('statut', ['En cours', 'Acceptée'])
                 ->first();
             if (!$activeAffectation) {
-                // Prendre la dernière affectation avec maitreStage si aucune n'est "En cours" ou "Acceptée"
-                $activeAffectation = $stage->affectationsMaitreStage->filter(function($aff) { return $aff->maitreStage; })->sortByDesc('date_affectation')->first();
+                // Si pas d'affectation sur ce stage, aller chercher celle du stage principal
+                $demande = $stage->demandeStage;
+                if ($demande) {
+                    $stagePrincipal = \App\Models\Stage::where('demande_stage_id', $demande->id)
+                        ->where('stagiaire_id', $demande->stagiaire_id)
+                        ->with(['affectationsMaitreStage' => function($query) {
+                            $query->whereIn('statut', ['En cours', 'Acceptée']);
+                        }, 'affectationsMaitreStage.maitreStage'])
+                        ->first();
+                    if ($stagePrincipal && $stagePrincipal->affectationsMaitreStage->count() > 0) {
+                        $activeAffectation = $stagePrincipal->affectationsMaitreStage->first();
+                    }
+                }
             }
             if ($activeAffectation && $activeAffectation->maitreStage) {
                 $stage->maitre_stage_actuel = [
@@ -181,9 +216,11 @@ class StageController extends Controller
             ]);
             return Inertia::render('Stagiaire/ShowStage', [
                 'stage' => array_merge($stage->toArray(), [
-                    'themeStage' => $stage->themeStage ? $stage->themeStage->toArray() : null
+                    'themeStage' => $stage->themeStage ? $stage->themeStage->toArray() : null,
+                    'note' => $note,
+                    'commentaire_evaluation' => $commentaire,
                 ]),
-                'notifications' => Auth::user()->notifications()->unread()->orderBy('created_at', 'desc')->take(10)->get(),
+                'notifications' => Auth::user()->notifications->where('read_at', null)->sortByDesc('created_at')->take(10),
                 'error' => session('error'),
                 'success' => session('success'),
             ]);

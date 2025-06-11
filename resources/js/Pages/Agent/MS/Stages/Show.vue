@@ -1,325 +1,386 @@
 <template>
+
   <Head :title="`Stage de ${getStagiaireName(stage)}`" />
 
   <MSLayout>
     <!-- Composant Toast pour les notifications -->
     <AdminToast ref="toast" />
-    
+
     <template #header>
       <div class="flex items-center gap-4 mb-2">
-        <div class="bg-gradient-to-r from-blue-500 to-blue-700 text-white rounded-lg w-12 h-12 flex items-center justify-center shadow-md">
-          <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2" />
+        <div
+          class="bg-gradient-to-br from-blue-600 via-blue-700 to-indigo-600 text-white rounded-2xl w-18 h-18 flex items-center justify-center shadow-xl shadow-blue-500/30">
+          <svg class="w-10 h-10" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+              d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2" />
           </svg>
         </div>
         <div>
-          <h1 class="text-2xl font-bold text-gray-800 leading-tight md:text-3xl">Détails du Stage</h1>
-          <p class="text-sm text-gray-500 mt-1">{{ getStagiaireName(stage) }}</p>
+          <h1
+            class="text-3xl font-black bg-gradient-to-r from-slate-800 to-slate-600 bg-clip-text text-transparent leading-tight">
+            Détails du Stage
+          </h1>
+          <p class="text-base text-slate-600 mt-1 font-mono bg-slate-200 px-3 py-1 rounded-lg inline-block">
+            {{ getStagiaireName(stage) }}
+          </p>
         </div>
       </div>
     </template>
 
-    <div class="py-6">
-      <div class="max-w-7xl mx-auto sm:px-6 lg:px-8">
-        <!-- Messages d'état -->
-        <div v-if="error" class="mb-6 bg-red-50 border-l-4 border-red-500 text-red-700 p-4 rounded-md shadow-sm">
-          <div class="flex items-center">
-            <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
-            </svg>
-            <p class="font-semibold">{{ error }}</p>
+    <!-- Arrière-plan grisé pour tout le contenu -->
+    <div class="min-h-screen bg-gradient-to-br from-gray-100 via-slate-100 to-gray-200">
+      <div class="py-8">
+        <div class="max-w-7xl mx-auto sm:px-6 lg:px-8">
+          <!-- Messages d'état modernisés -->
+          <div v-if="error"
+            class="mb-8 bg-gradient-to-r from-red-100 to-rose-100 border-2 border-red-300 text-red-800 p-6 rounded-3xl shadow-xl transform transition-all duration-300 hover:scale-[1.02]">
+            <div class="flex items-center gap-4">
+              <div class="p-3 bg-gradient-to-br from-red-500 to-rose-600 rounded-2xl shadow-lg">
+                <svg class="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                    d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+                </svg>
+              </div>
+              <div>
+                <p class="font-bold text-lg">Erreur</p>
+                <p class="mt-1 font-medium">{{ error }}</p>
+              </div>
+            </div>
           </div>
-        </div>
 
-        <div v-if="success" class="mb-6 bg-blue-50 border-l-4 border-blue-500 text-blue-700 p-4 rounded-md shadow-sm">
-          <div class="flex items-center">
-            <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7" />
-            </svg>
-            <p class="font-semibold">{{ success }}</p>
+          <div v-if="success"
+            class="mb-8 bg-gradient-to-r from-blue-100 to-sky-100 border-2 border-blue-300 text-blue-800 p-6 rounded-3xl shadow-xl transform transition-all duration-300 hover:scale-[1.02]">
+            <div class="flex items-center gap-4">
+              <div class="p-3 bg-gradient-to-br from-blue-500 to-sky-600 rounded-2xl shadow-lg">
+                <svg class="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7" />
+                </svg>
+              </div>
+              <div>
+                <p class="font-bold text-lg">Succès</p>
+                <p class="mt-1 font-medium">{{ success }}</p>
+              </div>
+            </div>
           </div>
-        </div>
 
-        <!-- Navigation et badges d'état -->
-        <div class="mb-6 flex flex-wrap justify-between items-center gap-4">
-          <Link 
-            :href="route('agent.ms.stages')" 
-            class="inline-flex items-center px-4 py-2 bg-white border border-gray-300 rounded-md font-medium text-sm text-gray-700 shadow-sm hover:bg-gray-50 transition-colors duration-200"
-          >
-            <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <!-- Navigation et badges d'état modernisés -->
+          <div class="mb-8 flex flex-wrap justify-between items-center gap-6">
+            <Link :href="route('agent.ms.stages')"
+              class="inline-flex items-center px-6 py-3 bg-gradient-to-r from-slate-200 to-slate-300 border-2 border-slate-400 rounded-2xl font-bold text-lg text-slate-700 shadow-xl hover:from-slate-300 hover:to-slate-400 transition-all duration-300 transform hover:scale-105">
+            <svg class="w-5 h-5 mr-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18" />
             </svg>
             Retour à la liste
-          </Link>
+            </Link>
 
-          <!-- Badge de réaffectation -->
-          <div v-if="stage.est_reaffecte" class="bg-amber-50 text-amber-800 px-4 py-2 rounded-md border border-amber-200 flex items-center shadow-sm">
-            <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 9l3 3m0 0l-3 3m3-3H8m13 0a9 9 0 11-18 0 9 9 0 0118 0z" />
-            </svg>
-            <span>Stage réaffecté - Consultation uniquement</span>
-          </div>
-        </div>
-
-        <!-- Informations de réaffectation -->
-        <div v-if="stage.est_reaffecte && stage.reaffectation_info" class="mb-6 bg-amber-50 p-5 rounded-lg border border-amber-200 shadow-sm">
-          <h3 class="font-semibold text-amber-800 mb-3 flex items-center">
-            <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7h12m0 0l-4-4m4 4l-4 4m0 6H4m0 0l4 4m-4-4l4-4" />
-            </svg>
-            Informations de réaffectation
-          </h3>
-          <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-            <div>
-              <p class="text-sm"><span class="font-medium text-amber-900">Réaffecté à :</span> {{ stage.reaffectation_info.nouveau_ms_prenom }} {{ stage.reaffectation_info.nouveau_ms_nom }}</p>
-              <p class="text-sm"><span class="font-medium text-amber-900">Structure :</span> {{ stage.reaffectation_info.structure_libelle }} {{ stage.reaffectation_info.structure_sigle ? `(${stage.reaffectation_info.structure_sigle})` : '' }}</p>
-            </div>
-            <div>
-              <p class="text-sm"><span class="font-medium text-amber-900">Date de réaffectation :</span> {{ formatDate(stage.reaffectation_info.date_reaffectation) }}</p>
-              <p class="text-sm" v-if="stage.reaffectation_info.motif"><span class="font-medium text-amber-900">Motif :</span> {{ stage.reaffectation_info.motif }}</p>
+            <!-- Badge de réaffectation modernisé -->
+            <div v-if="stage.est_reaffecte"
+              class="bg-gradient-to-r from-amber-100 to-yellow-100 text-amber-800 px-6 py-3 rounded-2xl border-2 border-amber-300 flex items-center shadow-xl">
+              <svg class="w-6 h-6 mr-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                  d="M13 9l3 3m0 0l-3 3m3-3H8m13 0a9 9 0 11-18 0 9 9 0 0118 0z" />
+              </svg>
+              <span class="font-bold text-lg">Stage réaffecté - Consultation uniquement</span>
             </div>
           </div>
-        </div>
 
-        <!-- Onglets -->
-        <div class="bg-white overflow-hidden shadow-sm rounded-lg mb-6">
-          <div class="border-b border-gray-200">
-            <nav class="flex space-x-4 border-b border-gray-200">
-              <button
-                v-for="tab in tabs"
-                :key="tab.id"
-                @click="activeTab = tab.id"
-                :class="[
-                  'relative py-4 px-6 text-sm font-medium focus:outline-none focus:ring-2 focus:ring-inset focus:ring-indigo-500 transition-all duration-200',
+          <!-- Informations de réaffectation modernisées -->
+          <div v-if="stage.est_reaffecte && stage.reaffectation_info"
+            class="mb-8 bg-gradient-to-br from-amber-50 via-yellow-50 to-amber-50 p-8 rounded-3xl border-2 border-amber-300 shadow-2xl">
+            <h3 class="font-black text-amber-900 mb-6 flex items-center text-xl">
+              <svg class="w-6 h-6 mr-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                  d="M8 7h12m0 0l-4-4m4 4l-4 4m0 6H4m0 0l4 4m-4-4l4-4" />
+              </svg>
+              Informations de réaffectation
+            </h3>
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+              <div class="space-y-3">
+                <p class="text-base"><span class="font-bold text-amber-900">Réaffecté à :</span> <span
+                    class="font-medium text-slate-700">{{ stage.reaffectation_info.nouveau_ms_prenom }} {{
+                      stage.reaffectation_info.nouveau_ms_nom }}</span></p>
+                <p class="text-base"><span class="font-bold text-amber-900">Structure :</span> <span
+                    class="font-medium text-slate-700">{{ stage.reaffectation_info.structure_libelle }} {{
+                      stage.reaffectation_info.structure_sigle ? `(${stage.reaffectation_info.structure_sigle})` : ''
+                    }}</span></p>
+              </div>
+              <div class="space-y-3">
+                <p class="text-base"><span class="font-bold text-amber-900">Date de réaffectation :</span> <span
+                    class="font-medium text-slate-700">{{ formatDate(stage.reaffectation_info.date_reaffectation)
+                    }}</span>
+                </p>
+                <p class="text-base" v-if="stage.reaffectation_info.motif"><span class="font-bold text-amber-900">Motif
+                    :</span> <span class="font-medium text-slate-700">{{ stage.reaffectation_info.motif }}</span></p>
+              </div>
+            </div>
+          </div>
+          <!-- Onglets modernisés -->
+          <div
+            class="bg-gradient-to-br from-indigo-50 via-blue-50 to-indigo-50 overflow-hidden shadow-2xl rounded-3xl mb-8 border-2 border-indigo-200">
+            <div class="bg-gradient-to-r from-indigo-100 to-blue-100 border-b-2 border-indigo-200">
+              <nav class="flex space-x-2 p-2">
+                <button v-for="tab in tabs" :key="tab.id" @click="activeTab = tab.id" :class="[
+                  'relative py-4 px-8 text-base font-bold focus:outline-none focus:ring-4 focus:ring-indigo-300 transition-all duration-300 rounded-2xl transform hover:scale-105',
                   activeTab === tab.id
-                    ? 'text-indigo-600 bg-white border-b-2 border-indigo-500'
-                    : 'text-gray-500 hover:text-gray-700 hover:bg-white/50'
-                ]"
-              >
-                <div class="flex items-center">
-                  <component :is="tab.icon" class="w-4 h-4 mr-2" />
-                  {{ tab.label }}
-                </div>
-              </button>
-            </nav>
+                    ? 'text-white bg-gradient-to-r from-indigo-600 to-blue-600 shadow-xl shadow-indigo-500/30 border-2 border-indigo-700'
+                    : 'text-indigo-700 bg-gradient-to-r from-indigo-100 to-blue-100 hover:from-indigo-200 hover:to-blue-200 border-2 border-indigo-300 shadow-lg'
+                ]">
+                  <div class="flex items-center gap-3">
+                    <component :is="tab.icon" class="w-5 h-5" />
+                    <span class="font-black">{{ tab.label }}</span>
+                  </div>
+                </button>
+              </nav>
+            </div>
+
+            <!-- Contenu des onglets -->
+            <div class="p-8">
+              <!-- Le contenu des onglets suivra ici -->
+            </div>
           </div>
+          <!-- Informations générales modernisées -->
+          <div v-if="activeTab === 'infos'" class="space-y-8">
+            <!-- Timeline du stage modernisée -->
+            <div
+              class="bg-gradient-to-br from-purple-50 via-violet-50 to-purple-50 p-8 rounded-3xl shadow-2xl border-2 border-purple-200">
+              <h3 class="text-2xl font-black mb-6 flex items-center text-purple-900">
+                <svg class="w-7 h-7 mr-3 text-purple-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                    d="M13 7h8m0 0v8m0-8l-8 8-4-4-6 6" />
+                </svg>
+                Progression du stage
+              </h3>
+              <StageTimeline :start-date="stage.date_debut" :end-date="stage.date_fin" :events="getStageEvents()" />
+            </div>
 
-          <!-- Contenu des onglets -->
-          <div class="p-6">
-            <!-- Informations générales -->
-            <div v-if="activeTab === 'infos'" class="space-y-6">
-              <!-- Timeline du stage -->
-              <div class="bg-white p-6 rounded-lg shadow-sm border border-gray-200">
-                <h3 class="text-lg font-semibold mb-4 flex items-center">
-                  <svg class="w-5 h-5 mr-2 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 7h8m0 0v8m0-8l-8 8-4-4-6 6" />
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
+              <!-- Informations du stagiaire modernisées -->
+              <div>
+                <h3 class="text-2xl font-black mb-6 flex items-center text-blue-900">
+                  <svg class="w-7 h-7 mr-3 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                      d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
                   </svg>
-                  Progression du stage
+                  Informations du stagiaire
                 </h3>
-                <StageTimeline
-                  :start-date="stage.date_debut"
-                  :end-date="stage.date_fin"
-                  :events="getStageEvents()"
-                />
-              </div>
-
-              <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
-                <div>
-                  <h3 class="text-lg font-semibold mb-4 flex items-center">
-                    <svg class="w-5 h-5 mr-2 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
-                    </svg>
-                    Informations du stagiaire
-                  </h3>
-                  <div class="bg-gray-50 p-5 rounded-lg border border-gray-100 shadow-sm">
-                    <div class="flex items-center mb-4">
-                      <div class="bg-blue-100 text-blue-700 rounded-full w-12 h-12 flex items-center justify-center text-xl font-bold shadow mr-4">
-                        {{ getStagiaireInitials() }}
-                      </div>
-                      <div>
-                        <h4 class="text-base font-semibold">{{ getStagiaireName(stage) }}</h4>
-                        <p class="text-sm text-gray-500">
-                          <template v-if="stage.stagiaire_info?.email">
-                            {{ stage.stagiaire_info.email }}
-                          </template>
-                          <template v-else-if="stage.demandeStage?.stagiaire?.user?.email">
-                            {{ stage.demandeStage.stagiaire.user.email }}
-                          </template>
-                          <template v-else>
-                            <span class="italic">Email non disponible</span>
-                          </template>
-                        </p>
-                      </div>
+                <div
+                  class="bg-gradient-to-br from-blue-50 via-sky-50 to-blue-50 p-8 rounded-3xl border-2 border-blue-200 shadow-2xl">
+                  <div class="flex items-center mb-6">
+                    <div
+                      class="bg-gradient-to-br from-blue-600 to-sky-700 text-white rounded-2xl w-16 h-16 flex items-center justify-center text-2xl font-black shadow-xl shadow-blue-500/30 mr-6">
+                      {{ getStagiaireInitials() }}
                     </div>
-                    <div class="space-y-2">
-                      <div v-if="stage.stagiaire_info?.telephone || stage.demandeStage?.stagiaire?.user?.telephone" class="flex items-center space-x-2 text-sm">
-                        <svg class="w-4 h-4 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 5a2 2 0 012-2h3.28a1 1 0 01.948.684l1.498 4.493a1 1 0 01-.502 1.21l-2.257 1.13a11.042 11.042 0 005.516 5.516l1.13-2.257a1 1 0 011.21-.502l4.493 1.498a1 1 0 01.684.949V19a2 2 0 01-2 2h-1C9.716 21 3 14.284 3 6V5z" />
-                        </svg>
-                        <span>
-                          {{ stage.stagiaire_info?.telephone || stage.demandeStage?.stagiaire?.user?.telephone }}
-                        </span>
-                      </div>
-                      <div v-if="stage.stagiaire_info?.adresse || stage.demandeStage?.stagiaire?.user?.adresse" class="flex items-start space-x-2 text-sm">
-                        <svg class="w-4 h-4 text-gray-400 mt-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z" />
-                          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 11a3 3 0 11-6 0 3 3 0 016 0z" />
-                        </svg>
-                        <span>
-                          {{ stage.stagiaire_info?.adresse || stage.demandeStage?.stagiaire?.user?.adresse }}
-                        </span>
-                      </div>
-                      <div class="flex items-center space-x-2 text-sm">
-                        <svg class="w-4 h-4 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 12a4 4 0 10-8 0 4 4 0 008 0zm0 0v1.5a2.5 2.5 0 005 0V12a9 9 0 10-9 9m4.5-1.206a8.959 8.959 0 01-4.5 1.207" />
-                        </svg>
-                        <span>
-                          <template v-if="stage.stagiaire_info?.email">
-                            {{ stage.stagiaire_info.email }}
-                          </template>
-                          <template v-else-if="stage.demandeStage?.stagiaire?.user?.email">
-                            {{ stage.demandeStage.stagiaire.user.email }}
-                          </template>
-                          <template v-else>
-                            <span class="italic">Email non disponible</span>
-                          </template>
-                        </span>
-                      </div>
+                    <div>
+                      <h4 class="text-xl font-black text-slate-900">{{ getStagiaireName(stage) }}</h4>
+                      <p class="text-base text-slate-600 font-medium mt-1">
+                        <template v-if="stage.stagiaire_info?.email">
+                          {{ stage.stagiaire_info.email }}
+                        </template>
+                        <template v-else-if="stage.demandeStage?.stagiaire?.user?.email">
+                          {{ stage.demandeStage.stagiaire.user.email }}
+                        </template>
+                        <template v-else>
+                          <span class="italic">Email non disponible</span>
+                        </template>
+                      </p>
                     </div>
                   </div>
-                </div>
-
-                <div>
-                  <h3 class="text-lg font-semibold mb-4 flex items-center">
-                    <svg class="w-5 h-5 mr-2 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4" />
-                    </svg>
-                    Structure d'accueil
-                  </h3>
-                  <div class="bg-gray-50 p-5 rounded-lg border border-gray-100 shadow-sm">
-                    <h4 class="text-base font-semibold mb-2">{{ stage.structure?.libelle }}</h4>
-                    <div class="space-y-2">
-                      <div class="flex items-center space-x-2 text-sm">
-                        <svg class="w-4 h-4 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 10h18M3 14h18m-9-4v8m-7 0h14a2 2 0 002-2V8a2 2 0 00-2-2H5a2 2 0 00-2 2v8a2 2 0 002 2z" />
-                        </svg>
-                        <span>{{ stage.structure?.sigle || 'Sigle non disponible' }}</span>
-                      </div>
-
-                      <div v-if="stage.structure?.adresse" class="flex items-start space-x-2 text-sm">
-                        <svg class="w-4 h-4 text-gray-400 mt-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z" />
-                          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 11a3 3 0 11-6 0 3 3 0 016 0z" />
-                        </svg>
-                        <span>{{ stage.structure.adresse }}</span>
-                      </div>
-
-                      <div v-if="stage.structure?.telephone" class="flex items-center space-x-2 text-sm">
-                        <svg class="w-4 h-4 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 5a2 2 0 012-2h3.28a1 1 0 01.948.684l1.498 4.493a1 1 0 01-.502 1.21l-2.257 1.13a11.042 11.042 0 005.516 5.516l1.13-2.257a1 1 0 011.21-.502l4.493 1.498a1 1 0 01.684.949V19a2 2 0 01-2 2h-1C9.716 21 3 14.284 3 6V5z" />
-                        </svg>
-                        <span>{{ stage.structure.telephone }}</span>
-                      </div>
-
-                      <div v-if="stage.structure?.email" class="flex items-center space-x-2 text-sm">
-                        <svg class="w-4 h-4 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 12a4 4 0 10-8 0 4 4 0 008 0zm0 0v1.5a2.5 2.5 0 005 0V12a9 9 0 10-9 9m4.5-1.206a8.959 8.959 0 01-4.5 1.207" />
-                        </svg>
-                        <span>{{ stage.structure.email }}</span>
-                      </div>
+                  <div class="space-y-4">
+                    <div v-if="stage.stagiaire_info?.telephone || stage.demandeStage?.stagiaire?.user?.telephone"
+                      class="flex items-center space-x-3 text-base bg-blue-100 p-3 rounded-2xl border border-blue-300">
+                      <svg class="w-5 h-5 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                          d="M3 5a2 2 0 012-2h3.28a1 1 0 01.948.684l1.498 4.493a1 1 0 01-.502 1.21l-2.257 1.13a11.042 11.042 0 005.516 5.516l1.13-2.257a1 1 0 011.21-.502l4.493 1.498a1 1 0 01.684.949V19a2 2 0 01-2 2h-1C9.716 21 3 14.284 3 6V5z" />
+                      </svg>
+                      <span class="font-medium text-slate-800">
+                        {{ stage.stagiaire_info?.telephone || stage.demandeStage?.stagiaire?.user?.telephone }}
+                      </span>
+                    </div>
+                    <div v-if="stage.stagiaire_info?.adresse || stage.demandeStage?.stagiaire?.user?.adresse"
+                      class="flex items-start space-x-3 text-base bg-blue-100 p-3 rounded-2xl border border-blue-300">
+                      <svg class="w-5 h-5 text-blue-600 mt-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                          d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z" />
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                          d="M15 11a3 3 0 11-6 0 3 3 0 016 0z" />
+                      </svg>
+                      <span class="font-medium text-slate-800">
+                        {{ stage.stagiaire_info?.adresse || stage.demandeStage?.stagiaire?.user?.adresse }}
+                      </span>
+                    </div>
+                    <div
+                      class="flex items-center space-x-3 text-base bg-blue-100 p-3 rounded-2xl border border-blue-300">
+                      <svg class="w-5 h-5 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                          d="M16 12a4 4 0 10-8 0 4 4 0 008 0zm0 0v1.5a2.5 2.5 0 005 0V12a9 9 0 10-9 9m4.5-1.206a8.959 8.959 0 01-4.5 1.207" />
+                      </svg>
+                      <span class="font-medium text-slate-800">
+                        <template v-if="stage.stagiaire_info?.email">
+                          {{ stage.stagiaire_info.email }}
+                        </template>
+                        <template v-else-if="stage.demandeStage?.stagiaire?.user?.email">
+                          {{ stage.demandeStage.stagiaire.user.email }}
+                        </template>
+                        <template v-else>
+                          <span class="italic">Email non disponible</span>
+                        </template>
+                      </span>
                     </div>
                   </div>
                 </div>
               </div>
 
-              <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
-                <div>
-                  <h3 class="text-lg font-semibold mb-4 flex items-center">
-                    <svg class="w-5 h-5 mr-2 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
-                    </svg>
-                    Période du stage
-                  </h3>
-                  <div class="bg-gray-50 p-5 rounded-lg border border-gray-100 shadow-sm">
-                    <div class="space-y-3">
-                      <div class="flex justify-between items-center">
-                        <span class="text-sm font-medium text-gray-500">Date de début</span>
-                        <span class="text-base font-semibold text-gray-800">{{ formatDate(stage.date_debut) }}</span>
-                      </div>
-                      <div class="flex justify-between items-center">
-                        <span class="text-sm font-medium text-gray-500">Date de fin</span>
-                        <span class="text-base font-semibold text-gray-800">{{ formatDate(stage.date_fin) }}</span>
-                      </div>
-                      <div class="flex justify-between items-center">
-                        <span class="text-sm font-medium text-gray-500">Durée</span>
-                        <span class="text-base font-semibold text-gray-800">{{ calculateDuration(stage.date_debut, stage.date_fin) }}</span>
-                      </div>
-                      <div class="flex justify-between items-center">
-                        <span class="text-sm font-medium text-gray-500">Statut</span>
-                        <span class="px-2.5 py-1 inline-flex text-xs leading-5 font-semibold rounded-full"
-                        :class="{
-                            'bg-emerald-100 text-emerald-800 border border-emerald-200': stage.statut === 'Terminé',
-                            'bg-blue-100 text-blue-800 border border-blue-200': stage.statut === 'En cours',
-                            'bg-amber-100 text-amber-800 border border-amber-200': stage.statut === 'En attente',
-                        }">
+              <!-- Structure d'accueil modernisée -->
+              <div>
+                <h3 class="text-2xl font-black mb-6 flex items-center text-green-900">
+                  <svg class="w-7 h-7 mr-3 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                      d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4" />
+                  </svg>
+                  Structure d'accueil
+                </h3>
+                <div
+                  class="bg-gradient-to-br from-green-50 via-emerald-50 to-green-50 p-8 rounded-3xl border-2 border-green-200 shadow-2xl">
+                  <h4 class="text-xl font-black mb-6 text-slate-900">{{ stage.structure?.libelle }}</h4>
+                  <div class="space-y-4">
+                    <div
+                      class="flex items-center space-x-3 text-base bg-green-100 p-3 rounded-2xl border border-green-300">
+                      <svg class="w-5 h-5 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                          d="M3 10h18M3 14h18m-9-4v8m-7 0h14a2 2 0 002-2V8a2 2 0 00-2-2H5a2 2 0 00-2 2v8a2 2 0 002 2z" />
+                      </svg>
+                      <span class="font-medium text-slate-800">{{ stage.structure?.sigle || 'Sigle non disponible'
+                        }}</span>
+                    </div>
+
+                    <div v-if="stage.structure?.adresse"
+                      class="flex items-start space-x-3 text-base bg-green-100 p-3 rounded-2xl border border-green-300">
+                      <svg class="w-5 h-5 text-green-600 mt-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                          d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z" />
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                          d="M15 11a3 3 0 11-6 0 3 3 0 016 0z" />
+                      </svg>
+                      <span class="font-medium text-slate-800">{{ stage.structure.adresse }}</span>
+                    </div>
+
+                    <div v-if="stage.structure?.telephone"
+                      class="flex items-center space-x-3 text-base bg-green-100 p-3 rounded-2xl border border-green-300">
+                      <svg class="w-5 h-5 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                          d="M3 5a2 2 0 012-2h3.28a1 1 0 01.948.684l1.498 4.493a1 1 0 01-.502 1.21l-2.257 1.13a11.042 11.042 0 005.516 5.516l1.13-2.257a1 1 0 011.21-.502l4.493 1.498a1 1 0 01.684.949V19a2 2 0 01-2 2h-1C9.716 21 3 14.284 3 6V5z" />
+                      </svg>
+                      <span class="font-medium text-slate-800">{{ stage.structure.telephone }}</span>
+                    </div>
+
+                    <div v-if="stage.structure?.email"
+                      class="flex items-center space-x-3 text-base bg-green-100 p-3 rounded-2xl border border-green-300">
+                      <svg class="w-5 h-5 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                          d="M16 12a4 4 0 10-8 0 4 4 0 008 0zm0 0v1.5a2.5 2.5 0 005 0V12a9 9 0 10-9 9m4.5-1.206a8.959 8.959 0 01-4.5 1.207" />
+                      </svg>
+                      <span class="font-medium text-slate-800">{{ stage.structure.email }}</span>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
+              <!-- Période du stage -->
+              <div>
+                <h3 class="text-2xl font-black mb-6 flex items-center text-orange-900">
+                  <svg class="w-7 h-7 mr-3 text-orange-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                      d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
+                  </svg>
+                  Période du stage
+                </h3>
+                <div
+                  class="bg-gradient-to-br from-orange-50 via-amber-50 to-orange-50 p-8 rounded-3xl border-2 border-orange-200 shadow-2xl">
+                  <div class="space-y-6">
+                    <div class="flex justify-between items-center p-4 bg-orange-100 rounded-2xl border border-orange-300">
+                      <span class="text-lg font-bold text-orange-800">Date de début</span>
+                      <span class="text-xl font-black text-slate-800">{{ formatDate(stage.date_debut) }}</span>
+                    </div>
+                    <div class="flex justify-between items-center p-4 bg-orange-100 rounded-2xl border border-orange-300">
+                      <span class="text-lg font-bold text-orange-800">Date de fin</span>
+                      <span class="text-xl font-black text-slate-800">{{ formatDate(stage.date_fin) }}</span>
+                    </div>
+                    <div class="flex justify-between items-center p-4 bg-orange-100 rounded-2xl border border-orange-300">
+                      <span class="text-lg font-bold text-orange-800">Durée</span>
+                      <span class="text-xl font-black text-slate-800">{{ calculateDuration(stage.date_debut,
+                        stage.date_fin)
+                        }}</span>
+                    </div>
+                    <div class="flex justify-between items-center p-4 bg-orange-100 rounded-2xl border border-orange-300">
+                      <span class="text-lg font-bold text-orange-800">Statut</span>
+                      <span class="px-4 py-2 text-base font-bold rounded-2xl shadow-lg border-2" :class="{
+                        'bg-gradient-to-r from-emerald-100 to-green-100 text-emerald-800 border-emerald-300': stage.statut === 'Terminé',
+                        'bg-gradient-to-r from-blue-100 to-sky-100 text-blue-800 border-blue-300': stage.statut === 'En cours',
+                        'bg-gradient-to-r from-amber-100 to-yellow-100 text-amber-800 border-amber-300': stage.statut === 'En attente',
+                      }">
                         {{ stage.statut }}
                       </span>
-                      </div>
-                      <!-- Bouton de confirmation -->
-                      <div v-if="stage.statut === 'En cours' && new Date(stage.date_fin) <= new Date() && !stage.termine_par_ms" class="mt-4">
-                        <button
-                          @click="confirmerFinStage"
-                          class="bg-green-500 hover:bg-green-600 text-white px-4 py-2 rounded-md"
-                        >
-                          Confirmer la fin du stage
-                        </button>
-                      </div>
+                    </div>
+                    <!-- Bouton de confirmation modernisé -->
+                    <div
+                      v-if="stage.statut === 'En cours' && new Date(stage.date_fin) <= new Date() && !stage.termine_par_ms"
+                      class="mt-6">
+                      <button @click="confirmerFinStage"
+                        class="w-full bg-gradient-to-r from-green-600 to-emerald-600 hover:from-green-700 hover:to-emerald-700 text-white px-6 py-4 rounded-2xl font-bold text-lg shadow-xl transition-all duration-300 transform hover:scale-105">
+                        Confirmer la fin du stage
+                      </button>
                     </div>
                   </div>
                 </div>
-
-                <div>
-                  <h3 class="text-lg font-semibold mb-4 flex items-center">
-                    <svg class="w-5 h-5 mr-2 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
-                    </svg>
-                    Détails du thème
-                  </h3>
-                  <div class="bg-gray-50 p-5 rounded-lg border border-gray-100 shadow-sm">
-                    <div v-if="stage.themeStage" class="space-y-3">
-                      <div class="flex justify-between items-center">
-                        <span class="text-sm font-medium text-gray-500">Titre</span>
-                        <span class="text-base font-semibold text-gray-800">{{ stage.themeStage.titre }}</span>
-                      </div>
-                      <div class="flex flex-col">
-                        <span class="text-sm font-medium text-gray-500">Description</span>
-                        <p class="text-sm text-gray-700 mt-1">{{ stage.themeStage.description }}</p>
-                      </div>
-                      <div class="flex justify-between items-center">
-                        <span class="text-sm font-medium text-gray-500">État</span>
-                        <span class="px-2.5 py-1 inline-flex text-xs leading-5 font-semibold rounded-full"
-                          :class="{
-                            'bg-emerald-100 text-emerald-800 border border-emerald-200': stage.themeStage.etat === 'Validé',
-                            'bg-amber-100 text-amber-800 border border-amber-200': stage.themeStage.etat === 'Proposé',
-                            'bg-red-100 text-red-800 border border-red-200': stage.themeStage.etat === 'Refusé',
-                            'bg-blue-100 text-blue-800 border border-blue-200': stage.themeStage.etat === 'Modifié',
-                          }">
-                          {{ stage.themeStage.etat }}
-                        </span>
-                      </div>
+              </div>
+              <!-- Détails du thème -->
+              <div>
+                <h3 class="text-2xl font-black mb-6 flex items-center text-purple-900">
+                  <svg class="w-7 h-7 mr-3 text-purple-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                      d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
+                  </svg>
+                  Détails du thème
+                </h3>
+                <div
+                  class="bg-gradient-to-br from-purple-50 via-violet-50 to-purple-50 p-8 rounded-3xl border-2 border-purple-200 shadow-2xl">
+                  <div v-if="stage.themeStage" class="space-y-6">
+                    <div class="p-4 bg-purple-100 rounded-2xl border border-purple-300">
+                      <span class="text-lg font-bold text-purple-800 block mb-2">Titre</span>
+                      <span class="text-xl font-black text-slate-800">{{ stage.themeStage.titre }}</span>
                     </div>
-                    <div v-else class="py-6 text-center">
-                      <svg class="w-12 h-12 mx-auto text-gray-300 mb-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
+                    <div class="p-4 bg-purple-100 rounded-2xl border border-purple-300">
+                      <span class="text-lg font-bold text-purple-800 block mb-3">Description</span>
+                      <p class="text-base text-slate-700 font-medium leading-relaxed">{{ stage.themeStage.description }}
+                      </p>
+                    </div>
+                    <div class="flex justify-between items-center p-4 bg-purple-100 rounded-2xl border border-purple-300">
+                      <span class="text-lg font-bold text-purple-800">État</span>
+                      <span class="px-4 py-2 text-base font-bold rounded-2xl shadow-lg border-2" :class="{
+                        'bg-gradient-to-r from-emerald-100 to-green-100 text-emerald-800 border-emerald-300': stage.themeStage.etat === 'Validé',
+                        'bg-gradient-to-r from-amber-100 to-yellow-100 text-amber-800 border-amber-300': stage.themeStage.etat === 'Proposé',
+                        'bg-gradient-to-r from-red-100 to-rose-100 text-red-800 border-red-300': stage.themeStage.etat === 'Refusé',
+                        'bg-gradient-to-r from-blue-100 to-sky-100 text-blue-800 border-blue-300': stage.themeStage.etat === 'Modifié',
+                      }">
+                        {{ stage.themeStage.etat }}
+                      </span>
+                    </div>
+                  </div>
+                  <div v-else class="py-12 text-center">
+                    <div class="bg-gradient-to-br from-slate-100 to-gray-200 p-8 rounded-3xl border-2 border-slate-300">
+                      <svg class="w-16 h-16 mx-auto text-slate-500 mb-4" fill="none" stroke="currentColor"
+                        viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                          d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
                       </svg>
-                      <p class="text-sm text-gray-500">Aucun thème défini pour ce stage</p>
-                      <div v-if="!stage.est_reaffecte" class="mt-4">
-                        <button
-                          @click="activeTab = 'theme'"
-                          class="inline-flex items-center px-3 py-2 border border-blue-300 shadow-sm text-sm leading-4 font-medium rounded-md text-blue-700 bg-white hover:bg-blue-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500"
-                        >
-                          <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6v6m0 0v6m0-6h6m-6 0H6" />
+                      <p class="text-lg text-slate-600 font-bold mb-6">Aucun thème défini pour ce stage</p>
+                      <div v-if="!stage.est_reaffecte" class="mt-6">
+                        <button @click="activeTab = 'theme'"
+                          class="inline-flex items-center px-6 py-3 border-2 border-blue-400 shadow-xl text-lg font-bold rounded-2xl text-blue-700 bg-gradient-to-r from-blue-100 to-sky-100 hover:from-blue-200 hover:to-sky-200 focus:outline-none focus:ring-4 focus:ring-blue-300 transition-all duration-300 transform hover:scale-105">
+                          <svg class="w-5 h-5 mr-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                              d="M12 6v6m0 0v6m0-6h6m-6 0H6" />
                           </svg>
                           Définir un thème
                         </button>
@@ -329,438 +390,673 @@
                 </div>
               </div>
             </div>
-
-            <!-- Thème du stage -->
-            <div v-if="activeTab === 'theme'" class="space-y-6">
-              <div v-if="stage.est_reaffecte" class="bg-amber-50 p-4 rounded-md border border-amber-200 mb-4">
-                <p class="text-amber-700 text-sm">Ce stage a été réaffecté. Vous ne pouvez pas modifier le thème.</p>
-              </div>
-              <div v-else>
-                <!-- Formulaire de proposition de thème par le MS -->
-                <div v-if="!themesProposes.some(t => t.etat === 'Validé')" class="mb-8">
-                  <h3 class="text-lg font-semibold mb-2 flex items-center">
-                    <svg class="w-5 h-5 mr-2 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6v6m0 0v6m0-6h6m-6 0H6" />
-                    </svg>
-                    Proposer un thème (Maître de stage)
-                  </h3>
-                  <form @submit.prevent="proposerThemeMS" class="space-y-3 bg-white p-6 rounded-lg border border-gray-200 shadow-sm">
-                    <div>
-                      <label class="block text-sm font-medium mb-1">Titre du thème *</label>
-                      <input v-model="themeMSForm.intitule" required maxlength="255" class="w-full border rounded px-3 py-2" />
-                    </div>
-                    <div>
-                      <label class="block text-sm font-medium mb-1">Description *</label>
-                      <textarea v-model="themeMSForm.description" required maxlength="2000" class="w-full border rounded px-3 py-2"></textarea>
-                    </div>
-                    <div>
-                      <label class="block text-sm font-medium mb-1">Mots-clés (optionnel)</label>
-                      <input v-model="themeMSForm.mots_cles" maxlength="255" class="w-full border rounded px-3 py-2" />
-                    </div>
-                    <div class="flex gap-2 items-center">
-                      <button type="submit" :disabled="themeMSLoading" class="bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700">
-                        {{ themeMSLoading ? 'Envoi...' : 'Proposer' }}
-                      </button>
-                      <span v-if="themeMSSuccess" class="text-emerald-600 text-sm">{{ themeMSSuccess }}</span>
-                      <span v-if="themeMSError" class="text-red-600 text-sm">{{ themeMSError }}</span>
-                    </div>
-                  </form>
-                </div>
-                <!-- Liste des thèmes proposés -->
-                <div>
-                <h3 class="text-lg font-semibold mb-4 flex items-center">
-                  <svg class="w-5 h-5 mr-2 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
+          </div>
+          <!-- Dans les autres onglets, NE PAS inclure la grille à deux colonnes -->
+          <div v-if="activeTab === 'theme'">
+            <!-- Message de réaffectation modernisé -->
+            <div v-if="stage.est_reaffecte"
+              class="bg-gradient-to-r from-amber-100 to-orange-100 border-2 border-amber-300 text-amber-800 p-6 rounded-3xl shadow-xl transform transition-all duration-300 hover:scale-[1.02]">
+              <div class="flex items-center gap-4">
+                <div class="p-3 bg-gradient-to-br from-amber-500 to-orange-600 rounded-2xl shadow-lg">
+                  <svg class="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                      d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" />
                   </svg>
-                    Propositions de thèmes
-                </h3>
-
-                  <div v-if="loadingThemes" class="text-center py-4">
-                    <div class="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-600 mx-auto"></div>
-                    <p class="mt-2 text-gray-600">Chargement des propositions...</p>
-                    </div>
-
-                  <div v-else>
-                    <div v-if="errorThemes" class="mb-4 bg-red-50 border border-red-200 text-red-700 px-4 py-3 rounded-lg">
-                      {{ errorThemes }}
-                    </div>
-
-                    <div v-if="themesProposes.length === 0" class="text-center py-8 bg-gray-50 rounded-lg">
-                      <svg class="w-12 h-12 text-gray-400 mx-auto mb-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9.663 17h4.673M12 3v1m6.364 1.636l-.707.707M21 12h-1M4 12H3m3.343-5.657l-.707-.707m2.828 9.9a5 5 0 117.072 0l-.548.547A3.374 3.374 0 0014 18.469V19a2 2 0 11-4 0v-.531c0-.895-.356-1.754-.988-2.386l-.548-.547z" />
-                      </svg>
-                      <p class="text-gray-500">Aucune proposition de thème pour ce stage.</p>
-                    </div>
-
-                    <ul v-else class="space-y-4">
-                      <li v-for="theme in themesProposes" :key="theme.id" 
-                          class="p-6 rounded-lg border bg-white shadow-sm hover:shadow-md transition-shadow duration-200">
-                        <div class="flex justify-between items-start mb-4">
-                    <div>
-                            <h4 class="text-xl font-bold text-gray-900 mb-2">{{ theme.intitule }}</h4>
-                            <p class="text-gray-600">{{ theme.description }}</p>
-                    </div>
-                          <span class="px-3 py-1 rounded-full text-sm font-semibold"
-                                :class="{
-                                  'bg-emerald-100 text-emerald-700': theme.etat === 'Validé',
-                                  'bg-amber-100 text-amber-700': theme.etat === 'Proposé',
-                                  'bg-red-100 text-red-700': theme.etat === 'Refusé'
-                                }">
-                            {{ theme.etat }}
-                          </span>
-                    </div>
-
-                        <div class="space-y-3">
-                          <div v-if="theme.mots_cles" class="flex flex-wrap gap-2">
-                            <span v-for="(motCle, index) in theme.mots_cles.split(',')" :key="index"
-                                  class="px-2 py-1 bg-blue-50 text-blue-700 rounded-full text-sm">
-                              {{ motCle.trim() }}
-                        </span>
-                      </div>
-                          
-                          <div class="text-sm text-gray-500">
-                            Proposé le {{ formatDate(theme.created_at) }}
-                            <span v-if="theme.propose_par === 'stagiaire'">par le stagiaire</span>
-                            <span v-else>par vous</span>
-                    </div>
-
-                          <div v-if="theme.etat === 'Refusé' && theme.motif_refus" 
-                               class="mt-2 p-3 bg-red-50 rounded-lg">
-                            <p class="text-sm font-medium text-red-700">Motif du refus :</p>
-                            <p class="text-sm text-red-600">{{ theme.motif_refus }}</p>
-                          </div>
-                          
-                          <!-- Actions pour les thèmes en attente -->
-                          <div v-if="theme.etat === 'Proposé'" class="flex gap-3 mt-4">
-                            <button @click="validerTheme(theme)"
-                                    class="px-4 py-2 bg-emerald-600 text-white rounded-lg hover:bg-emerald-700 transition-colors duration-200 flex items-center">
-                        <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7" />
-                        </svg>
-                              Valider
-                      </button>
-                            <button @click="refuserTheme(theme)"
-                                    class="px-4 py-2 bg-red-600 text-white rounded-lg hover:bg-red-700 transition-colors duration-200 flex items-center">
-                        <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
-                        </svg>
-                              Refuser
-                      </button>
-                    </div>
-                  </div>
-                      </li>
-                    </ul>
+                </div>
+                <p class="font-bold text-lg">Ce stage a été réaffecté. Vous ne pouvez pas modifier le thème.</p>
               </div>
             </div>
 
-                <!-- Modal de refus -->
-                <div v-if="themeEnCours" class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-4">
-                  <div class="bg-white rounded-lg p-6 max-w-lg w-full">
-                    <h3 class="text-lg font-semibold mb-4">Refuser le thème</h3>
-                    <p class="text-gray-600 mb-4">Veuillez indiquer le motif du refus pour le thème :</p>
-                    <p class="font-medium mb-2">{{ themeEnCours.intitule }}</p>
-                    
-                    <textarea v-model="motifRefus"
-                              class="w-full border rounded-lg p-3 mb-4"
-                              rows="4"
-                              placeholder="Motif du refus..."></textarea>
-                    
-                    <div class="flex justify-end gap-3">
-                      <button @click="annulerRefus"
-                              class="px-4 py-2 bg-gray-100 text-gray-700 rounded-lg hover:bg-gray-200 transition-colors duration-200">
-                        Annuler
-                      </button>
-                      <button @click="confirmerRefus"
-                              class="px-4 py-2 bg-red-600 text-white rounded-lg hover:bg-red-700 transition-colors duration-200">
-                        Confirmer le refus
-                      </button>
-                </div>
-                    </div>
-                  </div>
-                </div>
-              </div>
-
-            <!-- Evaluation avancée -->
-            <div v-if="activeTab === 'evaluation'" class="space-y-6">
-                <h3 class="text-lg font-semibold mb-4 flex items-center">
-                  <svg class="w-5 h-5 mr-2 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" />
+            <div v-else>
+              <!-- Formulaire de proposition de thème modernisé -->
+              <div v-if="!themesProposes.some(t => t.etat === 'Validé')" class="mb-8">
+                <h3 class="text-2xl font-black mb-6 flex items-center text-orange-900">
+                  <svg class="w-7 h-7 mr-3 text-orange-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                      d="M12 6v6m0 0v6m0-6h6m-6 0H6" />
                   </svg>
-                Évaluation des membres du groupe
+                  Proposer un thème (Maître de stage)
                 </h3>
-              <div v-if="membresEvaluation.length > 0" class="space-y-4">
-                <div v-for="membre in membresEvaluation" :key="membre.id" class="bg-white p-4 rounded-lg shadow-sm border border-gray-200 flex justify-between items-center">
+
+                <form @submit.prevent="proposerThemeMS"
+                  class="bg-gradient-to-br from-orange-50 via-amber-50 to-orange-50 p-8 rounded-3xl border-2 border-orange-200 shadow-2xl">
+                  <div class="space-y-6">
                     <div>
-                    <h4 class="text-lg font-semibold text-gray-900">{{ membre.user.prenom }} {{ membre.user.nom }}</h4>
-                    <p class="text-sm text-gray-500">Stagiaire</p>
-                    </div>
-                  <div class="flex items-center gap-3">
-                    <template v-if="membre.evaluationMembre && membre.evaluationMembre.note_totale">
-                      <span class="text-base font-semibold text-blue-800">Note : {{ membre.evaluationMembre.note_totale }}/20</span>
-                      <button @click="consulterEvaluation(membre)" class="px-3 py-2 bg-gray-200 text-gray-700 rounded hover:bg-gray-300">Voir l'évaluation</button>
-                    </template>
-                    <template v-else>
-                      <button
-                        v-if="membre.statutStage === 'Terminé'"
-                        @click="ouvrirModalEvaluation(membre)"
-                        class="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors duration-200"
-                      >
-                        Évaluer
-                      </button>
-                      <button
-                        v-else
-                        class="px-4 py-2 bg-gray-300 text-gray-500 rounded-lg cursor-not-allowed"
-                        :title="'Le stage doit être terminé pour pouvoir évaluer ce stagiaire.'"
-                        disabled
-                      >
-                        Évaluer
-                      </button>
-                    </template>
-                    </div>
-                  </div>
-              </div>
-              <div v-else class="text-center py-8">
-                <p class="text-gray-500">Aucun membre du groupe trouvé.</p>
-              </div>
-                </div>
-
-            <!-- Contacter le stagiaire -->
-            <div v-if="activeTab === 'contacter'" class="space-y-6">
-              <h3 class="text-lg font-semibold mb-4 flex items-center">
-                <svg class="w-5 h-5 mr-2 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z" />
-                </svg>
-                Contacter le stagiaire
-              </h3>
-
-              <div class="bg-white p-6 rounded-lg shadow-sm border border-gray-200">
-                <div class="grid grid-cols-1 gap-6">
-                  <div>
-                    <label for="contact_subject" class="block text-sm font-medium text-gray-700 mb-1">Sujet <span class="text-red-500">*</span></label>
-                    <input
-                      id="contact_subject"
-                      v-model="contactForm.subject"
-                      type="text"
-                      required
-                      class="w-full rounded-md border-gray-300 shadow-sm focus:ring-blue-500 focus:border-blue-500"
-                      placeholder="Saisir le sujet de votre message"
-                    />
-                  </div>
-
-                  <div>
-                    <label for="contact_message" class="block text-sm font-medium text-gray-700 mb-1">Message <span class="text-red-500">*</span></label>
-                    <textarea
-                      id="contact_message"
-                      v-model="contactForm.message"
-                      rows="10"
-                      required
-                      class="w-full rounded-md border-gray-300 shadow-sm focus:ring-blue-500 focus:border-blue-500"
-                      placeholder="Rédigez votre message..."
-                    ></textarea>
-                </div>
-
-                  <div class="flex justify-end space-x-3 pt-2">
-                  <button
-                      type="button"
-                      @click="activeTab = 'infos'"
-                      class="inline-flex items-center px-4 py-2 border border-gray-300 shadow-sm text-sm font-medium rounded-md text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500"
-                  >
-                      Annuler
-                  </button>
-                  <button
-                      @click="onContactSubmit"
-                      class="inline-flex items-center px-4 py-2 border border-transparent shadow-sm text-sm font-medium rounded-md text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500"
-                  >
-                    <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z" />
-                    </svg>
-                      Envoyer le message
-                  </button>
-                  </div>
-                </div>
-              </div>
-            </div>
-
-            <!-- Réaffecter le stage -->
-            <div v-if="activeTab === 'reaffecter'" class="space-y-6">
-              <div v-if="stage.est_reaffecte" class="bg-amber-50 p-4 rounded-md border border-amber-200 mb-4">
-                <p class="text-amber-700 text-sm">Ce stage a déjà été réaffecté. Vous ne pouvez pas le réaffecter à nouveau.</p>
-              </div>
-
-              <div v-else>
-                <h3 class="text-lg font-semibold mb-4 flex items-center">
-                  <svg class="w-5 h-5 mr-2 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7h12m0 0l-4-4m4 4l-4 4m0 6H4m0 0l4 4m-4-4l4-4" />
-                </svg>
-                  Réaffecter le stage
-                </h3>
-
-                <div class="bg-red-50 p-4 mb-6 rounded-lg border border-red-200">
-                  <div class="flex">
-                    <div class="flex-shrink-0">
-                      <svg class="h-5 w-5 text-red-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" />
-                      </svg>
-                    </div>
-                    <div class="ml-3">
-                      <h3 class="text-sm font-medium text-red-800">Attention - Action irréversible</h3>
-                      <div class="mt-2 text-sm text-red-700">
-                        <p>
-                          La réaffectation d'un stage est une action définitive qui transfère la responsabilité à un autre maître de stage.
-                          Vous n'aurez plus la possibilité de modifier les informations de ce stage après cette action.
-                          Vous pourrez seulement le consulter.
-                        </p>
-                      </div>
-                    </div>
-                  </div>
-                </div>
-
-                <form @submit.prevent="onReaffectationSubmit" class="bg-white p-6 rounded-lg shadow-sm border border-gray-200">
-                  <div class="grid grid-cols-1 gap-6">
-                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-                      <div>
-                        <label for="nouveau_maitre_stage_id" class="block text-sm font-medium text-gray-700 mb-1">Nouveau maître de stage <span class="text-red-500">*</span></label>
-                        <select
-                          id="nouveau_maitre_stage_id"
-                          v-model="reaffectationForm.nouveau_maitre_stage_id"
-                          required
-                          class="w-full rounded-md border-gray-300 shadow-sm focus:ring-blue-500 focus:border-blue-500"
-                        >
-                          <option value="">Sélectionner un maître de stage</option>
-                          <option v-for="ms in maitresDeStage" :key="ms.id" :value="ms.id">
-                            {{ ms.nom }} {{ ms.prenom }} ({{ ms.structure.sigle }})
-                          </option>
-                        </select>
-                      </div>
-
-                      <div>
-                        <label for="date_reaffectation" class="block text-sm font-medium text-gray-700 mb-1">Date de réaffectation <span class="text-red-500">*</span></label>
-                        <input
-                          id="date_reaffectation"
-                          v-model="reaffectationForm.date_reaffectation"
-                          type="date"
-                          required
-                          class="w-full rounded-md border-gray-300 shadow-sm focus:ring-blue-500 focus:border-blue-500"
-                          :min="today"
-                        />
-                      </div>
+                      <label class="block text-lg font-black mb-3 text-slate-900">Titre du thème *</label>
+                      <input v-model="themeMSForm.intitule" required maxlength="255"
+                        class="w-full border-2 border-orange-300 rounded-2xl px-4 py-3 text-base font-medium bg-orange-50 focus:border-orange-500 focus:ring-4 focus:ring-orange-200 transition-all duration-300" />
                     </div>
 
                     <div>
-                      <label for="motif" class="block text-sm font-medium text-gray-700 mb-1">Motif de la réaffectation <span class="text-red-500">*</span></label>
-                      <textarea
-                        id="motif"
-                        v-model="reaffectationForm.motif"
-                        rows="4"
-                        required
-                        class="w-full rounded-md border-gray-300 shadow-sm focus:ring-blue-500 focus:border-blue-500"
-                        placeholder="Expliquez le motif de cette réaffectation..."
-                      ></textarea>
+                      <label class="block text-lg font-black mb-3 text-slate-900">Description *</label>
+                      <textarea v-model="themeMSForm.description" required maxlength="2000" rows="4"
+                        class="w-full border-2 border-orange-300 rounded-2xl px-4 py-3 text-base font-medium bg-orange-50 focus:border-orange-500 focus:ring-4 focus:ring-orange-200 transition-all duration-300"></textarea>
                     </div>
 
-                    <div class="flex items-start">
-                      <div class="flex items-center h-5">
-                        <input
-                          id="confirmation"
-                          v-model="reaffectationForm.confirmation"
-                          type="checkbox"
-                          required
-                          class="h-4 w-4 text-blue-600 border-gray-300 rounded focus:ring-blue-500"
-                        />
-                      </div>
-                      <div class="ml-3 text-sm">
-                        <label for="confirmation" class="font-medium text-gray-700">Je confirme la réaffectation de ce stage</label>
-                        <p class="text-gray-500">Je comprends que cette action est irréversible et que je n'aurai plus qu'un accès en lecture à ce stage après la réaffectation.</p>
-                      </div>
+                    <div>
+                      <label class="block text-lg font-black mb-3 text-slate-900">Mots-clés (optionnel)</label>
+                      <input v-model="themeMSForm.mots_cles" maxlength="255"
+                        class="w-full border-2 border-orange-300 rounded-2xl px-4 py-3 text-base font-medium bg-orange-50 focus:border-orange-500 focus:ring-4 focus:ring-orange-200 transition-all duration-300" />
                     </div>
 
-                    <div class="flex justify-end space-x-3 pt-2">
-                      <button
-                        type="button"
-                        @click="activeTab = 'infos'"
-                        class="inline-flex items-center px-4 py-2 border border-gray-300 shadow-sm text-sm font-medium rounded-md text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500"
-                      >
-                        Annuler
+                    <div class="flex gap-4 items-center pt-4">
+                      <button type="submit" :disabled="themeMSLoading"
+                        class="px-8 py-4 bg-gradient-to-r from-orange-600 to-amber-600 text-white font-black text-lg rounded-2xl shadow-xl hover:from-orange-700 hover:to-amber-700 transform hover:scale-105 transition-all duration-300 disabled:opacity-50 disabled:cursor-not-allowed">
+                        {{ themeMSLoading ? 'Envoi...' : 'Proposer le thème' }}
                       </button>
-                <button
-                        type="submit"
-                        class="inline-flex items-center px-4 py-2 border border-transparent shadow-sm text-sm font-medium rounded-md text-white bg-red-600 hover:bg-red-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-red-500"
-                >
-                  <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7h12m0 0l-4-4m4 4l-4 4m0 6H4m0 0l4 4m-4-4l4-4" />
-                  </svg>
-                        Réaffecter le stage
-                </button>
+                      <span v-if="themeMSSuccess"
+                        class="text-emerald-600 font-bold text-base bg-emerald-100 px-4 py-2 rounded-2xl border border-emerald-300">{{
+                        themeMSSuccess }}</span>
+                      <span v-if="themeMSError"
+                        class="text-red-600 font-bold text-base bg-red-100 px-4 py-2 rounded-2xl border border-red-300">{{
+                        themeMSError }}</span>
                     </div>
                   </div>
                 </form>
               </div>
+
+              <!-- Liste des thèmes proposés modernisée -->
+              <div>
+                <h3 class="text-2xl font-black mb-6 flex items-center text-orange-900">
+                  <svg class="w-7 h-7 mr-3 text-orange-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                      d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
+                  </svg>
+                  Propositions de thèmes
+                </h3>
+
+                <div v-if="loadingThemes"
+                  class="text-center py-12 bg-gradient-to-br from-orange-50 to-amber-50 rounded-3xl border-2 border-orange-200">
+                  <div
+                    class="animate-spin rounded-full h-12 w-12 border-4 border-orange-600 border-t-transparent mx-auto mb-4">
+                  </div>
+                  <p class="text-lg font-bold text-slate-700">Chargement des propositions...</p>
+                </div>
+
+                <div v-else>
+                  <div v-if="errorThemes"
+                    class="mb-6 bg-gradient-to-r from-red-100 to-rose-100 border-2 border-red-300 text-red-800 p-6 rounded-3xl shadow-xl">
+                    <div class="flex items-center gap-4">
+                      <div class="p-3 bg-gradient-to-br from-red-500 to-rose-600 rounded-2xl shadow-lg">
+                        <svg class="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                            d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+                        </svg>
+                      </div>
+                      <p class="font-bold text-lg">{{ errorThemes }}</p>
+                    </div>
+                  </div>
+
+                  <div v-if="themesProposes.length === 0"
+                    class="text-center py-16 bg-gradient-to-br from-orange-50 to-amber-50 rounded-3xl border-2 border-orange-200 shadow-xl">
+                    <div
+                      class="p-6 bg-gradient-to-br from-orange-100 to-amber-100 rounded-3xl w-24 h-24 flex items-center justify-center mx-auto mb-6 shadow-xl">
+                      <svg class="w-12 h-12 text-orange-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                          d="M9.663 17h4.673M12 3v1m6.364 1.636l-.707.707M21 12h-1M4 12H3m3.343-5.657l-.707-.707m2.828 9.9a5 5 0 117.072 0l-.548.547A3.374 3.374 0 0014 18.469V19a2 2 0 11-4 0v-.531c0-.895-.356-1.754-.988-2.386l-.548-.547z" />
+                      </svg>
+                    </div>
+                    <p class="text-xl font-bold text-slate-700">Aucune proposition de thème pour ce stage.</p>
+                  </div>
+
+                  <ul v-else class="space-y-6">
+                    <li v-for="theme in themesProposes" :key="theme.id"
+                      class="bg-gradient-to-br from-orange-50 via-amber-50 to-orange-50 p-8 rounded-3xl border-2 border-orange-200 shadow-2xl hover:shadow-3xl transform hover:scale-[1.02] transition-all duration-300">
+
+                      <div class="flex justify-between items-start mb-6">
+                        <div class="flex-1">
+                          <h4 class="text-2xl font-black text-slate-900 mb-4">{{ theme.intitule }}</h4>
+                          <p class="text-base font-medium text-slate-700 leading-relaxed">{{ theme.description }}</p>
+                        </div>
+
+                        <span class="ml-6 px-4 py-2 rounded-2xl text-base font-black shadow-lg" :class="{
+                          'bg-gradient-to-r from-emerald-100 to-green-100 text-emerald-800 border-2 border-emerald-300': theme.etat === 'Validé',
+                          'bg-gradient-to-r from-amber-100 to-yellow-100 text-amber-800 border-2 border-amber-300': theme.etat === 'Proposé',
+                          'bg-gradient-to-r from-red-100 to-rose-100 text-red-800 border-2 border-red-300': theme.etat === 'Refusé'
+                        }">
+                          {{ theme.etat }}
+                        </span>
+                      </div>
+
+                      <div class="space-y-4">
+                        <div v-if="theme.mots_cles" class="flex flex-wrap gap-3">
+                          <span v-for="(motCle, index) in theme.mots_cles.split(',')" :key="index"
+                            class="px-3 py-2 bg-gradient-to-r from-blue-100 to-sky-100 text-blue-800 rounded-2xl text-sm font-bold border border-blue-300 shadow-md">
+                            {{ motCle.trim() }}
+                          </span>
+                        </div>
+
+                        <div
+                          class="text-base font-medium text-slate-600 bg-orange-100 p-3 rounded-2xl border border-orange-300">
+                          Proposé le {{ formatDate(theme.created_at) }}
+                          <span v-if="theme.user && theme.user.prenom && theme.user.nom" class="font-bold text-orange-800">
+                            par {{ theme.user.prenom }} {{ theme.user.nom }}
+                          </span>
+                          <span v-else-if="theme.propose_par === 'stagiaire'" class="font-bold text-orange-800">par le stagiaire</span>
+                          <span v-else class="font-bold text-orange-800">par le maître de stage</span>
+                        </div>
+
+                        <div v-if="theme.etat === 'Refusé' && theme.motif_refus"
+                          class="bg-gradient-to-r from-red-50 to-rose-50 p-6 rounded-3xl border-2 border-red-200 shadow-xl">
+                          <p class="text-lg font-black text-red-800 mb-3">Motif du refus :</p>
+                          <p class="text-base font-medium text-red-700">{{ theme.motif_refus }}</p>
+                        </div>
+
+                        <!-- Actions pour les thèmes en attente modernisées -->
+                        <div v-if="theme.etat === 'Proposé'" class="flex gap-4 pt-4">
+                          <button @click="validerTheme(theme)"
+                            class="px-6 py-3 bg-gradient-to-r from-emerald-600 to-green-600 text-white font-black text-base rounded-2xl shadow-xl hover:from-emerald-700 hover:to-green-700 transform hover:scale-105 transition-all duration-300 flex items-center">
+                            <svg class="w-5 h-5 mr-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                d="M5 13l4 4L19 7" />
+                            </svg>
+                            Valider le thème
+                          </button>
+
+                          <button @click="refuserTheme(theme)"
+                            class="px-6 py-3 bg-gradient-to-r from-red-600 to-rose-600 text-white font-black text-base rounded-2xl shadow-xl hover:from-red-700 hover:to-rose-700 transform hover:scale-105 transition-all duration-300 flex items-center">
+                            <svg class="w-5 h-5 mr-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                d="M6 18L18 6M6 6l12 12" />
+                            </svg>
+                            Refuser le thème
+                          </button>
+                        </div>
+                      </div>
+                    </li>
+                  </ul>
+                </div>
+              </div>
+
+              <!-- Modal de refus modernisé -->
+              <div v-if="themeEnCours"
+                class="fixed inset-0 bg-black bg-opacity-60 flex items-center justify-center p-6 z-50">
+                <div
+                  class="bg-gradient-to-br from-white via-gray-50 to-white rounded-3xl p-8 max-w-2xl w-full shadow-3xl border-2 border-gray-200 transform scale-100 transition-all duration-300">
+                  <h3 class="text-2xl font-black mb-6 text-slate-900 flex items-center">
+                    <svg class="w-8 h-8 mr-3 text-red-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
+                    </svg>
+                    Refuser le thème
+                  </h3>
+
+                  <div class="bg-gradient-to-r from-red-50 to-rose-50 p-6 rounded-2xl border-2 border-red-200 mb-6">
+                    <p class="text-base font-medium text-slate-700 mb-4">Veuillez indiquer le motif du refus pour le
+                      thème :
+                    </p>
+                    <p class="text-lg font-black text-slate-900 bg-red-100 p-3 rounded-2xl border border-red-300">{{
+                      themeEnCours.intitule }}</p>
+                  </div>
+
+                  <textarea v-model="motifRefus"
+                    class="w-full border-2 border-gray-300 rounded-2xl p-4 text-base font-medium bg-gray-50 focus:border-red-500 focus:ring-4 focus:ring-red-200 transition-all duration-300 mb-6"
+                    rows="5" placeholder="Motif du refus..."></textarea>
+
+                  <div class="flex justify-end gap-4">
+                    <button @click="annulerRefus"
+                      class="px-6 py-3 bg-gradient-to-r from-gray-200 to-gray-300 text-gray-800 font-black text-base rounded-2xl shadow-xl hover:from-gray-300 hover:to-gray-400 transform hover:scale-105 transition-all duration-300">
+                      Annuler
+                    </button>
+                    <button @click="confirmerRefus"
+                      class="px-6 py-3 bg-gradient-to-r from-red-600 to-rose-600 text-white font-black text-base rounded-2xl shadow-xl hover:from-red-700 hover:to-rose-700 transform hover:scale-105 transition-all duration-300">
+                      Confirmer le refus
+                    </button>
+                  </div>
+                </div>
+              </div>
             </div>
           </div>
+          <!-- Evaluation modernisée -->
+          <div v-if="activeTab === 'evaluation'" class="space-y-8">
+            <h3 class="text-2xl font-black mb-6 flex items-center text-purple-900">
+              <svg class="w-7 h-7 mr-3 text-purple-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                  d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" />
+              </svg>
+              Évaluation des membres du groupe
+            </h3>
+
+            <div v-if="membresEvaluation.length > 0" class="space-y-6">
+              <div v-for="membre in membresEvaluation" :key="membre.id"
+                class="bg-gradient-to-br from-purple-50 via-violet-50 to-purple-50 p-8 rounded-3xl border-2 border-purple-200 shadow-2xl hover:shadow-3xl transform hover:scale-[1.02] transition-all duration-300">
+
+                <div class="flex justify-between items-center">
+                  <!-- Informations du membre -->
+                  <div class="flex items-center gap-6">
+                    <div
+                      class="bg-gradient-to-br from-purple-100 to-violet-100 rounded-3xl w-16 h-16 flex items-center justify-center shadow-xl border-2 border-purple-300">
+                      <div class="text-purple-700 text-xl font-black">
+                        {{ membre.user.prenom.charAt(0) }}{{ membre.user.nom.charAt(0) }}
+                      </div>
+                    </div>
+                    <div>
+                      <h4 class="text-2xl font-black text-slate-900 mb-2">{{ membre.user.prenom }} {{ membre.user.nom }}
+                      </h4>
+                      <p
+                        class="text-base font-bold text-purple-700 bg-purple-100 px-4 py-2 rounded-2xl border border-purple-300 inline-block">
+                        Stagiaire</p>
+                    </div>
+                  </div>
+
+                  <!-- Actions et notes -->
+                  <div class="flex items-center gap-4">
+                    <template v-if="membre.evaluationMembre && membre.evaluationMembre.note_totale">
+                      <!-- Note affichée -->
+                      <div
+                        class="bg-gradient-to-r from-emerald-100 to-green-100 border-2 border-emerald-300 px-6 py-4 rounded-3xl shadow-xl">
+                        <span class="text-xl font-black text-emerald-800">Note : {{ membre.evaluationMembre.note_totale
+                          }}/20</span>
+                      </div>
+
+                      <!-- Bouton consulter -->
+                      <button @click="consulterEvaluation(membre)"
+                        class="px-6 py-4 bg-gradient-to-r from-blue-600 to-indigo-600 text-white font-black text-base rounded-2xl shadow-xl hover:from-blue-700 hover:to-indigo-700 transform hover:scale-105 transition-all duration-300 flex items-center">
+                        <svg class="w-5 h-5 mr-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                            d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
+                          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                            d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z" />
+                        </svg>
+                        Voir l'évaluation
+                      </button>
+                    </template>
+
+                    <template v-else>
+                      <!-- Bouton évaluer (actif) -->
+                      <button v-if="membre.statutStage === 'Terminé'" @click="ouvrirModalEvaluation(membre)"
+                        class="px-8 py-4 bg-gradient-to-r from-purple-600 to-violet-600 text-white font-black text-lg rounded-2xl shadow-xl hover:from-purple-700 hover:to-violet-700 transform hover:scale-105 transition-all duration-300 flex items-center">
+                        <svg class="w-6 h-6 mr-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                            d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" />
+                        </svg>
+                        Évaluer le stagiaire
+                      </button>
+
+                      <!-- Bouton évaluer (désactivé) -->
+                      <div v-else
+                        class="px-8 py-4 bg-gradient-to-r from-gray-300 to-gray-400 text-gray-600 font-black text-lg rounded-2xl shadow-xl cursor-not-allowed relative group"
+                        :title="'Le stage doit être terminé pour pouvoir évaluer ce stagiaire.'">
+                        <div class="flex items-center">
+                          <svg class="w-6 h-6 mr-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                              d="M18.364 18.364A9 9 0 005.636 5.636m12.728 12.728L5.636 5.636m12.728 12.728L18 12M6 6l12 12" />
+                          </svg>
+                          Évaluer (indisponible)
+                        </div>
+
+                        <!-- Tooltip -->
+                        <div
+                          class="absolute bottom-full left-1/2 transform -translate-x-1/2 mb-2 px-4 py-2 bg-gray-800 text-white text-sm rounded-lg opacity-0 group-hover:opacity-100 transition-opacity duration-300 whitespace-nowrap z-10">
+                          Le stage doit être terminé pour pouvoir évaluer ce stagiaire
+                        </div>
+                      </div>
+                    </template>
+                  </div>
+                </div>
+
+                <!-- Indicateur de statut du stage -->
+                <div class="mt-6 flex items-center gap-3">
+                  <span class="text-base font-bold text-slate-700">Statut du stage :</span>
+                  <span class="px-4 py-2 rounded-2xl text-base font-black" :class="{
+                    'bg-gradient-to-r from-emerald-100 to-green-100 text-emerald-800 border-2 border-emerald-300': membre.statutStage === 'Terminé',
+                    'bg-gradient-to-r from-amber-100 to-yellow-100 text-amber-800 border-2 border-amber-300': membre.statutStage === 'En cours',
+                    'bg-gradient-to-r from-blue-100 to-sky-100 text-blue-800 border-2 border-blue-300': membre.statutStage === 'En attente'
+                  }">
+                    {{ membre.statutStage }}
+                  </span>
+                </div>
+              </div>
+            </div>
+
+            <!-- Message quand aucun membre -->
+            <div v-else
+              class="text-center py-16 bg-gradient-to-br from-purple-50 to-violet-50 rounded-3xl border-2 border-purple-200 shadow-xl">
+              <div
+                class="p-6 bg-gradient-to-br from-purple-100 to-violet-100 rounded-3xl w-24 h-24 flex items-center justify-center mx-auto mb-6 shadow-xl">
+                <svg class="w-12 h-12 text-purple-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                    d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z" />
+                </svg>
+              </div>
+              <p class="text-xl font-bold text-slate-700">Aucun membre du groupe trouvé.</p>
+              <p class="text-base font-medium text-purple-600 mt-2">Les évaluations apparaîtront ici une fois que des
+                membres seront assignés au groupe.</p>
+            </div>
+          </div>
+          <!-- Contacter le stagiaire modernisé -->
+          <div v-if="activeTab === 'contacter'" class="space-y-8">
+            <h3 class="text-2xl font-black mb-6 flex items-center text-cyan-900">
+              <svg class="w-7 h-7 mr-3 text-cyan-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                  d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z" />
+              </svg>
+              Contacter le stagiaire
+            </h3>
+
+            <div
+              class="bg-gradient-to-br from-cyan-50 via-teal-50 to-cyan-50 p-8 rounded-3xl border-2 border-cyan-200 shadow-2xl">
+              <!-- En-tête avec informations du stagiaire -->
+              <div
+                class="mb-8 bg-gradient-to-r from-cyan-100 to-teal-100 p-6 rounded-3xl border-2 border-cyan-300 shadow-xl">
+                <div class="flex items-center gap-4">
+                  <div
+                    class="bg-gradient-to-br from-cyan-500 to-teal-600 text-white rounded-3xl w-16 h-16 flex items-center justify-center shadow-xl">
+                    <svg class="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                        d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
+                    </svg>
+                  </div>
+                  <div>
+                    <h4 class="text-xl font-black text-slate-900 mb-2">Envoyer un message à</h4>
+                    <p class="text-lg font-bold text-cyan-800">{{ getStagiaireName(stage) }}</p>
+                    <p class="text-base font-medium text-slate-600">
+                      <template v-if="stage.stagiaire_info?.email">
+                        {{ stage.stagiaire_info.email }}
+                      </template>
+                      <template v-else-if="stage.demandeStage?.stagiaire?.user?.email">
+                        {{ stage.demandeStage.stagiaire.user.email }}
+                      </template>
+                    </p>
+                  </div>
+                </div>
+              </div>
+
+              <!-- Formulaire de contact -->
+              <div class="space-y-6">
+                <div>
+                  <label for="contact_subject" class="block text-lg font-black mb-3 text-slate-900">
+                    Sujet du message
+                    <span class="text-red-600 ml-1">*</span>
+                  </label>
+                  <input id="contact_subject" v-model="contactForm.subject" type="text" required
+                    class="w-full border-2 border-cyan-300 rounded-2xl px-4 py-4 text-base font-medium bg-cyan-50 focus:border-cyan-500 focus:ring-4 focus:ring-cyan-200 transition-all duration-300 placeholder-slate-500"
+                    placeholder="Saisir le sujet de votre message" />
+                </div>
+
+                <div>
+                  <label for="contact_message" class="block text-lg font-black mb-3 text-slate-900">
+                    Message
+                    <span class="text-red-600 ml-1">*</span>
+                  </label>
+                  <textarea id="contact_message" v-model="contactForm.message" rows="8" required
+                    class="w-full border-2 border-cyan-300 rounded-2xl px-4 py-4 text-base font-medium bg-cyan-50 focus:border-cyan-500 focus:ring-4 focus:ring-cyan-200 transition-all duration-300 placeholder-slate-500 resize-none"
+                    placeholder="Rédigez votre message..."></textarea>
+                  <div class="mt-2 text-sm font-medium text-slate-600">
+                    <svg class="w-4 h-4 inline mr-1 text-cyan-600" fill="none" stroke="currentColor"
+                      viewBox="0 0 24 24">
+                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                        d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+                    </svg>
+                    Soyez précis et professionnel dans votre communication
+                  </div>
+                </div>
+
+                <!-- Boutons d'action -->
+                <div class="flex justify-end gap-4 pt-6 border-t-2 border-cyan-200">
+                  <button type="button" @click="activeTab = 'infos'"
+                    class="px-8 py-4 bg-gradient-to-r from-gray-200 to-gray-300 text-gray-800 font-black text-base rounded-2xl shadow-xl hover:from-gray-300 hover:to-gray-400 transform hover:scale-105 transition-all duration-300 flex items-center">
+                    <svg class="w-5 h-5 mr-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
+                    </svg>
+                    Annuler
+                  </button>
+
+                  <button @click="onContactSubmit"
+                    class="px-8 py-4 bg-gradient-to-r from-cyan-600 to-teal-600 text-white font-black text-base rounded-2xl shadow-xl hover:from-cyan-700 hover:to-teal-700 transform hover:scale-105 transition-all duration-300 flex items-center">
+                    <svg class="w-5 h-5 mr-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                        d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z" />
+                    </svg>
+                    Envoyer le message
+                  </button>
+                </div>
+              </div>
+
+              <!-- Section d'aide -->
+              <div class="mt-8 bg-gradient-to-r from-blue-50 to-indigo-50 p-6 rounded-3xl border-2 border-blue-200">
+                <h5 class="text-lg font-black text-blue-900 mb-3 flex items-center">
+                  <svg class="w-5 h-5 mr-2 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                      d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+                  </svg>
+                  Conseils pour votre message
+                </h5>
+                <ul class="space-y-2 text-base font-medium text-blue-800">
+                  <li class="flex items-start gap-2">
+                    <span class="text-blue-600 font-bold">•</span>
+                    Soyez clair et précis dans vos instructions
+                  </li>
+                  <li class="flex items-start gap-2">
+                    <span class="text-blue-600 font-bold">•</span>
+                    Mentionnez les échéances importantes
+                  </li>
+                  <li class="flex items-start gap-2">
+                    <span class="text-blue-600 font-bold">•</span>
+                    Restez professionnel dans le ton
+                  </li>
+                  <li class="flex items-start gap-2">
+                    <span class="text-blue-600 font-bold">•</span>
+                    N'hésitez pas à poser des questions spécifiques
+                  </li>
+                </ul>
+              </div>
+            </div>
+          </div>
+          <!-- Réaffecter le stage modernisé -->
+          <div v-if="activeTab === 'reaffecter'" class="space-y-8">
+            <!-- Message si déjà réaffecté -->
+            <div v-if="stage.est_reaffecte"
+              class="bg-gradient-to-r from-amber-100 to-orange-100 border-2 border-amber-300 text-amber-800 p-6 rounded-3xl shadow-xl transform transition-all duration-300 hover:scale-[1.02]">
+              <div class="flex items-center gap-4">
+                <div class="p-3 bg-gradient-to-br from-amber-500 to-orange-600 rounded-2xl shadow-lg">
+                  <svg class="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                      d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" />
+                  </svg>
+                </div>
+                <div>
+                  <p class="font-bold text-lg">Stage déjà réaffecté</p>
+                  <p class="font-medium text-base">Ce stage a déjà été réaffecté. Vous ne pouvez pas le réaffecter à
+                    nouveau.</p>
+                </div>
+              </div>
+            </div>
+
+            <div v-else>
+              <h3 class="text-2xl font-black mb-6 flex items-center text-rose-900">
+                <svg class="w-7 h-7 mr-3 text-rose-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                    d="M8 7h12m0 0l-4-4m4 4l-4 4m0 6H4m0 0l4 4m-4-4l4-4" />
+                </svg>
+                Réaffecter le stage
+              </h3>
+
+              <!-- Avertissement de sécurité -->
+              <div
+                class="bg-gradient-to-r from-red-100 to-rose-100 border-2 border-red-300 p-8 rounded-3xl shadow-xl mb-8">
+                <div class="flex items-start gap-6">
+                  <div class="p-4 bg-gradient-to-br from-red-500 to-rose-600 rounded-3xl shadow-xl">
+                    <svg class="w-8 h-8 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                        d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" />
+                    </svg>
+                  </div>
+                  <div class="flex-1">
+                    <h4 class="text-xl font-black text-red-800 mb-4">⚠️ Attention - Action irréversible</h4>
+                    <div class="text-base font-medium text-red-700 space-y-3">
+                      <p>La réaffectation d'un stage est une action <strong>définitive</strong> qui transfère la
+                        responsabilité à un autre maître de stage.</p>
+                      <p>Vous n'aurez plus la possibilité de modifier les informations de ce stage après cette action.
+                      </p>
+                      <p>Vous pourrez seulement le <strong>consulter en lecture seule</strong>.</p>
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              <!-- Formulaire de réaffectation -->
+              <form @submit.prevent="onReaffectationSubmit"
+                class="bg-gradient-to-br from-rose-50 via-pink-50 to-rose-50 p-8 rounded-3xl border-2 border-rose-200 shadow-2xl">
+                <div class="space-y-8">
+                  <!-- Sélection du nouveau maître et date -->
+                  <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+                    <div>
+                      <label for="nouveau_maitre_stage_id" class="block text-lg font-black mb-3 text-slate-900">
+                        Nouveau maître de stage
+                        <span class="text-red-600 ml-1">*</span>
+                      </label>
+                      <select id="nouveau_maitre_stage_id" v-model="reaffectationForm.nouveau_maitre_stage_id" required
+                        class="w-full border-2 border-rose-300 rounded-2xl px-4 py-4 text-base font-medium bg-rose-50 focus:border-rose-500 focus:ring-4 focus:ring-rose-200 transition-all duration-300">
+                        <option value="">Sélectionner un maître de stage</option>
+                        <option v-for="ms in maitresDeStage" :key="ms.id" :value="ms.id">
+                          {{ ms.nom }} {{ ms.prenom }} ({{ ms.structure.sigle }})
+                        </option>
+                      </select>
+                    </div>
+
+                    <div>
+                      <label for="date_reaffectation" class="block text-lg font-black mb-3 text-slate-900">
+                        Date de réaffectation
+                        <span class="text-red-600 ml-1">*</span>
+                      </label>
+                      <input id="date_reaffectation" v-model="reaffectationForm.date_reaffectation" type="date" required
+                        class="w-full border-2 border-rose-300 rounded-2xl px-4 py-4 text-base font-medium bg-rose-50 focus:border-rose-500 focus:ring-4 focus:ring-rose-200 transition-all duration-300"
+                        :min="today" />
+                    </div>
+                  </div>
+
+                  <!-- Motif de la réaffectation -->
+                  <div>
+                    <label for="motif" class="block text-lg font-black mb-3 text-slate-900">
+                      Motif de la réaffectation
+                      <span class="text-red-600 ml-1">*</span>
+                    </label>
+                    <textarea id="motif" v-model="reaffectationForm.motif" rows="6" required
+                      class="w-full border-2 border-rose-300 rounded-2xl px-4 py-4 text-base font-medium bg-rose-50 focus:border-rose-500 focus:ring-4 focus:ring-rose-200 transition-all duration-300 placeholder-slate-500 resize-none"
+                      placeholder="Expliquez le motif de cette réaffectation..."></textarea>
+                    <div class="mt-2 text-sm font-medium text-slate-600">
+                      <svg class="w-4 h-4 inline mr-1 text-rose-600" fill="none" stroke="currentColor"
+                        viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                          d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+                      </svg>
+                      Détaillez les raisons qui justifient cette réaffectation
+                    </div>
+                  </div>
+
+                  <!-- Confirmation avec checkbox -->
+                  <div class="bg-gradient-to-r from-red-50 to-rose-50 p-6 rounded-3xl border-2 border-red-200">
+                    <div class="flex items-start gap-4">
+                      <div class="flex items-center h-6 mt-1">
+                        <input id="confirmation" v-model="reaffectationForm.confirmation" type="checkbox" required
+                          class="h-5 w-5 text-rose-600 border-2 border-rose-400 rounded-lg focus:ring-rose-500 focus:ring-4" />
+                      </div>
+                      <div class="flex-1">
+                        <label for="confirmation" class="text-lg font-black text-slate-900 cursor-pointer">
+                          Je confirme la réaffectation de ce stage
+                        </label>
+                        <p class="text-base font-medium text-red-700 mt-2">
+                          Je comprends que cette action est <strong>irréversible</strong> et que je n'aurai plus qu'un
+                          accès
+                          en lecture à ce stage après la réaffectation.
+                        </p>
+                      </div>
+                    </div>
+                  </div>
+
+                  <!-- Boutons d'action -->
+                  <div class="flex justify-end gap-4 pt-6 border-t-2 border-rose-200">
+                    <button type="button" @click="activeTab = 'infos'"
+                      class="px-8 py-4 bg-gradient-to-r from-gray-200 to-gray-300 text-gray-800 font-black text-base rounded-2xl shadow-xl hover:from-gray-300 hover:to-gray-400 transform hover:scale-105 transition-all duration-300 flex items-center">
+                      <svg class="w-5 h-5 mr-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                          d="M6 18L18 6M6 6l12 12" />
+                      </svg>
+                      Annuler
+                    </button>
+
+                    <button type="submit"
+                      class="px-8 py-4 bg-gradient-to-r from-red-600 to-rose-600 text-white font-black text-base rounded-2xl shadow-xl hover:from-red-700 hover:to-rose-700 transform hover:scale-105 transition-all duration-300 flex items-center">
+                      <svg class="w-5 h-5 mr-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                          d="M8 7h12m0 0l-4-4m4 4l-4 4m0 6H4m0 0l4 4m-4-4l4-4" />
+                      </svg>
+                      Réaffecter le stage
+                    </button>
+                  </div>
+                </div>
+              </form>
+
+              <!-- Section informative -->
+              <div class="bg-gradient-to-r from-blue-50 to-indigo-50 p-6 rounded-3xl border-2 border-blue-200">
+                <h5 class="text-lg font-black text-blue-900 mb-3 flex items-center">
+                  <svg class="w-5 h-5 mr-2 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                      d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+                  </svg>
+                  Après la réaffectation
+                </h5>
+                <ul class="space-y-2 text-base font-medium text-blue-800">
+                  <li class="flex items-start gap-2">
+                    <span class="text-blue-600 font-bold">•</span>
+                    Le nouveau maître de stage recevra une notification
+                  </li>
+                  <li class="flex items-start gap-2">
+                    <span class="text-blue-600 font-bold">•</span>
+                    Votre accès sera limité à la consultation
+                  </li>
+                  <li class="flex items-start gap-2">
+                    <span class="text-blue-600 font-bold">•</span>
+                    L'historique des actions sera conservé
+                  </li>
+                  <li class="flex items-start gap-2">
+                    <span class="text-blue-600 font-bold">•</span>
+                    Le stagiaire sera informé du changement
+                  </li>
+                </ul>
+              </div>
+            </div>
+          </div>
+          <!-- Le contenu suivra ici -->
         </div>
       </div>
     </div>
   </MSLayout>
 
-  <!-- Modal d'évaluation d'un membre -->
-  <div v-if="modalEvalOuvert" class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
-    <div class="bg-white rounded-lg p-8 max-w-lg w-full shadow-lg">
-      <h3 class="text-lg font-bold mb-4">
-        Évaluation de {{ membreAevaluer?.user?.prenom }} {{ membreAevaluer?.user?.nom }}
+  <!-- Après la liste des membres à évaluer dans l'onglet 'Évaluation' -->
+  <div v-if="modalEvalOuvert" class="fixed inset-0 bg-black bg-opacity-60 flex items-center justify-center z-50">
+    <div class="bg-white rounded-3xl p-8 max-w-2xl w-full shadow-3xl border-2 border-gray-200">
+      <h3 class="text-2xl font-black mb-6 text-purple-900 flex items-center">
+        <svg class="w-8 h-8 mr-3 text-purple-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" />
+        </svg>
+        Évaluer {{ membreAevaluer?.user?.prenom }} {{ membreAevaluer?.user?.nom }}
       </h3>
       <form @submit.prevent="soumettreEvaluationMembre">
         <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-          <div class="mb-3">
-            <label class="block text-sm font-medium mb-1">Ponctualité</label>
-            <input type="number" v-model="formEvalMembre.ponctualite" min="1" max="2" class="w-full border rounded px-2 py-1" required />
-          </div>
-          <div class="mb-3">
-            <label class="block text-sm font-medium mb-1">Motivation</label>
-            <input type="number" v-model="formEvalMembre.motivation" min="1" max="2" class="w-full border rounded px-2 py-1" required />
-          </div>
-          <div class="mb-3">
-            <label class="block text-sm font-medium mb-1">Capacité à apprendre</label>
-            <input type="number" v-model="formEvalMembre.capacite_apprendre" min="1" max="2" class="w-full border rounded px-2 py-1" required />
-          </div>
-          <div class="mb-3">
-            <label class="block text-sm font-medium mb-1">Qualité du travail</label>
-            <input type="number" v-model="formEvalMembre.qualite_travail" min="1" max="2" class="w-full border rounded px-2 py-1" required />
-          </div>
-          <div class="mb-3">
-            <label class="block text-sm font-medium mb-1">Rapidité d'exécution</label>
-            <input type="number" v-model="formEvalMembre.rapidite_execution" min="1" max="2" class="w-full border rounded px-2 py-1" required />
-          </div>
-          <div class="mb-3">
-            <label class="block text-sm font-medium mb-1">Jugement</label>
-            <input type="number" v-model="formEvalMembre.jugement" min="1" max="2" class="w-full border rounded px-2 py-1" required />
-          </div>
-          <div class="mb-3">
-            <label class="block text-sm font-medium mb-1">Esprit d'initiative / motivation</label>
-            <input type="number" v-model="formEvalMembre.esprit_motivation" min="1" max="2" class="w-full border rounded px-2 py-1" required />
-          </div>
-          <div class="mb-3">
-            <label class="block text-sm font-medium mb-1">Esprit de collaboration</label>
-            <input type="number" v-model="formEvalMembre.esprit_collaboration" min="1" max="2" class="w-full border rounded px-2 py-1" required />
-          </div>
-          <div class="mb-3">
-            <label class="block text-sm font-medium mb-1">Sens des responsabilités</label>
-            <input type="number" v-model="formEvalMembre.sens_responsabilite" min="1" max="2" class="w-full border rounded px-2 py-1" required />
-          </div>
-          <div class="mb-3">
-            <label class="block text-sm font-medium mb-1">Communication</label>
-            <input type="number" v-model="formEvalMembre.communication" min="1" max="2" class="w-full border rounded px-2 py-1" required />
+          <div v-for="(label, key) in {
+            ponctualite: 'Ponctualité',
+            motivation: 'Motivation',
+            capacite_apprendre: 'Capacité à apprendre',
+            qualite_travail: 'Qualité du travail',
+            rapidite_execution: 'Rapidité d\'exécution',
+            jugement: 'Jugement',
+            esprit_motivation: 'Esprit de motivation',
+            esprit_collaboration: 'Esprit de collaboration',
+            sens_responsabilite: 'Sens des responsabilités',
+            communication: 'Communication'
+          }" :key="key">
+            <label class="block font-bold mb-2">{{ label }}</label>
+            <input type="number" v-model="formEvalMembre[key]" min="1" max="2" class="w-full border rounded p-2" />
           </div>
         </div>
-        <div class="mb-3">
-          <label class="block text-sm font-medium mb-1">Commentaire général</label>
-          <textarea v-model="formEvalMembre.commentaire_general" class="w-full border rounded px-2 py-1"></textarea>
+        <div class="mt-4">
+          <label class="block font-bold mb-2">Commentaire général</label>
+          <textarea v-model="formEvalMembre.commentaire_general" rows="3" class="w-full border rounded p-2"></textarea>
         </div>
-        <div class="mb-3 text-right">
-          <span class="font-semibold text-blue-700">Note totale : {{ getTotalEvalMembre() }}/20</span>
-        </div>
-        <div class="flex justify-end gap-2 mt-4">
-          <button type="button" @click="fermerModalEval" class="px-4 py-2 bg-gray-200 rounded">Annuler</button>
-          <button type="submit" class="px-4 py-2 bg-blue-600 text-white rounded">Enregistrer</button>
+        <div class="flex justify-end gap-4 mt-6">
+          <button type="button" @click="fermerModalEval" class="px-6 py-3 bg-gray-200 rounded-2xl font-bold">Annuler</button>
+          <button type="submit" class="px-6 py-3 bg-purple-600 text-white rounded-2xl font-bold">Valider</button>
         </div>
       </form>
     </div>
@@ -811,7 +1107,7 @@ const fetchThemesProposes = async () => {
 
 const validerTheme = async (theme) => {
   if (!confirm('Êtes-vous sûr de vouloir valider ce thème ?')) return
-  
+
   try {
     await axios.post(`/agent/ms/stages/${props.stage.id}/themes/${theme.id}/action`, {
       action: 'valider'
@@ -835,7 +1131,7 @@ const confirmerRefus = async () => {
     alert('Veuillez indiquer un motif de refus')
     return
   }
-  
+
   try {
     await axios.post(`/agent/ms/stages/${props.stage.id}/themes/${themeEnCours.value.id}/action`, {
       action: 'refuser',
@@ -1116,7 +1412,7 @@ const onThemeSubmit = () => {
 // Fonction pour éditer l'évaluation
 const editEvaluation = () => {
   if (stage.evaluation) {
-  evaluationForm.value = {
+    evaluationForm.value = {
       ponctualite: stage.evaluation.ponctualite || 1,
       motivation: stage.evaluation.motivation || 1,
       capacite_apprendre: stage.evaluation.capacite_apprendre || 1,
@@ -1128,7 +1424,7 @@ const editEvaluation = () => {
       sens_responsabilite: stage.evaluation.sens_responsabilite || 1,
       communication: stage.evaluation.communication || 1,
       commentaire_general: stage.evaluation.commentaire_general || ''
-  };
+    };
   }
 };
 
@@ -1223,9 +1519,9 @@ const onContactSubmit = async () => {
     });
 
     if (response.data.success) {
-  if (toast.value) {
-    toast.value.show({
-      type: 'success',
+      if (toast.value) {
+        toast.value.show({
+          type: 'success',
           message: `Message envoyé à ${stagiaireEmail} avec succès !`
         });
       }
@@ -1483,23 +1779,23 @@ const getTotalEvalMembre = () => {
 };
 
 const soumettreEvaluationMembre = async () => {
-  if (!membreAevaluer.value) return;
-  console.log('DEBUG soumission membreAevaluer:', membreAevaluer.value); // Ajout du log
   try {
-    // Utiliser l'id du stage du membre à évaluer (à injecter côté backend)
-    await axios.post(`/agent/ms/stages/${membreAevaluer.value.stage_id}/noter`, {
+    // Utiliser le stage_id du membre à évaluer (important pour les groupes)
+    const response = await axios.post(`/agent/ms/stages/${membreAevaluer.value.stage_id}/noter`, {
       ...formEvalMembre.value,
+      membre_id: membreAevaluer.value.user.id,
       note_totale: getTotalEvalMembre(),
-      membre_id: membreAevaluer.value.user.id
     });
-    // Rafraîchir l'évaluation du membre (idéalement, re-fetch ou maj locale)
-    membreAevaluer.value.evaluationMembre = {
-      ...formEvalMembre.value,
-      note_totale: getTotalEvalMembre()
-    };
-    fermerModalEval();
+    if (response.data.success) {
+      if (toast.value && typeof toast.value.show === 'function') toast.value.show({ type: 'success', message: response.data.message });
+      modalEvalOuvert.value = false;
+      // Rafraîchir la liste ou autre action si besoin
+    } else {
+      if (toast.value && typeof toast.value.show === 'function') toast.value.show({ type: 'error', message: response.data.message });
+    }
   } catch (error) {
-    alert('Erreur lors de la soumission de l\'évaluation');
+    let msg = error.response?.data?.message || error.message || 'Erreur lors de la soumission de l\'évaluation';
+    if (toast.value && typeof toast.value.show === 'function') toast.value.show({ type: 'error', message: msg });
   }
 };
 

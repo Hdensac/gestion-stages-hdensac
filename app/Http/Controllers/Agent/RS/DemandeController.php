@@ -15,6 +15,8 @@ use Inertia\Inertia;
 use Illuminate\Support\Facades\Log;
 use App\Notifications\StagiaireNotification;
 use Illuminate\Support\Facades\DB;
+use App\Models\AffectationMaitreStage;
+use App\Mail\AffectationMaitreStageMail;
 
 class DemandeController extends Controller
 {
@@ -139,10 +141,24 @@ class DemandeController extends Controller
 
         $user = Auth::user();
         $agent = $user->agent;
+        $structure = Structure::where('responsable_id', $agent->id)->first();
+        // Récupérer tous les IDs de la structure principale et de ses sous-structures
+        $getAllSubStructureIds = function($parentId) use (&$getAllSubStructureIds) {
+            $ids = [$parentId];
+            $children = Structure::where('parent_id', $parentId)->pluck('id');
+            foreach ($children as $childId) {
+                $ids = array_merge($ids, $getAllSubStructureIds($childId));
+            }
+            return $ids;
+        };
+        $allStructureIds = $structure ? $getAllSubStructureIds($structure->id) : [];
+        // Récupérer tous les agents MS de ces structures
+        $agentsMS = \App\Models\Agent::with('user')
+            ->where('role_agent', 'MS')
+            ->whereIn('structure_id', $allStructureIds)
+            ->get();
 
         try {
-            $structure = Structure::where('responsable_id', $agent->id)->first();
-
             // Vérifier si la demande est directement liée à la structure ou affectée via la table d'affectation
             $estAffectee = \App\Models\AffectationResponsableStructure::where('structure_id', $structure->id)
                 ->where('id_demande_stages', $demande->id)
@@ -159,10 +175,10 @@ class DemandeController extends Controller
             $affectation = \App\Models\AffectationResponsableStructure::where('id_demande_stages', $demande->id)
                 ->orderByDesc('date_affectation')
                 ->orderByDesc('id')
-                ->with('structure')
-                ->first();
+                    ->with('structure')
+                    ->first();
 
-            if ($affectation && $affectation->structure) {
+                if ($affectation && $affectation->structure) {
                 $demande->setRelation('structure', $affectation->structure);
                 \Log::info('Structure d\'affectation utilisée', [
                     'demande_id' => $demande->id,
@@ -191,6 +207,7 @@ class DemandeController extends Controller
                 'demande' => $demande->toArray(),
                 'membres' => $demande->nature === 'Groupe' ? $demande->membres : [],
                 'maitre_stage_deja_affecte' => $maitre_stage_deja_affecte,
+                'agentsMS' => $agentsMS,
             ]);
 
         } catch (\Exception $e) {
@@ -382,25 +399,35 @@ class DemandeController extends Controller
                     $existingStage = \App\Models\Stage::where('demande_stage_id', $demande->id)->first();
 
                     if (!$existingStage) {
-                    $stage = \App\Models\Stage::create([
-                        'demande_stage_id' => $demande->id,
-                        'structure_id' => $demande->structure_id,
-                        'date_debut' => $demande->date_debut,
-                        'date_fin' => $demande->date_fin,
-                        'statut' => 'En cours',
+                        $stage = \App\Models\Stage::create([
+                            'demande_stage_id' => $demande->id,
+                            'structure_id' => $demande->structure_id,
+                            'date_debut' => $demande->date_debut,
+                            'date_fin' => $demande->date_fin,
+                            'statut' => 'En cours',
                             'type' => $typeFormatted,
                             'stagiaire_id' => $demande->stagiaire_id
-                    ]);
+                        ]);
 
                         Log::info('Stage créé pour une demande individuelle', [
-                        'stage_id' => $stage->id,
+                            'stage_id' => $stage->id,
                             'demande_stage_id' => $demande->id,
                             'stagiaire_id' => $demande->stagiaire_id
-                    ]);
+                        ]);
+                    } else {
+                        $stage = $existingStage;
                     }
                 }
 
                 // Vérifier que le stage a bien été créé
+                if (!$stage) {
+                    Log::error('Échec de la création du stage', [
+                        'demande_id' => $demande->id,
+                        'structure_id' => $demande->structure_id
+                    ]);
+                    throw new \Exception('Échec de la création du stage');
+                }
+
                 $stageCheck = \App\Models\Stage::find($stage->id);
 
                 Log::info('Vérification de la création du stage', [
@@ -602,10 +629,15 @@ class DemandeController extends Controller
                 return response()->json([], 200);
             }
 
-            // Récupérer les agents avec le rôle MS appartenant à la structure dont l'agent est responsable
+            // Récupérer les IDs de la structure principale et de ses sous-structures
+            $structureIds = Structure::where('parent_id', $structure->id)
+                ->orWhere('id', $structure->id)
+                ->pluck('id');
+
+            // Récupérer les agents avec le rôle MS appartenant à la structure principale ET à ses sous-structures
             $msAgents = Agent::with(['user', 'structuresResponsable'])
                 ->where('role_agent', 'MS')
-                ->where('structure_id', $structure->id)
+                ->whereIn('structure_id', $structureIds)
                 ->get()
                 ->map(function ($agent) {
                     // Ajouter la structure dont l'agent est responsable (si applicable)
@@ -620,7 +652,7 @@ class DemandeController extends Controller
             // Journaliser le nombre d'agents trouvés pour le débogage
             Log::info('Agents MS trouvés', [
                 'count' => $msAgents->count(),
-                'structure_id' => $structure->id,
+                'structure_ids' => $structureIds->toArray(),
                 'agents' => $msAgents->pluck('id')->toArray()
             ]);
 
@@ -669,8 +701,6 @@ class DemandeController extends Controller
             return response()->json([], 500);
         }
     }
-
-
 
     /**
      * Assigner un agent à une demande
@@ -730,194 +760,115 @@ class DemandeController extends Controller
      */
     public function affecterMaitreStage(Request $request, DemandeStage $demande)
     {
-        $user = Auth::user();
-        $agent = $user->agent;
-
         try {
-            // Vérifier que l'agent est bien responsable de la structure concernée
-            $structure = Structure::where('responsable_id', $agent->id)->first();
-
-            // Vérifier si la demande est directement liée à la structure ou affectée via la table d'affectation
-            $estAffectee = \App\Models\AffectationResponsableStructure::where('structure_id', $structure->id)
-                ->where('id_demande_stages', $demande->id)
-                ->exists();
-
-            if (!$structure || ($demande->structure_id !== $structure->id && !$estAffectee)) {
-                return redirect()->back()->with('error', 'Vous n\'avez pas accès à cette demande.');
-            }
-
-            // Journaliser les données reçues
+            $agent = Auth::user()->agent;
+            
             Log::info('Données reçues pour l\'affectation du maître de stage', [
                 'request_all' => $request->all(),
                 'demande_id' => $demande->id
             ]);
 
-            // Valider l'ID de l'agent
+            // Valider les données
             $validated = $request->validate([
                 'maitre_stage_id' => 'required|exists:agents,id'
             ]);
 
-            Log::info('Données validées', [
-                'maitre_stage_id' => $validated['maitre_stage_id']
-            ]);
+            Log::info('Données validées', $validated);
 
-            // Récupérer l'agent à assigner comme maître de stage
-            $maitreStage = Agent::with('user')->findOrFail($validated['maitre_stage_id']);
-
+            // Récupérer le maître de stage
+            $maitreStage = Agent::findOrFail($validated['maitre_stage_id']);
+            
             Log::info('Agent récupéré', [
                 'agent_id' => $maitreStage->id,
                 'user_id' => $maitreStage->user_id,
                 'role_agent' => $maitreStage->role_agent
             ]);
 
-            // Vérifier que l'agent a bien le rôle MS
+            // Vérifier que le maître de stage a le rôle MS
             if ($maitreStage->role_agent !== 'MS') {
-                return redirect()->back()->with('error', 'L\'agent sélectionné n\'est pas un maître de stage (rôle MS).');
+                return redirect()->back()->with('error', 'L\'agent sélectionné n\'est pas un maître de stage.');
             }
 
-            // Vérifier que le maître de stage appartient à la structure du RS
-            if ($maitreStage->structure_id !== $structure->id) {
-                return redirect()->back()->with('error', 'Le maître de stage sélectionné n\'appartient pas à votre structure.');
-            }
-
-            // Vérifier que la demande est acceptée
-            if ($demande->statut !== 'Acceptée') {
-                return redirect()->back()->with('error', 'La demande doit être acceptée avant d\'affecter un maître de stage.');
-            }
-
-            // Charger les relations nécessaires
-            $demande->load(['structure', 'affectations.structure']);
-
-            // Toujours utiliser la structure d'affectation la plus récente si elle existe
+            // Récupérer la structure de l'affectation la plus récente
             $affectation = \App\Models\AffectationResponsableStructure::where('id_demande_stages', $demande->id)
                 ->orderByDesc('date_affectation')
                 ->orderByDesc('id')
                 ->with('structure')
                 ->first();
 
-            if ($affectation && $affectation->structure) {
-                $demande->structure = $affectation->structure;
-                \Log::info('Structure d\'affectation utilisée', [
-                    'demande_id' => $demande->id,
-                    'structure_id' => $affectation->structure->id,
-                    'structure_libelle' => $affectation->structure->libelle
-                ]);
-            } else {
-                \Log::info('Structure d\'origine utilisée', [
-                    'demande_id' => $demande->id,
-                    'structure_id' => $demande->structure ? $demande->structure->id : null,
-                    'structure_libelle' => $demande->structure ? $demande->structure->libelle : null
-                ]);
+            if (!$affectation || !$affectation->structure) {
+                return redirect()->back()->with('error', 'Aucune structure d\'affectation trouvée pour cette demande.');
             }
 
-            // Récupérer le stage associé à la demande (qui a été créé lors de l'acceptation)
-            $stage = \App\Models\Stage::where('demande_stage_id', $demande->id)->first();
+            $structure = $affectation->structure;
+            
+            Log::info('Structure d\'affectation utilisée', [
+                'demande_id' => $demande->id,
+                'structure_id' => $structure->id,
+                'structure_libelle' => $structure->libelle
+            ]);
 
+            // Récupérer les IDs de la structure principale et de ses sous-structures
+            $structureIds = Structure::where('parent_id', $structure->id)
+                ->orWhere('id', $structure->id)
+                ->pluck('id')
+                ->toArray();
+
+            if (!in_array($maitreStage->structure_id, $structureIds)) {
+                return redirect()->back()->with('error', 'Le maître de stage sélectionné n\'appartient pas à votre structure ou à ses sous-structures.');
+            }
+
+            // Vérifier si le stage existe déjà
+            $stage = \App\Models\Stage::where('demande_stage_id', $demande->id)->first();
+            
             if (!$stage) {
-                // Si pour une raison quelconque le stage n'existe pas, le créer
+                // Créer le stage
                 $stage = \App\Models\Stage::create([
                     'demande_stage_id' => $demande->id,
-                    'structure_id' => $demande->structure ? $demande->structure->id : $structure->id,
+                    'structure_id' => $structure->id,
+                    'stagiaire_id' => $demande->stagiaire_id,
                     'date_debut' => $demande->date_debut,
                     'date_fin' => $demande->date_fin,
-                    'statut' => 'En cours',
-                    'type' => $demande->type
-                ]);
-
-                Log::info('Stage créé lors de l\'affectation du maître de stage (normalement déjà créé lors de l\'acceptation)', [
-                    'stage_id' => $stage->id,
-                    'demande_stage_id' => $demande->id
-                ]);
-            }
-
-            Log::info('Stage créé ou récupéré', [
-                'stage_id' => $stage->id,
-                'demande_stage_id' => $demande->id,
-                'structure_id' => $demande->structure_id,
-                'was_created' => $stage->wasRecentlyCreated
-            ]);
-
-            // Créer ou mettre à jour l'affectation du maître de stage
-            \App\Models\AffectationMaitreStage::updateOrCreate(
-                ['stage_id' => $stage->id],
-                [
-                    'maitre_stage_id' => $maitreStage->user_id, // Utiliser l'ID de l'utilisateur associé à l'agent
-                    'agent_affectant_id' => $agent->id,
-                    'date_affectation' => now(),
+                    'type' => strtolower($demande->type),
                     'statut' => 'En cours'
-                ]
-            );
-
-            // Envoi du mail au stagiaire
-            try {
-                $stagiaire = $demande->stagiaire;
-                if ($stagiaire && $stagiaire->user && $stagiaire->user->email) {
-                    \Mail::to($stagiaire->user->email)
-                        ->send(new \App\Mail\AffectationMaitreStageMail($stagiaire, $stage, $maitreStage->user, false));
-                }
-                // Envoi aux membres du groupe si besoin
-                if ($demande->nature === 'Groupe' && $demande->membres) {
-                    foreach ($demande->membres as $membre) {
-                        if (
-                            $membre['user'] &&
-                            $membre['user']['email'] &&
-                            $stagiaire->user->email !== $membre['user']['email']
-                        ) {
-                            \Mail::to($membre['user']['email'])
-                                ->send(new \App\Mail\AffectationMaitreStageMail($membre, $stage, $maitreStage->user, false));
-                        }
-                    }
-                }
-            } catch (\Exception $e) {
-                \Log::error('Erreur lors de l\'envoi du mail d\'affectation MS', [
-                    'error' => $e->getMessage(),
-                    'stage_id' => $stage->id
                 ]);
             }
 
-            // Journaliser les détails de l'affectation pour le débogage
-            Log::info('Affectation du maître de stage créée', [
+            // Créer l'affectation
+            $affectation = AffectationMaitreStage::create([
                 'stage_id' => $stage->id,
                 'maitre_stage_id' => $maitreStage->user_id,
-                'agent_affectant_id' => $agent->id
+                'agent_affectant_id' => $agent->id,
+                'date_affectation' => now(),
+                'statut' => 'En cours'
             ]);
 
-            // Après l'envoi du mail d'affectation, notifier le stagiaire et les membres du groupe
-            try {
-                if ($stagiaire && $stagiaire->user) {
-                    $stagiaire->user->notify(new StagiaireNotification(
-                        'Vous avez été affecté à un maître de stage.',
-                        route('stagiaire.stages')
-                    ));
-                }
-                if ($demande->nature === 'Groupe' && $demande->membres) {
-                    foreach ($demande->membres as $membre) {
-                        if ($membre['user'] && $stagiaire->user->id !== $membre['user']['id']) {
-                            $membre['user']->notify(new StagiaireNotification(
-                                'Votre groupe a été affecté à un maître de stage.',
-                                route('stagiaire.stages')
-                            ));
-                        }
-                    }
-                }
-            } catch (\Exception $e) {
-                \Log::error('Erreur lors de l\'envoi de la notification Laravel (affectation)', [
-                    'error' => $e->getMessage(),
-                    'demande_id' => $demande->id
-                ]);
-            }
+            // Mettre à jour le statut de la demande
+            $demande->update([
+                'statut' => 'En cours',
+                'traite_par' => $agent->id,
+                'date_traitement' => now()
+            ]);
 
-            return redirect()->back()->with('success', 'Le maître de stage a été affecté avec succès.');
+            // Envoyer un email de notification au maître de stage
+            Mail::to($maitreStage->user->email)->send(new AffectationMaitreStageMail($demande->stagiaire->user, $stage, $maitreStage->user));
+
+            Log::info('Email d\'affectation du maître de stage envoyé avec succès.', [
+                'demande_id' => $demande->id,
+                'maitre_stage_id' => $maitreStage->id
+            ]);
+
+            return redirect()->back()->with('success', 'Maître de stage affecté avec succès.');
 
         } catch (\Exception $e) {
             Log::error('Erreur lors de l\'affectation du maître de stage', [
                 'error' => $e->getMessage(),
-                'agent_id' => $agent->id,
                 'demande_id' => $demande->id,
-                'maitre_stage_id' => $request->maitre_stage_id ?? null
+                'maitre_stage_id' => $request->maitre_stage_id,
+                'stack' => $e->getTraceAsString()
             ]);
 
-            return redirect()->back()->with('error', 'Une erreur est survenue lors de l\'affectation du maître de stage: ' . $e->getMessage());
+            return redirect()->back()->with('error', 'Une erreur est survenue lors de l\'affectation du maître de stage.');
         }
     }
 }

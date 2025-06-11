@@ -144,7 +144,8 @@ class StageController extends Controller
             })->toArray());
 
             return Inertia::render('Agent/MS/Stages/Index', [
-                'stages' => $stagesArray
+                'stages' => $stagesArray,
+                'notifications' => $user->notifications()->latest()->take(20)->get(),
             ]);
 
         } catch (\Exception $e) {
@@ -304,7 +305,8 @@ class StageController extends Controller
                 ]),
                 'openContact' => $request->boolean('openContact'),
                 'success' => session('success'),
-                'error' => session('error')
+                'error' => session('error'),
+                'notifications' => $user->notifications()->latest()->take(20)->get(),
             ]);
 
         } catch (\Exception $e) {
@@ -798,7 +800,22 @@ class StageController extends Controller
                         'date_evaluation' => now()
                     ])
                 );
-                // Notifier le stagiaire
+                // Envoyer un mail à tous les stagiaires du groupe (demandeur et membres) pour notifier l'évaluation
+                $stages = \App\Models\Stage::where('demande_stage_id', $stageMembre->demande_stage_id)->get();
+                foreach ($stages as $s) {
+                    if ($s->stagiaire && $s->stagiaire->user) {
+                        try {
+                            \Mail::to($s->stagiaire->user->email)
+                                ->send(new \App\Mail\EvaluationNotifieeMail($s->stagiaire, $s, $evaluation));
+                        } catch (\Exception $e) {
+                            \Log::error('Erreur lors de l\'envoi du mail d\'évaluation', [
+                                'error' => $e->getMessage(),
+                                'stage_id' => $s->id
+                            ]);
+                        }
+                    }
+                }
+                // (Notifier le stagiaire via la notification interne si nécessaire)
                 if ($stageMembre->stagiaire && $stageMembre->stagiaire->user) {
                     $stagiaireUser = $stageMembre->stagiaire->user;
                     $stagiaireUser->notify(new \App\Notifications\StagiaireNotification(
@@ -820,12 +837,12 @@ class StageController extends Controller
                 ->first();
 
             if (!$affectation) {
-                return redirect()->back()->with('error', 'Vous n\'êtes pas autorisé à noter ce stage.');
+                return response()->json(['success' => false, 'message' => 'Vous n\'êtes pas autorisé à noter ce stage.'], 403);
             }
 
             // Vérifier que le stage est terminé
             if ($stage->statut !== 'Terminé') {
-                return redirect()->back()->with('error', 'Vous ne pouvez noter que les stages terminés.');
+                return response()->json(['success' => false, 'message' => 'Vous ne pouvez noter que les stages terminés.'], 403);
             }
 
             // Vérifier si une évaluation existe déjà pour ce stage et cet agent
@@ -833,7 +850,7 @@ class StageController extends Controller
                 ->where('agent_id', $agent->id)
                 ->first();
             if ($evaluationExistante) {
-                return redirect()->back()->with('error', 'Vous avez déjà saisi une évaluation pour ce stage. La modification n\'est pas autorisée.');
+                return response()->json(['success' => false, 'message' => 'Vous avez déjà saisi une évaluation pour ce stage. La modification n\'est pas autorisée.'], 409);
             }
 
             // Valider tous les critères d'évaluation
@@ -863,7 +880,23 @@ class StageController extends Controller
                 ])
             );
 
-            // Lors de la soumission d'une évaluation
+            // Envoyer un mail à tous les stagiaires du groupe (demandeur et membres) pour notifier l'évaluation
+            $stages = \App\Models\Stage::where('demande_stage_id', $stage->demande_stage_id)->get();
+            foreach ($stages as $s) {
+                if ($s->stagiaire && $s->stagiaire->user) {
+                    try {
+                        \Mail::to($s->stagiaire->user->email)
+                            ->send(new \App\Mail\EvaluationNotifieeMail($s->stagiaire, $s, $evaluation));
+                    } catch (\Exception $e) {
+                        \Log::error('Erreur lors de l\'envoi du mail d\'évaluation', [
+                            'error' => $e->getMessage(),
+                            'stage_id' => $s->id
+                        ]);
+                    }
+                }
+            }
+
+            // (Notifier le stagiaire via la notification interne si nécessaire)
             if ($stage->demandeStage && $stage->demandeStage->stagiaire && $stage->demandeStage->stagiaire->user) {
                 $stagiaireUser = $stage->demandeStage->stagiaire->user;
                 $stagiaireUser->notify(new \App\Notifications\StagiaireNotification(
@@ -878,7 +911,7 @@ class StageController extends Controller
                 'agent_id' => $agent->id
             ]);
 
-            return redirect()->back()->with('success', 'L\'évaluation a été enregistrée avec succès.');
+            return response()->json(['success' => true, 'message' => 'Évaluation enregistrée.']);
 
         } catch (\Exception $e) {
             Log::error('Erreur lors de l\'enregistrement de l\'évaluation', [
@@ -886,8 +919,7 @@ class StageController extends Controller
                 'stage_id' => $stage->id,
                 'agent_id' => $agent->id
             ]);
-
-            return redirect()->back()->with('error', 'Une erreur est survenue lors de l\'enregistrement de l\'évaluation.');
+            return response()->json(['success' => false, 'message' => 'Une erreur est survenue lors de l\'enregistrement de l\'évaluation.'], 500);
         }
     }
 
@@ -1096,7 +1128,13 @@ class StageController extends Controller
                 $themeValide->save();
             }
         }
-        $themes = $stage->themesProposes()->with('user')->orderByDesc('created_at')->get();
+        // Récupérer tous les stages du même groupe (même demande_stage_id)
+        $stageIds = \App\Models\Stage::where('demande_stage_id', $stage->demande_stage_id)->pluck('id');
+        // Récupérer tous les thèmes liés à ces stages
+        $themes = \App\Models\ThemeStage::whereIn('stage_id', $stageIds)
+            ->with('user')
+            ->orderByDesc('created_at')
+            ->get();
         return response()->json(['success' => true, 'themes' => $themes]);
     }
 
@@ -1118,8 +1156,17 @@ class StageController extends Controller
         if ($validated['action'] === 'valider') {
             $theme->etat = 'Validé';
             $theme->save();
-            $stage->theme_stage_id = $theme->id;
-            $stage->save();
+            // Mettre à jour le thème validé pour tous les stages du groupe
+            \App\Models\Stage::where('demande_stage_id', $stage->demande_stage_id)
+                ->update(['theme_stage_id' => $theme->id]);
+            // Envoi d'un mail à tous les stagiaires du groupe
+            $stages = \App\Models\Stage::where('demande_stage_id', $stage->demande_stage_id)->get();
+            foreach ($stages as $stageMembre) {
+                if ($stageMembre->stagiaire && $stageMembre->stagiaire->user) {
+                    \Mail::to($stageMembre->stagiaire->user->email)
+                        ->send(new \App\Mail\ThemeProposeMail($stageMembre->stagiaire, $stageMembre, $theme));
+                }
+            }
         } else {
             $theme->etat = 'Refusé';
             $theme->save();
@@ -1154,6 +1201,14 @@ class StageController extends Controller
         // Associer ce thème comme thème validé du stage
         $stage->theme_stage_id = $theme->id;
         $stage->save();
+        // Envoi d'un mail à tous les stagiaires du groupe
+        $stages = \App\Models\Stage::where('demande_stage_id', $stage->demande_stage_id)->get();
+        foreach ($stages as $stageMembre) {
+            if ($stageMembre->stagiaire && $stageMembre->stagiaire->user) {
+                \Mail::to($stageMembre->stagiaire->user->email)
+                    ->send(new \App\Mail\ThemeProposeMail($stageMembre->stagiaire, $stageMembre, $theme));
+            }
+        }
         return response()->json(['success' => true, 'theme' => $theme]);
     }
 
@@ -1216,45 +1271,18 @@ class StageController extends Controller
                 'statut' => 'Terminé'
             ]);
 
-        // Envoyer une notification au stagiaire principal
-        if ($stage->demandeStage && $stage->demandeStage->stagiaire && $stage->demandeStage->stagiaire->user) {
-            $stage->demandeStage->stagiaire->user->notify(new \App\Notifications\StagiaireNotification(
-                'Votre stage a été marqué comme terminé par le Maître de Stage.',
-                route('stagiaire.stages.show', $stage->id)
-            ));
-
-            // Envoyer un email au stagiaire principal
-            try {
-                Mail::to($stage->demandeStage->stagiaire->user->email)
-                    ->send(new \App\Mail\StageTermineMail($stage));
-            } catch (\Exception $e) {
-                Log::error('Erreur lors de l\'envoi du mail de fin de stage', [
-                    'error' => $e->getMessage(),
-                    'stage_id' => $stage->id
-                ]);
-            }
-        }
-
-        // Notifier tous les membres du groupe
-        if ($stage->demandeStage && $stage->demandeStage->membres) {
-            foreach ($stage->demandeStage->membres as $membre) {
-                if ($membre->user && $membre->user->id !== $stage->demandeStage->stagiaire->user->id) {
-                    $membre->user->notify(new \App\Notifications\StagiaireNotification(
-                        'Le stage a été marqué comme terminé par le Maître de Stage.',
-                        route('stagiaire.stages.show', $stage->id)
-                    ));
-
-                    // Envoyer un email à chaque membre
-                    try {
-                        Mail::to($membre->user->email)
-                            ->send(new \App\Mail\StageTermineMail($stage));
-                    } catch (\Exception $e) {
-                        Log::error('Erreur lors de l\'envoi du mail de fin de stage', [
-                            'error' => $e->getMessage(),
-                            'stage_id' => $stage->id,
-                            'membre_id' => $membre->id
-                        ]);
-                    }
+        // Envoyer un mail à tous les stagiaires du groupe
+        $stages = \App\Models\Stage::where('demande_stage_id', $stage->demande_stage_id)->get();
+        foreach ($stages as $stageMembre) {
+            if ($stageMembre->stagiaire && $stageMembre->stagiaire->user) {
+                try {
+                    \Mail::to($stageMembre->stagiaire->user->email)
+                        ->send(new \App\Mail\StageTermineMail($stageMembre));
+                } catch (\Exception $e) {
+                    \Log::error('Erreur lors de l\'envoi du mail de fin de stage', [
+                        'error' => $e->getMessage(),
+                        'stage_id' => $stageMembre->id
+                    ]);
                 }
             }
         }
