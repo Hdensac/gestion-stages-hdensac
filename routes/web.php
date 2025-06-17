@@ -198,6 +198,8 @@ Route::get('/dashboard', function () {
             // Routes pour les stages
             Route::get('/stages', [App\Http\Controllers\Agent\RS\StageController::class, 'index'])->name('stages');
             Route::get('/stages/{stage}', [App\Http\Controllers\Agent\RS\StageController::class, 'show'])->name('stages.show');
+            Route::post('/stages/{stage}/affecter-maitre', [App\Http\Controllers\Agent\RS\StageController::class, 'affecterMaitreStage'])->name('stages.affecter-maitre');
+            Route::get('/stages/{stage}/attestation', [App\Http\Controllers\Agent\RS\StageController::class, 'attestation'])->name('stages.attestation');
             // CRUD agents sans rôle
             Route::resource('agents', App\Http\Controllers\Agent\RS\AgentController::class);
             // ROUTE PERSONNALISÉE D'ABORD

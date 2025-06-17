@@ -103,7 +103,10 @@
                                             Date de soumission</th>
                                         <th scope="col"
                                             class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                                            Structure</th>
+                                            Structure affectée</th>
+                                        <th scope="col"
+                                            class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                                            Structure souhaitée</th>
                                         <th scope="col"
                                             class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
                                             Statut</th>
@@ -143,15 +146,12 @@
                       </div>
                     </td>
                     <td class="px-6 py-4 whitespace-nowrap">
-                      <div v-if="demande.structure" class="flex items-center gap-2">
-                                                <div class="text-sm font-medium text-gray-800">{{
-                                                    demande.structure.libelle }}</div>
-                                                <span
-                                                    class="text-xs bg-blue-50 text-blue-700 px-2 py-0.5 rounded-full">{{
-                                                    demande.structure.sigle }}</span>
-                      </div>
-                                            <span v-else class="text-xs text-gray-400 italic">Aucune structure
-                                                selectionnée</span>
+                      <span v-if="demande.derniere_affectation && demande.derniere_affectation.structure && demande.derniere_affectation.structure.sigle" class="text-xs bg-blue-50 text-blue-700 px-2 py-1 rounded-full font-semibold">{{ demande.derniere_affectation.structure.sigle }}</span>
+                      <span v-else class="text-xs text-gray-400 italic">Non renseigné</span>
+                    </td>
+                    <td class="px-6 py-4 whitespace-nowrap">
+                      <span v-if="demande.structure_souhaitee && demande.structure_souhaitee.sigle" class="text-xs bg-blue-50 text-blue-700 px-2 py-1 rounded-full font-semibold">{{ demande.structure_souhaitee.sigle }}</span>
+                      <span v-else class="text-xs text-gray-400 italic">Non renseigné</span>
                     </td>
                     <td class="px-6 py-4 whitespace-nowrap">
                                             <span :class="getStatusClass(demande.statut)"
@@ -185,7 +185,7 @@
                     </td>
                   </tr>
                   <tr v-if="!props.demandes?.data || props.demandes.data.length === 0">
-                    <td colspan="6" class="px-6 py-10 text-center">
+                    <td colspan="8" class="px-6 py-10 text-center">
                       <div class="flex flex-col items-center justify-center">
                         <InboxIcon class="h-12 w-12 text-gray-300 mb-3" />
                         <p class="text-gray-500">Aucune demande trouvée</p>
@@ -385,7 +385,8 @@ const statusOptions = [
   { value: 'En attente', label: 'En attente' },
   { value: 'En cours', label: 'En cours' },
     { value: 'Acceptée', label: 'Acceptée' },
-  { value: 'Refusée', label: 'Refusée' }
+  { value: 'Refusée', label: 'Refusée' },
+  { value: 'A réaffecter', label: 'A réaffecter' }
 ];
 
 const formatDate = (date) => {

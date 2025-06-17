@@ -11,6 +11,7 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Log;
 use Inertia\Inertia;
+use Barryvdh\DomPDF\Facade\Pdf;
 
 class StageController extends Controller
 {
@@ -72,11 +73,30 @@ class StageController extends Controller
                 });
             }
             
-            // Pagination
-            $stages = $query->latest()->paginate(10)->withQueryString();
+            // Filtrer pour n'afficher que le stage du demandeur principal pour les demandes de groupe
+            $stages = $query->get();
+            $filteredStages = $stages->filter(function ($stage) {
+                $demande = $stage->demandeStage;
+                if (!$demande) return false;
+                // Si ce n'est pas une demande de groupe, on garde le stage
+                if ($demande->nature !== 'Groupe') return true;
+                // Pour une demande de groupe, on ne garde que le stage du demandeur principal
+                return $stage->stagiaire_id == $demande->stagiaire_id;
+            });
+            // Paginer manuellement
+            $perPage = 10;
+            $page = request()->get('page', 1);
+            $pagedStages = $filteredStages->forPage($page, $perPage);
+            $paginated = new \Illuminate\Pagination\LengthAwarePaginator(
+                $pagedStages,
+                $filteredStages->count(),
+                $perPage,
+                $page,
+                ['path' => request()->url(), 'query' => request()->query()]
+            );
             
             // Préparer les données pour la vue
-            $stages->getCollection()->transform(function ($stage) {
+            $paginated->getCollection()->transform(function ($stage) {
                 // Ajouter l'historique des affectations
                 $stage->historique_affectations = $stage->affectationsMaitreStage->map(function($affectation) {
                     return [
@@ -101,7 +121,7 @@ class StageController extends Controller
             });
             
             return Inertia::render('Agent/RS/Stages/Index', [
-                'stages' => $stages,
+                'stages' => $paginated,
                 'structure' => $structure,
                 'filters' => $request->only(['status', 'search', 'page'])
             ]);
@@ -149,12 +169,30 @@ class StageController extends Controller
                 },
                 'affectationsMaitreStage.maitreStage',
                 'affectationsMaitreStage.agentAffectant.user',
-                'themeStage'
+                'themeStage',
+                'evaluation',
+                'demandeStage.membres.user',
             ]);
+            
+            // Préparer les membres du groupe avec leur stage et évaluation
+            $membresGroupe = [];
+            if ($stage->demandeStage && $stage->demandeStage->nature === 'Groupe') {
+                $membresGroupe = $stage->demandeStage->membres->map(function($membre) use ($stage) {
+                    $stagiaire = \App\Models\Stagiaire::where('user_id', $membre->user_id)->first();
+                    $stageMembre = $stagiaire ? \App\Models\Stage::where('demande_stage_id', $stage->demande_stage_id)->where('stagiaire_id', $stagiaire->id_stagiaire)->first() : null;
+                    return [
+                        'user' => $membre->user,
+                        'stagiaire' => $stagiaire,
+                        'stage' => $stageMembre,
+                        'evaluation' => $stageMembre ? $stageMembre->evaluation : null,
+                    ];
+                });
+            }
             
             return Inertia::render('Agent/RS/Stages/Show', [
                 'stage' => $stage,
-                'structure' => $structure
+                'structure' => $structure,
+                'membres_groupe' => $membresGroupe,
             ]);
             
         } catch (\Exception $e) {
@@ -181,5 +219,98 @@ class StageController extends Controller
         }
         
         return $ids;
+    }
+
+    /**
+     * Affecter un maître de stage à un stage
+     */
+    public function affecterMaitreStage(Request $request, Stage $stage)
+    {
+        $this->checkRSRole();
+        $user = Auth::user();
+        $agent = $user->agent;
+
+        try {
+            // Récupérer la structure dont l'agent est responsable
+            $structure = Structure::where('responsable_id', $agent->id)->first();
+            if (!$structure) {
+                return redirect()->back()->with('error', 'Vous n\'êtes pas responsable d\'une structure.');
+            }
+
+            // Vérifier que le stage appartient à la structure du RS ou à une sous-structure
+            $subStructureIds = $this->getAllSubStructureIds($structure->id);
+            $allStructureIds = array_merge([$structure->id], $subStructureIds);
+            if (!in_array($stage->structure_id, $allStructureIds)) {
+                return redirect()->back()->with('error', 'Vous n\'êtes pas autorisé à affecter un maître de stage à ce stage.');
+            }
+
+            // Valider les données
+            $validated = $request->validate([
+                'maitre_stage_id' => 'required|exists:agents,id'
+            ]);
+
+            // Récupérer le maître de stage
+            $maitreStage = Agent::findOrFail($validated['maitre_stage_id']);
+
+            // Vérifier que le maître de stage a le rôle MS
+            if ($maitreStage->role_agent !== 'MS') {
+                return redirect()->back()->with('error', 'L\'agent sélectionné n\'est pas un maître de stage.');
+            }
+
+            // Vérifier que le maître de stage appartient à la structure ou à une sous-structure
+            if (!in_array($maitreStage->structure_id, $allStructureIds)) {
+                return redirect()->back()->with('error', 'Le maître de stage sélectionné n\'appartient pas à votre structure ou à ses sous-structures.');
+            }
+
+            // Créer l'affectation
+            $affectation = AffectationMaitreStage::create([
+                'stage_id' => $stage->id,
+                'maitre_stage_id' => $maitreStage->user_id,
+                'agent_affectant_id' => $agent->id,
+                'date_affectation' => now(),
+                'statut' => 'En cours'
+            ]);
+
+            // Mettre à jour le statut du stage
+            $stage->update([
+                'statut' => 'En cours',
+                'updated_at' => now()
+            ]);
+
+            Log::info('Maître de stage affecté au stage', [
+                'stage_id' => $stage->id,
+                'maitre_stage_id' => $maitreStage->id,
+                'affectation_id' => $affectation->id
+            ]);
+
+            return redirect()->back()->with('success', 'Maître de stage affecté avec succès.');
+
+        } catch (\Exception $e) {
+            Log::error('Erreur lors de l\'affectation du maître de stage', [
+                'error' => $e->getMessage(),
+                'stage_id' => $stage->id,
+                'maitre_stage_id' => $request->maitre_stage_id,
+                'stack' => $e->getTraceAsString()
+            ]);
+
+            return redirect()->back()->with('error', 'Une erreur est survenue lors de l\'affectation du maître de stage.');
+        }
+    }
+
+    /**
+     * Générer l'attestation de stage (PDF ou HTML)
+     */
+    public function attestation(Stage $stage)
+    {
+        $stage->load(['stagiaire.user', 'structure']);
+        $demande = $stage->demandeStage;
+        $stagiairePrincipal = $demande ? $demande->stagiaire : $stage->stagiaire;
+        $pdf = Pdf::loadView('attestation', [
+            'stage' => $stage,
+            'stagiaire' => $stage->stagiaire,
+            'structure' => $stage->structure,
+            'stagiaire_principal' => $stagiairePrincipal,
+        ]);
+        return $pdf->stream('attestation_stage_'.$stage->id.'.pdf');
     }
 }

@@ -1,0 +1,139 @@
+@startuml Gestion_des_Stages
+
+skinparam classAttributeIconSize 0
+skinparam class {
+    BackgroundColor White
+    ArrowColor Black
+    BorderColor Black
+}
+
+' Classes principales
+class User {
+    +id: int
+    +nom: string
+    +prenom: string
+    +email: string
+    +role: string
+    +date_de_naissance: date
+    +date_d_inscription: date
+    +isStagiaire(): boolean
+    +isAdmin(): boolean
+    +isAgent(): boolean
+}
+
+class Stagiaire {
+    +id: int
+    +user_id: int
+    +universite: string
+    +programme: string
+    +niveau_etudes: string
+    +soumettreDemande()
+    +consulterStatut()
+    +proposer_theme()
+}
+
+class Agent {
+    +id: int
+    +user_id: int
+    +matricule: string
+    +fonction: string
+    +role_agent: string
+    +date_embauche: datetime
+    +structure_id: int
+    +affecterDossier()
+    +affecter_a_encadrant()
+    +repondreDemande()
+    +validerTheme()
+    +confirmerFinStage()
+    +imprimerAttestation()
+    +traiterDemande()
+}
+
+class Structure {
+    +id: int
+    +sigle: string
+    +libelle: string
+    +description: string
+}
+
+class DemandeStage {
+    +id: int
+    +stagiaire_id: int
+    +structure_id: int
+    +date_debut: date
+    +date_fin: date
+    +type: string
+    +nature: string
+    +code_suivi: string
+    +statut: string
+    +date_soumission: datetime
+    +date_traitement: datetime
+}
+
+class Stage {
+    +id: int
+    +demande_stage_id: int
+    +structure_id: int
+    +theme_stage_id: int
+    +date_debut: date
+    +date_fin: date
+}
+
+class Theme {
+    +id: int
+    +intitule: string
+    +description: text
+    +etat: string
+    +mots_cles: string
+    +user_id: int
+}
+
+class Evaluation {
+    +id: int
+    +stage_id: int
+    +agent_id: int
+    +ponctualite: float
+    +motivation: float
+    +capacite_apprendre: float
+    +qualite_travail: float
+    +note_totale: float
+    +commentaire_general: text
+    +date_evaluation: datetime
+}
+
+class Notification {
+    +id: uuid
+    +user_id: int
+    +message: text
+    +date_envoi: datetime
+    +statut: string
+}
+
+class Affectation {
+    +id: int
+    +agent_id: int
+    +stage_id: int
+    +date_debut: string
+    +date_fin: string
+    +type_affectation: string
+}
+
+' Relations
+User "1" -- "1" Stagiaire : est_un
+User "1" -- "1" Agent : est_un
+User "1" -- "*" Notification
+
+Structure "1" -- "*" Stage
+Structure "1" -- "*" Agent
+DemandeStage "1" -- "1" Stagiaire
+DemandeStage "1" -- "1" Structure
+DemandeStage "1" -- "1" Stage
+Stage "1" -- "1" Theme
+Stage "1" -- "*" Evaluation
+Stage "1" -- "*" Affectation
+Agent "1" -- "*" Evaluation
+Agent "1" -- "*" Affectation
+Affectation "*" -- "1" Stage : concerne
+Affectation "*" -- "1" Agent : concerne
+
+@enduml

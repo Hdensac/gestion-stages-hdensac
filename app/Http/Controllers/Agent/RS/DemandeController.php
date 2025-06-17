@@ -137,7 +137,7 @@ class DemandeController extends Controller
     public function show(DemandeStage $demande)
     {
         // Log pour vérifier si la méthode show est appelée
-        \Log::info('Agent RS Demande Show Method Called', ['demande_id' => $demande]);
+        Log::info('Agent RS Demande Show Method Called', ['demande_id' => $demande]);
 
         $user = Auth::user();
         $agent = $user->agent;
@@ -180,13 +180,13 @@ class DemandeController extends Controller
 
                 if ($affectation && $affectation->structure) {
                 $demande->setRelation('structure', $affectation->structure);
-                \Log::info('Structure d\'affectation utilisée', [
+                Log::info('Structure d\'affectation utilisée', [
                     'demande_id' => $demande->id,
                     'structure_id' => $affectation->structure->id,
                     'structure_libelle' => $affectation->structure->libelle
                 ]);
             } else {
-                \Log::info('Structure d\'origine utilisée', [
+                Log::info('Structure d\'origine utilisée', [
                     'demande_id' => $demande->id,
                     'structure_id' => $demande->structure ? $demande->structure->id : null,
                     'structure_libelle' => $demande->structure ? $demande->structure->libelle : null
@@ -196,18 +196,28 @@ class DemandeController extends Controller
             // Ajout : vérifier si un maître de stage est déjà affecté
             $stage = \App\Models\Stage::where('demande_stage_id', $demande->id)->first();
             $maitre_stage_deja_affecte = false;
+            $maitreStageAffecte = null;
             if ($stage) {
-                $maitre_stage_deja_affecte = \App\Models\AffectationMaitreStage::where('stage_id', $stage->id)
+                $maitre_stage_deja_affecte = AffectationMaitreStage::where('stage_id', $stage->id)
                     ->whereIn('statut', ['En cours', 'Acceptée'])
                     ->exists();
+
+                if ($maitre_stage_deja_affecte) {
+                    $maitreStageAffecte = AffectationMaitreStage::where('stage_id', $stage->id)
+                        ->whereIn('statut', ['En cours', 'Acceptée'])
+                        ->with('agentAffectant.user')
+                        ->first();
+                }
             }
 
             // Après avoir potentiellement modifié $demande->structure, convertir en tableau pour Inertia
             return Inertia::render('Agent/RS/Demandes/Show', [
                 'demande' => $demande->toArray(),
                 'membres' => $demande->nature === 'Groupe' ? $demande->membres : [],
-                'maitre_stage_deja_affecte' => $maitre_stage_deja_affecte,
                 'agentsMS' => $agentsMS,
+                'maitre_stage_deja_affecte' => $maitre_stage_deja_affecte,
+                'maitreStageAffecte' => $maitreStageAffecte,
+                'structure' => $structure,
             ]);
 
         } catch (\Exception $e) {
@@ -367,7 +377,7 @@ class DemandeController extends Controller
                         $userIds[] = $demande->stagiaire->user_id;
                     }
 
-                    \Log::info('Liste des user_id pour création des stages', [
+                    Log::info('Liste des user_id pour création des stages', [
                         'demande_id' => $demande->id,
                         'userIds' => $userIds,
                         'demandeur_principal' => $demande->stagiaire->user_id,
@@ -595,7 +605,7 @@ class DemandeController extends Controller
             $demande->traite_par = $agent->id;
             $demande->save();
 
-            \Log::info('Demande refusée par RS, en attente de réaffectation', [
+            Log::info('Demande refusée par RS, en attente de réaffectation', [
                 'demande_id' => $demande->id,
                 'statut' => $demande->statut,
                 'motif_refus' => $demande->motif_refus

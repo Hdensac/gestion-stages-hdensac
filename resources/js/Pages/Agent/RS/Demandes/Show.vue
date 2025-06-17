@@ -55,8 +55,8 @@
               <div class="p-8 space-y-5">
                 <div class="bg-white/80 p-5 rounded-2xl border border-blue-200/50 shadow-sm">
                   <span class="text-sm text-blue-700 font-bold block mb-3">Statut</span>
-                  <span class="px-4 py-2 text-sm font-bold rounded-2xl inline-flex items-center shadow-lg" :class="getEnhancedStatusColor(demande.statut)">
-                    <span class="h-2 w-2 rounded-full mr-2" :class="getStatusDotColor(demande.statut)"></span>
+                  <span class="px-4 py-2 text-sm font-bold rounded-2xl inline-flex items-center shadow-lg" :class="getEnhancedStatusColor(getStatutAffichageRS(demande.statut))">
+                    <span class="h-2 w-2 rounded-full mr-2" :class="getStatusDotColor(getStatutAffichageRS(demande.statut))"></span>
                   {{ getStatutAffichageRS(demande.statut) }}
                 </span>
               </div>
@@ -461,7 +461,7 @@
 
 <script setup>
 import { ref, onMounted } from 'vue';
-import { Head, Link, useForm } from '@inertiajs/vue3';
+import { Head, Link, useForm, router } from '@inertiajs/vue3';
 import RSLayout from '@/Layouts/RSLayout.vue';
 import Modal from '@/Components/Modal.vue';
 import Toast from '@/Components/Toast.vue';
@@ -509,6 +509,8 @@ function getEnhancedStatusColor(status) {
     case 'Acceptée':
     case 'Approuvée':
       return 'text-emerald-800 bg-gradient-to-r from-emerald-100 to-green-100 border-2 border-emerald-300';
+    case 'A réaffecter':
+      return 'text-orange-800 bg-gradient-to-r from-orange-100 to-amber-100 border-2 border-amber-300';
     case 'Refusée':
       return 'text-red-800 bg-gradient-to-r from-red-100 to-rose-100 border-2 border-red-300';
     default:
@@ -543,6 +545,8 @@ function getStatusDotColor(status) {
     case 'Acceptée':
     case 'Approuvée':
       return 'bg-emerald-500';
+    case 'A réaffecter':
+      return 'bg-orange-500';
     case 'Refusée':
       return 'bg-red-500';
     default:
@@ -645,7 +649,9 @@ function submitMaitreStage() {
   maitreStageForm.post(route('agent.rs.demandes.affecter-maitre', props.demande.id), {
     onSuccess: () => {
       closeMaitreStageModal();
+      setTimeout(() => {
       router.reload();
+      }, 250);
     },
     onError: (errors) => {
       console.error('Erreur lors de l\'affectation du maître de stage:', errors);

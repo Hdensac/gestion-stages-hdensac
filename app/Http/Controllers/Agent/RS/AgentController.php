@@ -48,7 +48,10 @@ class AgentController extends Controller
                 return $agent;
             });
         }
-        return Inertia::render('Agent/RS/Agents/Index', ['agents' => $agents]);
+        return Inertia::render('Agent/RS/Agents/Index', [
+            'agents' => $agents,
+            'structure' => $structure,
+        ]);
     }
 
     public function create()

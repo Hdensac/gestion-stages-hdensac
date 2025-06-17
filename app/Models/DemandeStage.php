@@ -115,4 +115,20 @@ class DemandeStage extends Model
     {
         return Structure::whereIn('id', $this->affectations()->pluck('structure_id'));
     }
+
+    /**
+     * Relation avec la structure souhaitée par le stagiaire
+     */
+    public function structureSouhaitee()
+    {
+        return $this->belongsTo(Structure::class, 'structure_id');
+    }
+
+    /**
+     * Dernière affectation de la demande (structure d'affectation réelle)
+     */
+    public function derniereAffectation()
+    {
+        return $this->hasOne(\App\Models\AffectationResponsableStructure::class, 'id_demande_stages')->latestOfMany();
+    }
 }

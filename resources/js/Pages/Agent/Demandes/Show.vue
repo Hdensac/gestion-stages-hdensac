@@ -20,15 +20,26 @@ const formatDate = (date) => {
 
 // Fonction améliorée pour les couleurs de statut - plus vives
 const getStatusColor = (statut) => {
-    switch (statut) {
-        case 'En attente':
+    if (!statut) return 'text-slate-800 bg-gradient-to-r from-slate-100 to-gray-100 border-2 border-slate-300 shadow-lg shadow-slate-200/50';
+    // Normalisation : trim, minuscule, suppression des accents
+    const normalize = (str) => str.normalize('NFD').replace(/\p{Diacritic}/gu, '').trim().toLowerCase();
+    const cleanStatut = normalize(statut);
+    console.log('Statut reçu pour coloration:', statut);
+    switch (cleanStatut) {
+        case 'en attente':
             return 'text-amber-800 bg-gradient-to-r from-amber-100 to-orange-100 border-2 border-amber-300 shadow-lg shadow-amber-200/50';
-        case 'En cours':
+        case 'en cours':
             return 'text-blue-800 bg-gradient-to-r from-blue-100 to-sky-100 border-2 border-blue-300 shadow-lg shadow-blue-200/50';
-        case 'Approuvée':
+        case 'approuvee':
+        case 'acceptée':
+        case 'acceptee':
             return 'text-emerald-800 bg-gradient-to-r from-emerald-100 to-green-100 border-2 border-emerald-300 shadow-lg shadow-emerald-200/50';
-        case 'Refusée':
+        case 'refusee':
+        case 'refusée':
             return 'text-red-800 bg-gradient-to-r from-red-100 to-rose-100 border-2 border-red-300 shadow-lg shadow-red-200/50';
+        case 'a reaffecter':
+        case 'a réaffecter':
+            return 'text-orange-800 bg-gradient-to-r from-orange-100 to-amber-100 border-2 border-amber-300 shadow-lg shadow-orange-200/50';
         default:
             return 'text-slate-800 bg-gradient-to-r from-slate-100 to-gray-100 border-2 border-slate-300 shadow-lg shadow-slate-200/50';
     }
@@ -341,7 +352,7 @@ function getInitials(nom, prenom) {
         <!-- Modal d'affectation - amélioré -->
         <div v-if="showAffectationModal" class="fixed inset-0 bg-black/60 backdrop-blur-sm flex items-center justify-center z-50">
             <div class="bg-white rounded-3xl shadow-2xl max-w-md w-full mx-4 border-2 border-slate-200/50">
-                <div class="px-6 py-5 border-b-2 border-slate-100 bg-gradient-to-r from-blue-50 to-indigo-50">
+                <div class="px-6 py-5 border-b-2 border-slate-100 bg-gradient-to-r from-blue-50 to-indigo-50 rounded-t-3xl">
                     <div class="flex items-center justify-between">
                         <div class="flex items-center gap-3">
                             <div class="p-2 bg-gradient-to-br from-blue-500 to-indigo-600 rounded-xl shadow-lg">

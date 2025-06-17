@@ -116,16 +116,16 @@
                     </div>
                   </div>
                   
-                  <div v-if="stage.note" class="space-y-2">
+                  <div v-if="stage.evaluation" class="space-y-2">
                     <div class="text-xs font-bold text-gray-500 uppercase tracking-wider flex items-center gap-2">
                       <div class="w-2 h-2 bg-amber-500 rounded-full"></div>
-                      Évaluation
+                      Évaluation du MS
                     </div>
                     <div class="flex items-center gap-2">
                       <div class="bg-gradient-to-r from-amber-400 to-amber-500 text-white px-3 py-2 rounded-lg font-bold text-sm shadow-md">
-                        ⭐ {{ stage.note }}/20
+                        ⭐ {{ stage.evaluation.note_totale }}/20
                       </div>
-                      <div class="text-xs text-gray-500">{{ getGradeDescription(stage.note) }}</div>
+                      <div class="text-xs text-gray-500">{{ getGradeDescription(stage.evaluation.note_totale) }}</div>
                     </div>
                   </div>
                 </div>
@@ -213,6 +213,27 @@
                   </div>
                 </div>
               </div>
+
+              <!-- Autres membres du groupe -->
+              <div v-if="props.membres_groupe && props.membres_groupe.length" class="mt-8">
+                <h3 class="text-md font-bold text-emerald-700 mb-4 flex items-center gap-2">
+                  <UserGroupIcon class="w-5 h-5" />
+                  Autres membres du groupe
+                </h3>
+                <ul class="space-y-4">
+                  <li
+                    v-for="membre in props.membres_groupe.filter(m => m.user && m.user.id !== stage.demande_stage.stagiaire.user.id)"
+                    :key="membre.user.id"
+                    class="bg-emerald-50 border border-emerald-100 rounded-xl p-4 flex flex-col sm:flex-row sm:items-center sm:gap-6"
+                  >
+                    <div class="flex-1">
+                      <div class="font-semibold text-gray-800 text-base">{{ membre.user.nom }} {{ membre.user.prenom }}</div>
+                      <div class="text-xs text-emerald-600 font-medium">{{ membre.user.email }}</div>
+                      <div class="text-xs text-gray-500 mt-1">Téléphone : <span class="font-semibold">{{ membre.user.telephone || 'N/A' }}</span></div>
+                    </div>
+                  </li>
+                </ul>
+              </div>
             </div>
             
             <div v-else class="p-6 text-center">
@@ -240,12 +261,7 @@
               </h2>
             </div>
             
-            <button 
-              class="text-sm bg-white/20 text-white px-4 py-2 rounded-xl hover:bg-white/30 transition-all duration-200 flex items-center gap-2 font-medium shadow-sm hover:shadow-md transform hover:scale-105"
-            >
-              <PlusIcon class="w-4 h-4" />
-              Nouvelle affectation
-            </button>
+           
           </div>
 
           <div class="p-6">
@@ -369,14 +385,120 @@
             </div>
           </div>
         </div>
+
+        <div v-if="props.membres_groupe && props.membres_groupe.length" class="mt-10">
+          <h2 class="text-xl font-bold text-purple-700 mb-6 flex items-center gap-3">
+            <UserGroupIcon class="w-7 h-7" />
+            Évaluation des membres du groupe
+          </h2>
+          <div class="space-y-6">
+            <div v-for="membre in props.membres_groupe" :key="membre.user.id" class="p-6 rounded-2xl bg-purple-50 border-2 border-purple-100 flex flex-col md:flex-row md:items-center md:justify-between gap-4 shadow-md">
+              <div class="flex items-center gap-4">
+                <div class="h-14 w-14 rounded-2xl bg-gradient-to-br from-purple-500 to-purple-600 flex items-center justify-center shadow-lg">
+                  <span class="text-white text-xl font-bold uppercase">{{ membre.user.nom.charAt(0) + membre.user.prenom.charAt(0) }}</span>
+                </div>
+                <div>
+                  <div class="font-bold text-gray-800 text-lg">{{ membre.user.nom }} {{ membre.user.prenom }}</div>
+                  <div class="text-xs text-purple-600 font-medium">Stagiaire</div>
+                  <div class="text-xs text-gray-500 mt-1">Statut du stage :
+                    <span class="inline-block px-3 py-1 rounded-xl font-semibold text-xs ml-1"
+                      :class="getStatusStyle(membre.stage ? membre.stage.statut : '')">
+                      {{ membre.stage ? membre.stage.statut : 'Non défini' }}
+                    </span>
+                  </div>
+                </div>
+              </div>
+              <div class="flex items-center gap-4">
+                <div v-if="membre.evaluation" class="bg-gradient-to-r from-emerald-200 to-emerald-300 text-emerald-800 px-4 py-2 rounded-lg font-bold text-md shadow">
+                  Note : {{ membre.evaluation.note_totale }}/20
+                </div>
+                <div v-else class="text-gray-400 italic">Non évalué</div>
+                <button
+                  v-if="membre.stage && membre.stage.termine_par_ms == 1"
+                  @click="imprimerAttestation(membre)"
+                  class="px-5 py-2 bg-gradient-to-r from-indigo-500 to-blue-600 text-white rounded-xl font-bold shadow hover:from-indigo-600 hover:to-blue-700 transition-all duration-200 flex items-center gap-2"
+                >
+                  <svg class="h-5 w-5" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd" /></svg>
+                  Imprimer l'attestation
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
       </div>
     </div>
+    <Modal :show="showMaitreStageModal" @close="closeMaitreStageModal">
+      <div class="p-8 bg-white/95 backdrop-blur-sm rounded-3xl shadow-2xl border-2 border-slate-200/50">
+        <h2 class="text-2xl font-bold text-gray-900 mb-6 flex items-center gap-3">
+          <div class="p-3 bg-gradient-to-br from-indigo-500 to-blue-600 rounded-2xl shadow-lg">
+            <svg class="h-6 w-6 text-white" viewBox="0 0 20 20" fill="currentColor">
+              <path d="M13 6a3 3 0 11-6 0 3 3 0 016 0zM18 8a2 2 0 11-4 0 2 2 0 014 0zM14 15a4 4 0 00-8 0v3h8v-3zM6 8a2 2 0 11-4 0 2 2 0 014 0zM16 18v-3a5.972 5.972 0 00-.75-2.906A3.005 3.005 0 0119 15v3h-3zM4.75 12.094A5.973 5.973 0 004 15v3H1v-3a3 3 0 013.75-2.906z" />
+            </svg>
+          </div>
+          Affecter un maître de stage
+        </h2>
+        <div class="mb-6">
+          <label class="block text-sm font-bold text-gray-700 mb-3 uppercase tracking-wide">
+            Sélectionner un agent avec le rôle MS
+          </label>
+          <select
+            v-model="selectedMaitreStageId"
+            class="w-full rounded-2xl border-2 border-gray-200 shadow-sm focus:border-indigo-500 focus:ring-2 focus:ring-indigo-200 focus:ring-opacity-50 text-gray-900 font-medium p-4"
+          >
+            <option value="" disabled>Sélectionner un maître de stage</option>
+            <option v-for="agent in maitreStageAgents" :key="agent.id" :value="agent.id">
+              {{ agent.user?.nom }} {{ agent.user?.prenom }}
+              {{ agent.structure_responsable ? '- Responsable de: ' + agent.structure_responsable.libelle : '' }}
+            </option>
+          </select>
+          <p v-if="maitreStageForm.errors.maitre_stage_id" class="mt-3 text-sm text-red-600 font-medium">
+            {{ maitreStageForm.errors.maitre_stage_id }}
+          </p>
+        </div>
+        <div class="flex justify-end gap-4">
+          <button
+            @click="closeMaitreStageModal"
+            class="px-6 py-3 bg-gradient-to-r from-gray-200 to-gray-300 text-gray-700 rounded-xl hover:from-gray-300 hover:to-gray-400 transition-all duration-300 font-bold transform hover:scale-105"
+          >
+            Annuler
+          </button>
+          <button
+            @click="submitMaitreStage"
+            class="px-6 py-3 bg-gradient-to-r from-indigo-600 to-blue-600 text-white rounded-xl hover:from-indigo-700 hover:to-blue-700 transition-all duration-300 flex items-center gap-2 font-bold shadow-lg hover:shadow-xl transform hover:scale-105"
+            :disabled="maitreStageForm.processing || !selectedMaitreStageId"
+          >
+            <svg class="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
+              <path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd" />
+            </svg>
+            Affecter le maître de stage
+          </button>
+          <button
+            @click="fetchMaitreStageAgents"
+            type="button"
+            class="px-6 py-3 bg-gradient-to-r from-yellow-500 to-amber-600 text-white rounded-xl hover:from-yellow-600 hover:to-amber-700 transition-all duration-300 flex items-center gap-2 font-bold shadow-lg hover:shadow-xl transform hover:scale-105"
+          >
+            <svg class="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
+              <path fill-rule="evenodd" d="M4 2a1 1 0 011 1v2.101a7.002 7.002 0 0111.601 2.566 1 1 0 11-1.885.666A5.002 5.002 0 005.999 7H9a1 1 0 010 2H4a1 1 0 01-1-1zm.008 9.057a1 1 0 011.276.61A5.002 5.002 0 0014.001 13H11a1 1 0 110-2h5a1 1 0 011 1v5a1 1 0 11-2 0v-2.101a7.002 7.002 0 01-11.601-2.566 1 1 0 01.61-1.276z" clip-rule="evenodd" />
+            </svg>
+            Rafraîchir la liste
+          </button>
+        </div>
+        <div v-if="maitreStageAgents.length === 0" class="mt-6 p-6 bg-gradient-to-r from-yellow-100 to-amber-100 rounded-2xl border-2 border-yellow-200/50 shadow-lg">
+          <div class="flex items-center gap-3">
+            <svg class="h-6 w-6 text-yellow-600" viewBox="0 0 20 20" fill="currentColor">
+              <path fill-rule="evenodd" d="M8.257 3.099c.765-1.36 2.722-1.36 3.486 0l5.58 9.92c.75 1.334-.213 2.98-1.742 2.98H4.42c-1.53 0-2.493-1.646-1.743-2.98l5.58-9.92zM11 13a1 1 0 11-2 0 1 1 0 012 0zm-1-8a1 1 0 00-1 1v3a1 1 0 002 0V6a1 1 0 00-1-1z" clip-rule="evenodd" />
+            </svg>
+            <span class="text-yellow-800 font-bold">Aucun agent avec le rôle MS n'a été trouvé. Veuillez vérifier que des agents avec ce rôle existent dans le système.</span>
+          </div>
+        </div>
+      </div>
+    </Modal>
   </RSLayout>
 </template>
 
 <script setup>
 import { ref } from 'vue';
-import { Link, router } from '@inertiajs/vue3';
+import { Link, router, useForm } from '@inertiajs/vue3';
 import RSLayout from '@/Layouts/RSLayout.vue';
 import Toast from '@/Components/Toast.vue';
 import { 
@@ -388,13 +510,22 @@ import {
   PlusIcon,
   ArrowLeftIcon
 } from '@heroicons/vue/24/outline';
+import Modal from '@/Components/Modal.vue';
+import axios from 'axios';
 
 const props = defineProps({
   stage: Object,
   structure: Object,
+  membres_groupe: Array,
 });
 
 const toast = ref(null);
+const showMaitreStageModal = ref(false);
+const selectedMaitreStageId = ref(null);
+const maitreStageAgents = ref([]);
+const maitreStageForm = useForm({
+  maitre_stage_id: '',
+});
 
 // Formater une date avec un style plus moderne
 function formatDate(date) {
@@ -444,7 +575,50 @@ function getGradeDescription(note) {
   return 'Insuffisant';
 }
 
+function openMaitreStageModal() {
+  fetchMaitreStageAgents();
+  showMaitreStageModal.value = true;
+}
+
+function closeMaitreStageModal() {
+  showMaitreStageModal.value = false;
+  selectedMaitreStageId.value = '';
+  maitreStageForm.reset();
+}
+
+async function fetchMaitreStageAgents() {
+  try {
+    const response = await axios.get(route('agent.rs.responsable-agents'));
+    maitreStageAgents.value = response.data;
+  } catch (error) {
+    console.error('Erreur lors de la récupération des maîtres de stage:', error);
+  }
+}
+
+function submitMaitreStage() {
+  if (!selectedMaitreStageId.value) return;
+  maitreStageForm.maitre_stage_id = selectedMaitreStageId.value;
+  maitreStageForm.post(route('agent.rs.stages.affecter-maitre', props.stage.id), {
+    onSuccess: () => {
+      closeMaitreStageModal();
+      setTimeout(() => {
+        router.reload();
+      }, 250);
+    },
+    onError: (errors) => {
+      console.error('Erreur lors de l\'affectation du maître de stage:', errors);
+    }
+  });
+}
+
+// Remplace l'appel router.visit par l'ouverture du modal dans le bouton d'affectation :
 const affecterMaitreStage = () => {
-  router.visit(route('agent.rs.stages.affecter', props.stage.id));
+  openMaitreStageModal();
 };
+
+function imprimerAttestation(membre) {
+  if (!membre || !membre.stage) return;
+  // Redirige vers une route d'impression d'attestation pour le membre
+  window.open(route('agent.rs.stages.attestation', membre.stage.id), '_blank');
+}
 </script>

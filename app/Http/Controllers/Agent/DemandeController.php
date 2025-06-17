@@ -17,7 +17,7 @@ class DemandeController extends Controller
     {
         try {
             $query = DemandeStage::query()
-                ->with(['stagiaire.user', 'structure'])
+                ->with(['stagiaire.user', 'structureSouhaitee', 'derniereAffectation.structure'])
                 ->latest();
 
             // Filtre par recherche
@@ -42,14 +42,16 @@ class DemandeController extends Controller
                 });
             }
 
-            // Filtre par statut
-            if ($request->filled('status') && in_array($request->status, ['En attente','En cours' ,'Approuvée', 'Refusée'])) {
+            // Filtre par statut (tous les statuts du filtre sont acceptés)
+            if ($request->filled('status')) {
                 $query->where('statut', $request->status);
             }
 
-            // Filtre par structure
+            // Filtre par structure affectée (dernière affectation)
             if ($request->filled('structure_id')) {
-                $query->where('structure_id', $request->structure_id);
+                $query->whereHas('derniereAffectation', function($q) use ($request) {
+                    $q->where('structure_id', $request->structure_id);
+                });
             }
 
             $demandes = $query->paginate(10)->withQueryString();
