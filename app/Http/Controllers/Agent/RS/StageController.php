@@ -305,11 +305,19 @@ class StageController extends Controller
         $stage->load(['stagiaire.user', 'structure']);
         $demande = $stage->demandeStage;
         $stagiairePrincipal = $demande ? $demande->stagiaire : $stage->stagiaire;
+        $structure = $stage->structure;
+        $responsable = $structure && $structure->responsable ? $structure->responsable : null;
+        $nom_rs = $responsable ? ($responsable->user->nom . ' ' . $responsable->user->prenom) : '';
+        $libelle_structure = $structure ? $structure->libelle : '';
+        $sigle_structure = $structure ? $structure->sigle : '';
         $pdf = Pdf::loadView('attestation', [
             'stage' => $stage,
             'stagiaire' => $stage->stagiaire,
-            'structure' => $stage->structure,
+            'structure' => $structure,
             'stagiaire_principal' => $stagiairePrincipal,
+            'nom_rs' => $nom_rs,
+            'libelle_structure' => $libelle_structure,
+            'sigle_structure' => $sigle_structure,
         ]);
         return $pdf->stream('attestation_stage_'.$stage->id.'.pdf');
     }
