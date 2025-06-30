@@ -48,9 +48,9 @@ onMounted(() => {
     
     <div class="min-h-screen bg-gradient-to-br from-blue-50 via-indigo-50/50 to-purple-50">
         <!-- Layout mobile : stack vertical -->
-        <div class="lg:hidden min-h-screen flex flex-col">
+        <div class="lg:hidden min-h-screen flex flex-col justify-center py-4">
             <!-- Header mobile avec illustration -->
-            <div class="relative bg-gradient-to-br from-blue-600 to-indigo-700 text-white p-8 overflow-hidden">
+            <div class="relative bg-gradient-to-br from-blue-600 to-indigo-700 text-white p-4 overflow-hidden">
                 <!-- Éléments décoratifs -->
                 <div class="absolute inset-0 overflow-hidden">
                     <div class="absolute top-0 right-0 w-32 h-32 bg-white/10 rounded-full -translate-y-16 translate-x-16"></div>
@@ -69,7 +69,7 @@ onMounted(() => {
             </div>
             
             <!-- Formulaire mobile -->
-            <div class="flex-1 p-6">
+            <div class="flex-1 p-4">
                 <div 
                     class="max-w-sm mx-auto transition-all duration-1000"
                     :class="{ 'opacity-100 translate-y-0': isLoaded, 'opacity-0 translate-y-8': !isLoaded }"
@@ -165,87 +165,218 @@ onMounted(() => {
         </div>
 
         <!-- Layout desktop : deux colonnes -->
-        <div class="hidden lg:grid lg:grid-cols-2 lg:min-h-screen">
+        <div class="hidden lg:grid lg:grid-cols-2 lg:min-h-screen" style="min-height: 80vh;">
             <!-- Colonne gauche : Illustration -->
-            <div class="relative bg-gradient-to-br from-blue-600 via-blue-700 to-indigo-800 text-white overflow-hidden">
-                <!-- Éléments de fond animés -->
-                <div class="absolute inset-0 overflow-hidden">
-                    <div class="absolute -top-40 -left-40 w-96 h-96 bg-gradient-to-br from-white/10 to-transparent rounded-full blur-3xl animate-pulse"></div>
-                    <div class="absolute top-1/3 -right-32 w-80 h-80 bg-gradient-to-br from-indigo-400/20 to-transparent rounded-full blur-3xl animate-pulse"></div>
-                    <div class="absolute bottom-1/4 left-1/4 w-64 h-64 bg-gradient-to-br from-blue-400/15 to-transparent rounded-full blur-2xl animate-pulse"></div>
+            <!-- Colonne gauche : Illustration modernisée -->
+<div class="relative bg-gradient-to-br from-blue-600 via-blue-700 to-indigo-800 text-white overflow-hidden min-h-full">
+    <!-- Éléments de fond animés avec effets modernes -->
+    <div class="absolute inset-0 overflow-hidden">
+        <!-- Grille de fond subtile -->
+        <div class="absolute inset-0 opacity-10">
+            <div class="absolute inset-0" style="background-image: url('data:image/svg+xml,%3Csvg width=\'60\' height=\'60\' viewBox=\'0 0 60 60\' xmlns=\'http://www.w3.org/2000/svg\'%3E%3Cg fill=\'none\' fill-rule=\'evenodd\'%3E%3Cg fill=\'%23ffffff\' fill-opacity=\'0.1\'%3E%3Ccircle cx=\'30\' cy=\'30\' r=\'1\'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E');"></div>
+        </div>
+        
+        <!-- Bulles flottantes animées -->
+        <div class="absolute -top-40 -left-40 w-96 h-96 bg-gradient-to-br from-cyan-400/20 to-blue-400/10 rounded-full blur-3xl animate-pulse"></div>
+        <div class="absolute top-1/3 -right-32 w-80 h-80 bg-gradient-to-br from-indigo-400/20 to-purple-400/10 rounded-full blur-3xl animate-pulse delay-1000"></div>
+        <div class="absolute bottom-1/4 left-1/4 w-64 h-64 bg-gradient-to-br from-blue-400/15 to-cyan-400/10 rounded-full blur-2xl animate-pulse delay-2000"></div>
+        
+        <!-- Formes géométriques flottantes -->
+        <div class="absolute top-20 right-20 w-4 h-4 bg-white/20 rounded-full animate-bounce delay-500"></div>
+        <div class="absolute bottom-40 left-16 w-6 h-6 bg-cyan-400/30 rotate-45 animate-pulse delay-700"></div>
+        <div class="absolute top-1/2 right-1/3 w-8 h-1 bg-white/30 rounded-full animate-pulse delay-1500"></div>
+    </div>
+
+    <div class="relative z-10 h-full flex flex-col justify-center p-8">
+        <!-- Header avec logo modernisé -->
+        <div class="mb-12">
+            <!-- Container du logo avec effet glassmorphism -->
+            <div class="relative mb-8">
+                <div class="absolute inset-0 bg-white/10 backdrop-blur-xl rounded-3xl blur-sm"></div>
+                <div class="relative bg-white/5 backdrop-blur-xl rounded-3xl p-8 border border-white/20">
+                    <img :src="logoUrl" alt="Ministère" class="max-h-24 w-auto mx-auto filter drop-shadow-2xl" />
                 </div>
+            </div>
+            
+            <!-- Titre avec animation de typing -->
+            <div class="text-center">
+                <h1 class="text-4xl font-black mb-4 bg-gradient-to-r from-white via-cyan-100 to-blue-100 bg-clip-text text-transparent">
+                    <span class="inline-block animate-pulse">Ministère</span>
+                    <span class="inline-block animate-pulse delay-200">des</span>
+                    <span class="inline-block animate-pulse delay-400">Finances</span>
+                </h1>
+                <div class="flex items-center justify-center space-x-2 mb-2">
+                    <div class="w-8 h-0.5 bg-gradient-to-r from-transparent to-cyan-400 animate-pulse"></div>
+                    <p class="text-cyan-100 text-lg font-medium">République du Bénin</p>
+                    <div class="w-8 h-0.5 bg-gradient-to-l from-transparent to-cyan-400 animate-pulse"></div>
+                </div>
+                <p class="text-blue-200/80 text-sm font-light">Transformation Digitale</p>
+            </div>
+        </div>
 
-                <div class="relative z-10 h-full flex flex-col justify-center p-12">
-                    <!-- Logo ministère -->
-                    <div class="mb-8">
-                        <img :src="logoUrl" alt="Ministère" class="max-h-32 w-auto mx-auto mb-6" />
-                        <div class="text-center">
-                            <h1 class="text-4xl font-black mb-3 bg-gradient-to-r from-white to-blue-100 bg-clip-text text-transparent">
-                                Ministère des Finances
-                            </h1>
-                            <p class="text-blue-100 text-lg">République du Bénin </p>
-                        </div>
-                    </div>
+        <!-- Illustration SVG modernisée avec animations -->
+        <div class="flex-1 flex items-center justify-center mb-12">
+            <div class="relative max-w-lg w-full">
+                <!-- Dashboard moderne -->
+                <svg viewBox="0 0 500 350" class="w-full h-auto drop-shadow-2xl">
+                    <!-- Écran principal avec effet glassmorphism -->
+                    <defs>
+                        <linearGradient id="screenGradient" x1="0%" y1="0%" x2="100%" y2="100%">
+                            <stop offset="0%" style="stop-color:rgba(255,255,255,0.15);stop-opacity:1" />
+                            <stop offset="100%" style="stop-color:rgba(255,255,255,0.05);stop-opacity:1" />
+                        </linearGradient>
+                        <linearGradient id="blueGradient" x1="0%" y1="0%" x2="100%" y2="100%">
+                            <stop offset="0%" style="stop-color:rgba(59,130,246,0.8);stop-opacity:1" />
+                            <stop offset="100%" style="stop-color:rgba(99,102,241,0.6);stop-opacity:1" />
+                        </linearGradient>
+                        <filter id="glow" x="-50%" y="-50%" width="200%" height="200%">
+                            <feGaussianBlur stdDeviation="3" result="coloredBlur"/>
+                            <feMerge> 
+                                <feMergeNode in="coloredBlur"/>
+                                <feMergeNode in="SourceGraphic"/>
+                            </feMerge>
+                        </filter>
+                    </defs>
+                    
+                    <!-- Écran principal -->
+                    <rect x="60" y="60" width="280" height="180" rx="20" fill="url(#screenGradient)" stroke="rgba(255,255,255,0.3)" stroke-width="2" filter="url(#glow)"/>
+                    
+                    <!-- Barre de navigation -->
+                    <rect x="75" y="75" width="250" height="30" rx="15" fill="rgba(59,130,246,0.3)"/>
+                    <circle cx="90" cy="90" r="4" fill="rgba(255,255,255,0.8)"/>
+                    <circle cx="105" cy="90" r="4" fill="rgba(255,255,255,0.6)"/>
+                    <circle cx="120" cy="90" r="4" fill="rgba(255,255,255,0.4)"/>
+                    
+                    <!-- Dashboard Cards -->
+                    <rect x="85" y="120" width="70" height="50" rx="8" fill="url(#blueGradient)">
+                        <animate attributeName="opacity" values="0.6;1;0.6" dur="3s" repeatCount="indefinite"/>
+                    </rect>
+                    <rect x="170" y="120" width="70" height="50" rx="8" fill="rgba(34,197,94,0.4)">
+                        <animate attributeName="opacity" values="0.4;0.8;0.4" dur="2.5s" repeatCount="indefinite"/>
+                    </rect>
+                    <rect x="255" y="120" width="70" height="50" rx="8" fill="rgba(168,85,247,0.4)">
+                        <animate attributeName="opacity" values="0.5;0.9;0.5" dur="3.5s" repeatCount="indefinite"/>
+                    </rect>
+                    
+                    <!-- Graphique en temps réel -->
+                    <path d="M85 190 Q120 180 155 185 Q190 195 225 180 Q260 170 295 175" 
+                          stroke="rgba(34,197,94,0.8)" stroke-width="3" fill="none" filter="url(#glow)">
+                        <animate attributeName="d" 
+                                 values="M85 190 Q120 180 155 185 Q190 195 225 180 Q260 170 295 175;
+                                         M85 195 Q120 185 155 180 Q190 190 225 175 Q260 165 295 170;
+                                         M85 190 Q120 180 155 185 Q190 195 225 180 Q260 170 295 175" 
+                                 dur="4s" repeatCount="indefinite"/>
+                    </path>
+                    
+                    <!-- Indicateurs en temps réel -->
+                    <circle cx="380" cy="100" r="20" fill="rgba(255,255,255,0.15)" stroke="rgba(59,130,246,0.6)" stroke-width="2">
+                        <animate attributeName="r" values="20;25;20" dur="2s" repeatCount="indefinite"/>
+                    </circle>
+                    <text x="380" y="105" text-anchor="middle" fill="rgba(255,255,255,0.9)" font-size="10" font-weight="bold">€</text>
+                    
+                    <!-- Notifications flottantes -->
+                    <rect x="350" y="160" width="80" height="25" rx="12" fill="rgba(59,130,246,0.6)" opacity="0">
+                        <animate attributeName="opacity" values="0;1;0" dur="3s" repeatCount="indefinite" begin="1s"/>
+                        <animate attributeName="x" values="350;340;350" dur="3s" repeatCount="indefinite" begin="1s"/>
+                    </rect>
+                    
+                    <rect x="360" y="200" width="60" height="20" rx="10" fill="rgba(34,197,94,0.6)" opacity="0">
+                        <animate attributeName="opacity" values="0;1;0" dur="2.5s" repeatCount="indefinite" begin="2s"/>
+                        <animate attributeName="x" values="360;350;360" dur="2.5s" repeatCount="indefinite" begin="2s"/>
+                    </rect>
+                    
+                    <!-- Particules connectées -->
+                    <g opacity="0.6">
+                        <circle cx="150" cy="280" r="3" fill="rgba(255,255,255,0.8)">
+                            <animate attributeName="cy" values="280;270;280" dur="4s" repeatCount="indefinite"/>
+                        </circle>
+                        <circle cx="200" cy="290" r="4" fill="rgba(59,130,246,0.6)">
+                            <animate attributeName="cy" values="290;275;290" dur="3s" repeatCount="indefinite"/>
+                        </circle>
+                        <circle cx="250" cy="285" r="2" fill="rgba(34,197,94,0.8)">
+                            <animate attributeName="cy" values="285;275;285" dur="3.5s" repeatCount="indefinite"/>
+                        </circle>
+                        
+                        <!-- Connexions animées -->
+                        <path d="M150 280 L200 290 L250 285" stroke="rgba(255,255,255,0.2)" stroke-width="1" fill="none" opacity="0.5">
+                            <animate attributeName="opacity" values="0.5;1;0.5" dur="2s" repeatCount="indefinite"/>
+                        </path>
+                    </g>
+                    
+                    <!-- Effet de scan moderne -->
+                    <rect x="60" y="60" width="280" height="2" fill="rgba(59,130,246,0.8)" opacity="0.8">
+                        <animate attributeName="y" values="60;240;60" dur="4s" repeatCount="indefinite"/>
+                        <animate attributeName="opacity" values="0.8;0.3;0.8" dur="4s" repeatCount="indefinite"/>
+                    </rect>
+                </svg>
+            </div>
+        </div>
 
-                    <!-- Illustration SVG de digitalisation -->
-                    <div class="flex-1 flex items-center justify-center mb-8">
-                        <div class="relative max-w-md w-full">
-                            <!-- Illustration SVG moderne -->
-                            <svg viewBox="0 0 400 300" class="w-full h-auto">
-                                <!-- Écran principal -->
-                                <rect x="50" y="80" width="200" height="140" rx="12" fill="rgba(255,255,255,0.1)" stroke="rgba(255,255,255,0.3)" stroke-width="2"/>
-                                
-                                <!-- Écran de code -->
-                                <rect x="60" y="95" width="180" height="110" rx="6" fill="rgba(59,130,246,0.2)"/>
-                                
-                                <!-- Lignes de code -->
-                                <rect x="70" y="105" width="100" height="4" rx="2" fill="rgba(255,255,255,0.6)"/>
-                                <rect x="70" y="115" width="80" height="4" rx="2" fill="rgba(255,255,255,0.4)"/>
-                                <rect x="70" y="125" width="120" height="4" rx="2" fill="rgba(255,255,255,0.5)"/>
-                                <rect x="70" y="135" width="90" height="4" rx="2" fill="rgba(255,255,255,0.3)"/>
-                                
-                                <!-- Graphiques -->
-                                <circle cx="200" cy="160" r="25" fill="rgba(34,197,94,0.3)" stroke="rgba(34,197,94,0.6)" stroke-width="2"/>
-                                <rect x="180" y="175" width="40" height="20" rx="4" fill="rgba(168,85,247,0.3)"/>
-                                
-                                <!-- Éléments flottants -->
-                                <circle cx="300" cy="100" r="15" fill="rgba(255,255,255,0.2)" class="animate-float">
-                                    <animate attributeName="cy" values="100;90;100" dur="3s" repeatCount="indefinite"/>
-                                </circle>
-                                
-                                <rect x="320" y="140" width="30" height="30" rx="6" fill="rgba(59,130,246,0.3)" class="animate-float">
-                                    <animate attributeName="y" values="140;130;140" dur="4s" repeatCount="indefinite"/>
-                                </rect>
-                                
-                                <circle cx="280" cy="220" r="12" fill="rgba(34,197,94,0.3)" class="animate-float">
-                                    <animate attributeName="cy" values="220;210;220" dur="3.5s" repeatCount="indefinite"/>
-                                </circle>
-                                
-                                <!-- Connexions -->
-                                <path d="M250 120 Q300 130 320 155" stroke="rgba(255,255,255,0.2)" stroke-width="2" fill="none" stroke-dasharray="5,5">
-                                    <animate attributeName="stroke-dashoffset" values="0;10" dur="2s" repeatCount="indefinite"/>
-                                </path>
+        <!-- Statistiques modernisées avec animations -->
+        <div class="grid grid-cols-3 gap-4">
+            <div class="group relative bg-white/10 backdrop-blur-xl rounded-2xl p-6 border border-white/20 hover:bg-white/15 transition-all duration-300 hover:scale-105">
+                <div class="absolute inset-0 bg-gradient-to-br from-cyan-400/20 to-transparent rounded-2xl opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
+                <div class="relative">
+                    <div class="flex items-center justify-between mb-2">
+                        <div class="text-3xl font-black text-white">50+</div>
+                        <div class="w-8 h-8 bg-cyan-400/30 rounded-full flex items-center justify-center">
+                            <svg class="w-4 h-4 text-cyan-200" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"/>
                             </svg>
                         </div>
                     </div>
-
-                    <!-- Statistiques animées -->
-                    <div class="grid grid-cols-3 gap-6 text-center">
-                        <div class="bg-white/10 backdrop-blur-sm rounded-2xl p-4 border border-white/20">
-                            <div class="text-2xl font-bold text-white mb-1">50+</div>
-                            <div class="text-blue-100 text-sm">Services Digitaux</div>
-                        </div>
-                        <div class="bg-white/10 backdrop-blur-sm rounded-2xl p-4 border border-white/20">
-                            <div class="text-2xl font-bold text-white mb-1">24/7</div>
-                            <div class="text-blue-100 text-sm">Disponibilité</div>
-                        </div>
-                        <div class="bg-white/10 backdrop-blur-sm rounded-2xl p-4 border border-white/20">
-                            <div class="text-2xl font-bold text-white mb-1">99%</div>
-                            <div class="text-blue-100 text-sm">Sécurité</div>
-                        </div>
+                    <div class="text-cyan-100 text-sm font-medium">Services Digitaux</div>
+                    <div class="w-full bg-white/20 rounded-full h-1 mt-2">
+                        <div class="bg-gradient-to-r from-cyan-400 to-blue-400 h-1 rounded-full animate-pulse" style="width: 85%"></div>
                     </div>
                 </div>
             </div>
+            
+            <div class="group relative bg-white/10 backdrop-blur-xl rounded-2xl p-6 border border-white/20 hover:bg-white/15 transition-all duration-300 hover:scale-105">
+                <div class="absolute inset-0 bg-gradient-to-br from-green-400/20 to-transparent rounded-2xl opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
+                <div class="relative">
+                    <div class="flex items-center justify-between mb-2">
+                        <div class="text-3xl font-black text-white">24/7</div>
+                        <div class="w-8 h-8 bg-green-400/30 rounded-full flex items-center justify-center">
+                            <div class="w-2 h-2 bg-green-400 rounded-full animate-pulse"></div>
+                        </div>
+                    </div>
+                    <div class="text-green-100 text-sm font-medium">Disponibilité</div>
+                    <div class="w-full bg-white/20 rounded-full h-1 mt-2">
+                        <div class="bg-gradient-to-r from-green-400 to-emerald-400 h-1 rounded-full animate-pulse" style="width: 100%"></div>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="group relative bg-white/10 backdrop-blur-xl rounded-2xl p-6 border border-white/20 hover:bg-white/15 transition-all duration-300 hover:scale-105">
+                <div class="absolute inset-0 bg-gradient-to-br from-purple-400/20 to-transparent rounded-2xl opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
+                <div class="relative">
+                    <div class="flex items-center justify-between mb-2">
+                        <div class="text-3xl font-black text-white">99%</div>
+                        <div class="w-8 h-8 bg-purple-400/30 rounded-full flex items-center justify-center">
+                            <svg class="w-4 h-4 text-purple-200" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z"/>
+                            </svg>
+                        </div>
+                    </div>
+                    <div class="text-purple-100 text-sm font-medium">Sécurité</div>
+                    <div class="w-full bg-white/20 rounded-full h-1 mt-2">
+                        <div class="bg-gradient-to-r from-purple-400 to-indigo-400 h-1 rounded-full animate-pulse" style="width: 99%"></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Badge "Powered by" moderne -->
+        <div class="mt-8 flex justify-center">
+            <div class="bg-white/5 backdrop-blur-xl rounded-full px-6 py-2 border border-white/20 flex items-center space-x-2">
+                <div class="w-2 h-2 bg-green-400 rounded-full animate-pulse"></div>
+                <span class="text-white/80 text-xs font-medium">Plateforme Sécurisée</span>
+                <div class="w-2 h-2 bg-blue-400 rounded-full animate-pulse delay-500"></div>
+            </div>
+        </div>
+    </div>
+</div>
 
             <!-- Colonne droite : Formulaire -->
             <div class="relative flex items-center justify-center p-12 bg-gradient-to-br from-gray-50 to-blue-50/30">

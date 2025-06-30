@@ -13,18 +13,47 @@
         .bold { font-weight: bold; }
         .center { text-align: center; }
         .footer { margin-top: 40px; color: #444; font-size: 0.95em; text-align: right; }
+        @media print {
+            .no-print { display: none !important; }
+        }
     </style>
 </head>
 <body>
+    <button onclick="window.print()" class="no-print" style="float: right; margin-bottom: 20px; padding: 8px 18px; font-size: 1em; background: #4F46E5; color: #fff; border: none; border-radius: 6px; cursor: pointer;">
+        Imprimer / Télécharger en PDF
+    </button>
     <div class="attestation-container">
+        <div style="display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 16px;">
+            <!-- Logo du ministère -->
+            <div style="width: 300px;">
+                <img src="{{ asset('images/logoministere.png') }}" alt="Logo Ministère" style="width: 300px;">
+            </div>
+            <!-- Informations du ministère -->
+            <div style="text-align: right; font-size: 0.98em; line-height: 1.4;">
+                <span style="font-size: 0.95em;">368, Avenue Pape Jean Paul II<br>01 BP 302 COTONOU<br>Tél : 21 30 10 20 – Fax : 21 30 18 51<br><a href="http://www.finances.bj" style="color: #222; text-decoration: underline;">www.finances.bj</a></span><br>
+                <span style="font-weight: bold;">Cotonou, le {{ now()->format('d/m/Y') }}</span>
+            </div>
+        </div>
+        <!-- Bloc titres institutionnels -->
+        <div style="text-align: left; margin-bottom: 18px;">
+            <span style="font-weight: bold; font-size: 1.1em;">SECRÉTARIAT GÉNÉRAL<br>DU MINISTÈRE</span><br>
+            <span style="font-size: 1em;">--------------------</span><br>
+            <span style="font-weight: bold; font-size: 1.1em;">{{ mb_strtoupper($libelle_structure, 'UTF-8') }}<br>{{ $sigle_structure ? '(' . mb_strtoupper($sigle_structure, 'UTF-8') . ')' : '' }}</span>
+        </div>
+        <!-- Numéro d'attestation (optionnel) -->
+        @isset($numero_attestation)
+            <div style="margin-bottom: 18px; font-size: 1.05em;">
+                N° <span style="font-weight: bold;">{{ $numero_attestation }}</span>/MEF/SGM/DSI/RSCP/SA
+            </div>
+        @endisset
         <h1>ATTESTATION D'EFFECTIVITE DE STAGE</h1>
         <div class="content">
-            Je soussigné <span class="bold">{{ strtoupper($nom_rs) }}</span>, Responsable de la structure <span class="bold">{{ $libelle_structure }} ({{ $sigle_structure }})</span>,
-            atteste que Monsieur <span class="bold">{{ $stagiaire->user->nom }} {{ $stagiaire->user->prenom }}</span>, a été stagiaire à la <span class="bold">{{ $libelle_structure }} ({{ $sigle_structure }})</span>.
+            Je soussigné <span class="bold">{{ mb_strtoupper($nom_rs, 'UTF-8') }}</span>, Responsable de la structure <span class="bold">{{ mb_strtoupper($libelle_structure, 'UTF-8') }}{{ $sigle_structure ? ' (' . mb_strtoupper($sigle_structure, 'UTF-8') . ')' : '' }}</span>,
+            atteste que Monsieur <span class="bold">{{ $stagiaire->user->nom }} {{ $stagiaire->user->prenom }}</span>, a été stagiaire à la <span class="bold">{{ mb_strtoupper($libelle_structure, 'UTF-8') }}{{ $sigle_structure ? ' (' . mb_strtoupper($sigle_structure, 'UTF-8') . ')' : '' }}</span>.
             <br><br>
             Il est étudiant en <span class="bold">{{ $stagiaire_principal->niveau_etude }}</span> en <span class="bold">{{ $stagiaire_principal->filiere }}</span> à <span class="bold">{{ $stagiaire_principal->universite }}</span>.
             <br><br>
-            Mis à la disposition de la <span class="bold">{{ $libelle_structure }} ({{ $sigle_structure }})</span> pour un stage <span class="bold">{{ $stage->type }}</span>, pratique et bénévole d'une durée de
+            Mis à la disposition de la <span class="bold">{{ mb_strtoupper($libelle_structure, 'UTF-8') }}{{ $sigle_structure ? ' (' . mb_strtoupper($sigle_structure, 'UTF-8') . ')' : '' }}</span> pour un stage <span class="bold">{{ $stage->type }}</span>, pratique et bénévole d'une durée de
             @php
                 $dateDebut = \Carbon\Carbon::parse($stage->date_debut);
                 $dateFin = \Carbon\Carbon::parse($stage->date_fin);
@@ -42,7 +71,7 @@
             En foi de quoi la présente attestation lui est délivrée pour servir et valoir ce que de droit.
         </div>
         <div class="footer">
-            Fait à {{ $libelle_structure }}, le {{ now()->format('d/m/Y') }}
+            Fait à {{ mb_strtoupper($libelle_structure, 'UTF-8') }}, le {{ now()->format('d/m/Y') }}
         </div>
         <div class="signature">
             Responsable de la structure<br>

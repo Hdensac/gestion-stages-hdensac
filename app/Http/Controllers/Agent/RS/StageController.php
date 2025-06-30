@@ -310,7 +310,7 @@ class StageController extends Controller
         $nom_rs = $responsable ? ($responsable->user->nom . ' ' . $responsable->user->prenom) : '';
         $libelle_structure = $structure ? $structure->libelle : '';
         $sigle_structure = $structure ? $structure->sigle : '';
-        $pdf = Pdf::loadView('attestation', [
+        return view('attestation', [
             'stage' => $stage,
             'stagiaire' => $stage->stagiaire,
             'structure' => $structure,
@@ -319,6 +319,5 @@ class StageController extends Controller
             'libelle_structure' => $libelle_structure,
             'sigle_structure' => $sigle_structure,
         ]);
-        return $pdf->stream('attestation_stage_'.$stage->id.'.pdf');
     }
 }

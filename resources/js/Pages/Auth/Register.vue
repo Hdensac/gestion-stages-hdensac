@@ -250,98 +250,187 @@ const updatePasswordStrength = () => {
         <div class="hidden lg:grid lg:grid-cols-2 lg:min-h-screen">
             <!-- Colonne gauche : Illustration -->
             <div class="relative bg-gradient-to-br from-blue-600 via-blue-700 to-indigo-800 text-white overflow-hidden">
-                <!-- Éléments de fond animés -->
-                <div class="absolute inset-0 overflow-hidden">
-                    <div class="absolute -top-40 -left-40 w-96 h-96 bg-gradient-to-br from-white/10 to-transparent rounded-full blur-3xl animate-pulse"></div>
-                    <div class="absolute top-1/3 -right-32 w-80 h-80 bg-gradient-to-br from-indigo-400/20 to-transparent rounded-full blur-3xl animate-pulse"></div>
-                    <div class="absolute bottom-1/4 left-1/4 w-64 h-64 bg-gradient-to-br from-blue-400/15 to-transparent rounded-full blur-2xl animate-pulse"></div>
-                </div>
+        <!-- Particules flottantes animées -->
+        <div class="absolute inset-0 overflow-hidden">
+            <!-- Cercles flottants avec animations décalées -->
+            <div class="absolute top-20 left-12 w-2 h-2 bg-white/30 rounded-full animate-bounce" style="animation-delay: 0s; animation-duration: 3s;"></div>
+            <div class="absolute top-1/3 right-20 w-1 h-1 bg-blue-200/40 rounded-full animate-bounce" style="animation-delay: 1s; animation-duration: 4s;"></div>
+            <div class="absolute bottom-1/3 left-16 w-3 h-3 bg-indigo-200/30 rounded-full animate-bounce" style="animation-delay: 2s; animation-duration: 3.5s;"></div>
+            <div class="absolute top-2/3 right-12 w-1.5 h-1.5 bg-white/40 rounded-full animate-bounce" style="animation-delay: 0.5s; animation-duration: 2.5s;"></div>
+            
+            <!-- Formes géométriques modernes -->
+            <div class="absolute top-1/4 -left-20 w-40 h-40 bg-gradient-to-br from-blue-400/20 to-transparent rounded-full blur-2xl animate-pulse-slow"></div>
+            <div class="absolute bottom-1/4 -right-32 w-60 h-60 bg-gradient-to-tl from-indigo-400/15 to-transparent rounded-full blur-3xl animate-pulse-slow" style="animation-delay: 2s;"></div>
+            <div class="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 w-32 h-32 border border-white/10 rounded-xl rotate-45 animate-spin-slow"></div>
+        </div>
 
-                <div class="relative z-10 h-full flex flex-col justify-center p-12">
-                    <!-- Logo ministère -->
-                    <div class="mb-8">
-                        <img :src="logoUrl" alt="Ministère" class="max-h-32 w-auto mx-auto mb-6" />
-                        <div class="text-center">
-                            <h1 class="text-4xl font-black mb-3 bg-gradient-to-r from-white to-pink-100 bg-clip-text text-transparent">
-                                Rejoignez l'Excellence
-                            </h1>
-                            <p class="text-indigo-100 text-lg">Programme de Stages</p>
-                        </div>
-                    </div>
-
-                    <!-- Illustration SVG pour inscription -->
-                    <div class="flex-1 flex items-center justify-center mb-8">
-                        <div class="relative max-w-md w-full">
-                            <svg viewBox="0 0 400 300" class="w-full h-auto">
-                                <!-- Groupe de personnes -->
-                                <circle cx="120" cy="140" r="30" fill="rgba(59,130,246,0.3)" stroke="rgba(59,130,246,0.6)" stroke-width="2"/>
-                                <circle cx="180" cy="120" r="35" fill="rgba(99,102,241,0.3)" stroke="rgba(99,102,241,0.6)" stroke-width="2"/>
-                                <circle cx="240" cy="145" r="32" fill="rgba(59,130,246,0.3)" stroke="rgba(59,130,246,0.6)" stroke-width="2"/>
-                                
-                                <!-- Connexions entre personnes -->
-                                <path d="M145 150 Q160 135 155 120" stroke="rgba(255,255,255,0.3)" stroke-width="3" fill="none"/>
-                                <path d="M210 135 Q225 140 225 155" stroke="rgba(255,255,255,0.3)" stroke-width="3" fill="none"/>
-                                
-                                <!-- Étoiles de réussite -->
-                                <g transform="translate(300,80)">
-                                    <path d="M0,-20 L6,-6 L20,-6 L10,2 L16,16 L0,8 L-16,16 L-10,2 L-20,-6 L-6,-6 Z" fill="rgba(255,215,0,0.4)" class="animate-float">
-                                        <animate attributeName="opacity" values="0.4;0.8;0.4" dur="2s" repeatCount="indefinite"/>
-                                    </path>
-                                </g>
-                                
-                                <g transform="translate(320,200)">
-                                    <path d="M0,-15 L4.5,-4.5 L15,-4.5 L7.5,1.5 L12,12 L0,6 L-12,12 L-7.5,1.5 L-15,-4.5 L-4.5,-4.5 Z" fill="rgba(255,215,0,0.3)" class="animate-float">
-                                        <animate attributeName="opacity" values="0.3;0.7;0.3" dur="3s" repeatCount="indefinite"/>
-                                    </path>
-                                </g>
-                                
-                                <!-- Documents/certificats -->
-                                <rect x="50" y="200" width="80" height="60" rx="8" fill="rgba(255,255,255,0.1)" stroke="rgba(255,255,255,0.3)" stroke-width="2"/>
-                                <rect x="60" y="210" width="60" height="4" rx="2" fill="rgba(255,255,255,0.4)"/>
-                                <rect x="60" y="220" width="45" height="4" rx="2" fill="rgba(255,255,255,0.3)"/>
-                                <rect x="60" y="230" width="55" height="4" rx="2" fill="rgba(255,255,255,0.4)"/>
-                                
-                                <!-- Flèches de progression -->
-                                <path d="M150 200 Q200 180 250 200" stroke="rgba(255,255,255,0.4)" stroke-width="3" fill="none" marker-end="url(#arrowhead)"/>
-                                
-                                <defs>
-                                    <marker id="arrowhead" markerWidth="10" markerHeight="7" refX="0" refY="3.5" orient="auto">
-                                        <polygon points="0 0, 10 3.5, 0 7" fill="rgba(255,255,255,0.4)"/>
-                                    </marker>
-                                </defs>
-                            </svg>
-                        </div>
-                    </div>
-
-                    <!-- Avantages du programme -->
-                    <div class="space-y-4">
-                        <div class="flex items-center space-x-3">
-                            <div class="w-8 h-8 bg-white/20 rounded-full flex items-center justify-center">
-                                <svg class="w-4 h-4 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/>
-                                </svg>
-                            </div>
-                            <span class="text-white/90">Formation professionnelle de qualité</span>
-                        </div>
-                        <div class="flex items-center space-x-3">
-                            <div class="w-8 h-8 bg-white/20 rounded-full flex items-center justify-center">
-                                <svg class="w-4 h-4 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/>
-                                </svg>
-                            </div>
-                            <span class="text-white/90">Encadrement par des experts</span>
-                        </div>
-                        <div class="flex items-center space-x-3">
-                            <div class="w-8 h-8 bg-white/20 rounded-full flex items-center justify-center">
-                                <svg class="w-4 h-4 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/>
-                                </svg>
-                            </div>
-                            <span class="text-white/90">Opportunités de carrière</span>
-                        </div>
+        <div class="relative z-10 h-full flex flex-col justify-center p-12">
+            <!-- Logo modernisé comme sur la page de login -->
+            <div class="mb-12">
+                <div class="relative mb-8">
+                    <div class="absolute inset-0 bg-white/10 backdrop-blur-xl rounded-3xl blur-sm"></div>
+                    <div class="relative bg-white/5 backdrop-blur-xl rounded-3xl p-8 border border-white/20">
+                        <img :src="logoUrl" alt="Ministère" class="max-h-24 w-auto mx-auto filter drop-shadow-2xl" />
                     </div>
                 </div>
             </div>
+
+            <!-- Logo et titre modernisés -->
+            <div class="mb-12 transform transition-all duration-1000 hover:scale-105">
+                <div class="text-center mb-8">
+                    
+                    <div class="flex items-center justify-center space-x-2 mb-2">
+                    <div class="w-8 h-0.5 bg-gradient-to-r from-transparent to-cyan-400 animate-pulse"></div>
+                    <p class="text-cyan-100 text-lg font-medium">République du Bénin</p>
+                    <div class="w-8 h-0.5 bg-gradient-to-l from-transparent to-cyan-400 animate-pulse"></div>
+                </div>
+                <p class="text-blue-200/80 text-sm font-light">Transformation Digitale</p>
+                    <div class="w-24 h-1 bg-gradient-to-r from-transparent via-white/50 to-transparent mx-auto rounded-full"></div>
+                </div>
+            </div>
+
+            <!-- Illustration SVG moderne et interactive -->
+            <div class="flex-1 flex items-center justify-center mb-12">
+                <div class="relative max-w-lg w-full">
+                    <svg viewBox="0 0 500 350" class="w-full h-auto">
+                        <!-- Fond avec grille moderne -->
+                        <defs>
+                            <pattern id="grid" width="40" height="40" patternUnits="userSpaceOnUse">
+                                <path d="M 40 0 L 0 0 0 40" fill="none" stroke="rgba(255,255,255,0.1)" stroke-width="1"/>
+                            </pattern>
+                            <linearGradient id="cardGradient" x1="0%" y1="0%" x2="100%" y2="100%">
+                                <stop offset="0%" style="stop-color:rgba(255,255,255,0.2);stop-opacity:1" />
+                                <stop offset="100%" style="stop-color:rgba(255,255,255,0.05);stop-opacity:1" />
+                            </linearGradient>
+                        </defs>
+                        
+                        <!-- Grille de fond -->
+                        <rect width="500" height="350" fill="url(#grid)" opacity="0.3"/>
+                        
+                        <!-- Personnes connectées - Design moderne -->
+                        <g class="animate-float-1">
+                            <!-- Personne 1 -->
+                            <circle cx="120" cy="140" r="35" fill="url(#cardGradient)" stroke="rgba(255,255,255,0.3)" stroke-width="2"/>
+                            <circle cx="120" cy="130" r="12" fill="rgba(255,255,255,0.8)"/>
+                            <path d="M105 150 Q120 145 135 150 Q135 160 120 165 Q105 160 105 150" fill="rgba(255,255,255,0.6)"/>
+                        </g>
+                        
+                        <g class="animate-float-2">
+                            <!-- Personne 2 (centrale) -->
+                            <circle cx="250" cy="120" r="40" fill="url(#cardGradient)" stroke="rgba(255,255,255,0.4)" stroke-width="3"/>
+                            <circle cx="250" cy="108" r="15" fill="rgba(255,255,255,0.9)"/>
+                            <path d="M230 140 Q250 135 270 140 Q270 155 250 160 Q230 155 230 140" fill="rgba(255,255,255,0.7)"/>
+                            <!-- Couronne pour la personne centrale -->
+                            <path d="M235 95 L245 85 L255 95 L265 85 L270 95 L260 100 L240 100 Z" fill="rgba(255,215,0,0.6)"/>
+                        </g>
+                        
+                        <g class="animate-float-3">
+                            <!-- Personne 3 -->
+                            <circle cx="380" cy="145" r="32" fill="url(#cardGradient)" stroke="rgba(255,255,255,0.3)" stroke-width="2"/>
+                            <circle cx="380" cy="135" r="11" fill="rgba(255,255,255,0.8)"/>
+                            <path d="M368 155 Q380 150 392 155 Q392 165 380 170 Q368 165 368 155" fill="rgba(255,255,255,0.6)"/>
+                        </g>
+                        
+                        <!-- Connexions modernes avec animation -->
+                        <g stroke="rgba(255,255,255,0.4)" stroke-width="3" fill="none">
+                            <path d="M155 140 Q200 130 215 120" class="animate-draw"/>
+                            <path d="M285 125 Q330 130 348 140" class="animate-draw" style="animation-delay: 1s;"/>
+                        </g>
+                        
+                        <!-- Éléments technologiques -->
+                        <g class="animate-pulse-tech">
+                            <!-- Tablette/Document digital -->
+                            <rect x="80" y="220" width="100" height="70" rx="12" fill="url(#cardGradient)" stroke="rgba(255,255,255,0.3)" stroke-width="2"/>
+                            <rect x="90" y="235" width="80" height="4" rx="2" fill="rgba(255,255,255,0.6)"/>
+                            <rect x="90" y="245" width="60" height="4" rx="2" fill="rgba(255,255,255,0.4)"/>
+                            <rect x="90" y="255" width="70" height="4" rx="2" fill="rgba(255,255,255,0.5)"/>
+                            <circle cx="90" cy="270" r="8" fill="rgba(59,130,246,0.6)"/>
+                            <circle cx="110" cy="270" r="8" fill="rgba(99,102,241,0.6)"/>
+                        </g>
+                        
+                        <!-- Graphique de progression -->
+                        <g class="animate-chart">
+                            <rect x="320" y="200" width="120" height="80" rx="12" fill="url(#cardGradient)" stroke="rgba(255,255,255,0.3)" stroke-width="2"/>
+                            <!-- Barres du graphique -->
+                            <rect x="335" y="250" width="12" height="20" rx="2" fill="rgba(34,197,94,0.6)"/>
+                            <rect x="355" y="240" width="12" height="30" rx="2" fill="rgba(59,130,246,0.6)"/>
+                            <rect x="375" y="230" width="12" height="40" rx="2" fill="rgba(99,102,241,0.6)"/>
+                            <rect x="395" y="220" width="12" height="50" rx="2" fill="rgba(168,85,247,0.6)"/>
+                        </g>
+                        
+                        <!-- Notifications/badges de réussite -->
+                        <g class="animate-notification">
+                            <circle cx="450" cy="80" r="25" fill="rgba(34,197,94,0.2)" stroke="rgba(34,197,94,0.6)" stroke-width="2"/>
+                            <path d="M440 80 L448 88 L462 72" stroke="rgba(34,197,94,0.8)" stroke-width="3" fill="none" stroke-linecap="round"/>
+                        </g>
+                        
+                        <g class="animate-notification" style="animation-delay: 2s;">
+                            <circle cx="50" cy="90" r="20" fill="rgba(59,130,246,0.2)" stroke="rgba(59,130,246,0.6)" stroke-width="2"/>
+                            <path d="M45 90 Q50 85 55 90 Q50 95 45 90" fill="rgba(59,130,246,0.8)"/>
+                        </g>
+                        
+                        <!-- Flèches de flux modernes -->
+                        <g stroke="rgba(255,255,255,0.5)" stroke-width="2" fill="none" marker-end="url(#modernArrow)">
+                            <path d="M180 230 Q220 210 280 220" class="animate-flow"/>
+                            <path d="M200 150 Q240 170 300 160" class="animate-flow" style="animation-delay: 1.5s;"/>
+                        </g>
+                        
+                        <defs>
+                            <marker id="modernArrow" markerWidth="12" markerHeight="8" refX="10" refY="4" orient="auto" markerUnits="strokeWidth">
+                                <path d="M0,0 L0,8 L12,4 z" fill="rgba(255,255,255,0.5)"/>
+                            </marker>
+                        </defs>
+                    </svg>
+                </div>
+            </div>
+
+            <!-- Avantages modernisés avec icônes et animations -->
+            <div class="space-y-6">
+                <div class="flex items-center space-x-4 group hover:translate-x-2 transition-transform duration-300">
+                    <div class="w-12 h-12 bg-gradient-to-br from-white/20 to-white/10 backdrop-blur-sm rounded-2xl flex items-center justify-center group-hover:scale-110 transition-transform duration-300 border border-white/20">
+                        <svg class="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z"/>
+                        </svg>
+                    </div>
+                    <div>
+                        <span class="text-white font-semibold text-lg">Formation Accélérée</span>
+                        <p class="text-blue-100 text-sm">Développement de compétences intensif</p>
+                    </div>
+                </div>
+                
+                <div class="flex items-center space-x-4 group hover:translate-x-2 transition-transform duration-300">
+                    <div class="w-12 h-12 bg-gradient-to-br from-white/20 to-white/10 backdrop-blur-sm rounded-2xl flex items-center justify-center group-hover:scale-110 transition-transform duration-300 border border-white/20">
+                        <svg class="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z"/>
+                        </svg>
+                    </div>
+                    <div>
+                        <span class="text-white font-semibold text-lg">Mentorat Expert</span>
+                        <p class="text-blue-100 text-sm">Accompagnement personnalisé</p>
+                    </div>
+                </div>
+                
+                <div class="flex items-center space-x-4 group hover:translate-x-2 transition-transform duration-300">
+                    <div class="w-12 h-12 bg-gradient-to-br from-white/20 to-white/10 backdrop-blur-sm rounded-2xl flex items-center justify-center group-hover:scale-110 transition-transform duration-300 border border-white/20">
+                        <svg class="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4M7.835 4.697a3.42 3.42 0 001.946-.806 3.42 3.42 0 014.438 0 3.42 3.42 0 001.946.806 3.42 3.42 0 013.138 3.138 3.42 3.42 0 00.806 1.946 3.42 3.42 0 010 4.438 3.42 3.42 0 00-.806 1.946 3.42 3.42 0 01-3.138 3.138 3.42 3.42 0 00-1.946.806 3.42 3.42 0 01-4.438 0 3.42 3.42 0 00-1.946-.806 3.42 3.42 0 01-3.138-3.138 3.42 3.42 0 00-.806-1.946 3.42 3.42 0 010-4.438 3.42 3.42 0 00.806-1.946 3.42 3.42 0 013.138-3.138z"/>
+                        </svg>
+                    </div>
+                    <div>
+                        <span class="text-white font-semibold text-lg">Certification Reconnue</span>
+                        <p class="text-blue-100 text-sm">Valorisation professionnelle garantie</p>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Call-to-action subtil -->
+            <div class="mt-8 text-center opacity-70">
+                <p class="text-blue-100 text-sm italic">
+                    "L'excellence ne naît pas du hasard, elle se cultive."
+                </p>
+            </div>
+        </div>
+    </div>
 
             <!-- Colonne droite : Formulaire -->
             <div class="relative flex items-center justify-center p-8 bg-gradient-to-br from-gray-50 to-blue-50/30 overflow-y-auto">
@@ -592,33 +681,100 @@ const updatePasswordStrength = () => {
 </template>
 
 <style scoped>
-/* Animations personnalisées */
-@keyframes float {
-    0%, 100% { transform: translateY(0px); }
-    50% { transform: translateY(-10px); }
+/* Animations modernisées */
+@keyframes float-1 {
+    0%, 100% { transform: translateY(0px) rotate(0deg); }
+    50% { transform: translateY(-8px) rotate(1deg); }
 }
 
-.animate-float {
-    animation: float 6s ease-in-out infinite;
+@keyframes float-2 {
+    0%, 100% { transform: translateY(0px) rotate(0deg); }
+    50% { transform: translateY(-12px) rotate(-1deg); }
 }
 
-/* Effet de focus sur les champs */
-input:focus, select:focus {
-    transform: scale(1.02);
+@keyframes float-3 {
+    0%, 100% { transform: translateY(0px) rotate(0deg); }
+    50% { transform: translateY(-6px) rotate(0.5deg); }
 }
 
-/* Animation des éléments SVG */
-.animate-svg-float {
-    animation: float 4s ease-in-out infinite;
+@keyframes pulse-slow {
+    0%, 100% { opacity: 0.8; transform: scale(1); }
+    50% { opacity: 0.4; transform: scale(1.1); }
 }
 
-/* Effet de pulsation douce */
-@keyframes pulse-soft {
-    0%, 100% { opacity: 1; }
-    50% { opacity: 0.8; }
+@keyframes spin-slow {
+    from { transform: translate(-50%, -50%) rotate(45deg); }
+    to { transform: translate(-50%, -50%) rotate(405deg); }
 }
 
-.animate-pulse-soft {
-    animation: pulse-soft 3s ease-in-out infinite;
+@keyframes draw {
+    0% { stroke-dasharray: 0 100; }
+    100% { stroke-dasharray: 100 0; }
+}
+
+@keyframes pulse-tech {
+    0%, 100% { opacity: 1; transform: translateY(0px); }
+    50% { opacity: 0.7; transform: translateY(-2px); }
+}
+
+@keyframes chart {
+    0% { transform: scaleY(0); }
+    100% { transform: scaleY(1); }
+}
+
+@keyframes notification {
+    0%, 100% { transform: scale(1); opacity: 1; }
+    50% { transform: scale(1.1); opacity: 0.8; }
+}
+
+@keyframes flow {
+    0% { stroke-dasharray: 0 20; }
+    100% { stroke-dasharray: 20 0; }
+}
+
+.animate-float-1 {
+    animation: float-1 6s ease-in-out infinite;
+}
+
+.animate-float-2 {
+    animation: float-2 7s ease-in-out infinite;
+}
+
+.animate-float-3 {
+    animation: float-3 5s ease-in-out infinite;
+}
+
+.animate-pulse-slow {
+    animation: pulse-slow 4s ease-in-out infinite;
+}
+
+.animate-spin-slow {
+    animation: spin-slow 20s linear infinite;
+}
+
+.animate-draw {
+    animation: draw 3s ease-in-out infinite;
+}
+
+.animate-pulse-tech {
+    animation: pulse-tech 3s ease-in-out infinite;
+}
+
+.animate-chart {
+    animation: chart 2s ease-in-out;
+    transform-origin: bottom;
+}
+
+.animate-notification {
+    animation: notification 4s ease-in-out infinite;
+}
+
+.animate-flow {
+    animation: flow 2s ease-in-out infinite;
+}
+
+/* Effet de hover sur l'ensemble de la section */
+.group:hover .w-12 {
+    box-shadow: 0 10px 25px rgba(255,255,255,0.1);
 }
 </style>

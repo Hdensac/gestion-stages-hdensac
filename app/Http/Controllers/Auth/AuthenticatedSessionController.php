@@ -10,6 +10,7 @@ use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Route;
 use Inertia\Inertia;
 use Inertia\Response;
+use Illuminate\Support\Facades\Http;
 
 class AuthenticatedSessionController extends Controller
 {
@@ -29,6 +30,19 @@ class AuthenticatedSessionController extends Controller
      */
     public function store(LoginRequest $request): RedirectResponse
     {
+        // Désactivation temporaire du reCAPTCHA pour le développement local sans connexion Internet
+        /*
+        $response = Http::asForm()->post('https://www.google.com/recaptcha/api/siteverify', [
+            'secret' => 'VOTRE_CLÉ_SECRÈTE', // Remplace par ta clé secrète
+            'response' => $request->recaptcha,
+            'remoteip' => $request->ip(),
+        ]);
+
+        if (!$response->json('success')) {
+            return back()->withErrors(['recaptcha' => 'Veuillez valider le reCAPTCHA.']);
+        }
+        */
+
         $request->authenticate();
 
         $request->session()->regenerate();
