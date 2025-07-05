@@ -18,7 +18,7 @@ class DemandeController extends Controller
         try {
             $query = DemandeStage::query()
                 ->with(['stagiaire.user', 'structureSouhaitee', 'derniereAffectation.structure'])
-                ->latest();
+                ->orderByDesc('updated_at');
 
             // Filtre par recherche
             if ($request->filled('search')) {

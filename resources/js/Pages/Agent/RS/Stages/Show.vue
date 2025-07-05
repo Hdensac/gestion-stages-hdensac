@@ -116,7 +116,7 @@
                     </div>
                   </div>
                   
-                  <div v-if="stage.evaluation" class="space-y-2">
+                  <!-- <div v-if="stage.evaluation" class="space-y-2">
                     <div class="text-xs font-bold text-gray-500 uppercase tracking-wider flex items-center gap-2">
                       <div class="w-2 h-2 bg-amber-500 rounded-full"></div>
                       Évaluation du MS
@@ -127,7 +127,7 @@
                       </div>
                       <div class="text-xs text-gray-500">{{ getGradeDescription(stage.evaluation.note_totale) }}</div>
                     </div>
-                  </div>
+                  </div> -->
                 </div>
               </div>
             </div>
@@ -182,7 +182,7 @@
                     </div>
                   </div>
                   
-                  <div class="space-y-2">
+                  <div class="space-y-2" v-if="stage.type === 'academique'">
                     <div class="text-xs font-bold text-gray-500 uppercase tracking-wider flex items-center gap-2">
                       <div class="w-2 h-2 bg-emerald-500 rounded-full"></div>
                       Université
@@ -309,28 +309,27 @@
                         </div>
                       </td>
                       <td class="px-6 py-5 whitespace-nowrap">
-                        <div v-if="affectation.maitre_stage" class="flex items-center gap-3">
-                          <div class="h-10 w-10 rounded-xl bg-gradient-to-br from-purple-500 to-purple-600 flex items-center justify-center flex-shrink-0 shadow-md">
-                            <UserIcon class="h-5 w-5 text-white" />
-                          </div>
-                          <div>
-                            <div class="text-sm font-semibold text-gray-800">
-                              {{ affectation.maitre_stage.nom }} {{ affectation.maitre_stage.prenom }}
-                            </div>
-                            <div class="text-xs text-gray-500 flex items-center gap-1">
-                              <svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 8l7.89 4.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"></path>
+                        <div v-if="affectation.maitre_stage">
+                          <div class="flex items-center gap-2">
+                            <span class="inline-flex items-center justify-center h-8 w-8 rounded-full bg-purple-200 text-purple-700">
+                              <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"/>
                               </svg>
+                            </span>
+                            <div>
+                              <div class="font-bold text-gray-900">
+                                <span v-if="affectation.maitre_stage.nom || affectation.maitre_stage.prenom">
+                                  {{ affectation.maitre_stage.nom }} {{ affectation.maitre_stage.prenom }}
+                                </span>
+                                <span v-else class="italic text-gray-400">Non renseigné</span>
+                              </div>
+                              <div v-if="affectation.maitre_stage.email" class="text-xs text-gray-500">
                               {{ affectation.maitre_stage.email }}
+                              </div>
                             </div>
                           </div>
                         </div>
-                        <div v-else class="text-gray-400 italic text-sm flex items-center gap-2">
-                          <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M18.364 18.364A9 9 0 005.636 5.636m12.728 12.728L5.636 5.636m12.728 12.728L18.364 5.636M5.636 18.364l12.728-12.728"></path>
-                          </svg>
-                          Informations non disponibles
-                        </div>
+                        <div v-else class="italic text-gray-400">Aucun maître de stage</div>
                       </td>
                       <td class="px-6 py-5 whitespace-nowrap">
                         <div v-if="affectation.agent_affectant?.user" class="flex items-center gap-3">
@@ -355,7 +354,7 @@
                           class="px-3 py-2 text-xs font-semibold rounded-xl shadow-sm"
                           :class="getAffectationStatusStyle(affectation.statut)"
                         >
-                          {{ affectation.statut }}
+                          {{ getStatutAffichage(affectation.statut) }}
                         </span>
                       </td>
                     </tr>
@@ -556,6 +555,8 @@ function getAffectationStatusStyle(status) {
       return 'bg-gradient-to-r from-blue-50 to-blue-100 text-blue-700 border border-blue-200';
     case 'Acceptée':
       return 'bg-gradient-to-r from-emerald-50 to-emerald-100 text-emerald-700 border border-emerald-200';
+    case 'Réaffectée':
+      return 'bg-gradient-to-r from-amber-50 to-yellow-100 text-amber-700 border border-amber-200';
     case 'Terminée':
       return 'bg-gradient-to-r from-gray-50 to-gray-100 text-gray-700 border border-gray-200';
     case 'Refusée':
@@ -573,6 +574,14 @@ function getGradeDescription(note) {
   if (note >= 12) return 'Assez bien';
   if (note >= 10) return 'Passable';
   return 'Insuffisant';
+}
+
+// Fonction utilitaire pour afficher le bon statut dans l'historique
+function getStatutAffichage(statut) {
+  if (statut === 'Acceptée') return 'En cours';
+  if (statut === 'Réaffectée') return 'Réaffectée';
+  if (statut === 'Terminée') return 'Terminée';
+  return statut;
 }
 
 function openMaitreStageModal() {

@@ -74,8 +74,8 @@
             Fait à {{ mb_strtoupper($libelle_structure, 'UTF-8') }}, le {{ now()->format('d/m/Y') }}
         </div>
         <div class="signature">
-            Responsable de la structure<br>
-            <img src="{{ public_path('images/cachet_dsi.png') }}" alt="Cachet" class="stamp"><br>
+            Directeur de la structure {{ $sigle_structure }}<br>
+            
             <span class="bold">{{ $nom_rs }}</span>
         </div>
     </div>

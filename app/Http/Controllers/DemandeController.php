@@ -76,13 +76,16 @@ class DemandeController extends Controller
             ]);
 
             // Créer ou mettre à jour les informations du stagiaire
+            $stagiaireData = [
+                'filiere' => $validated['filiere'],
+                'niveau_etude' => $validated['niveau_etude'],
+            ];
+            if ($validated['type'] === 'Académique') {
+                $stagiaireData['universite'] = $validated['universite'];
+            }
             $stagiaire = Stagiaire::updateOrCreate(
                 ['user_id' => Auth::id()],
-                [
-                    'universite' => $validated['universite'],
-                    'filiere' => $validated['filiere'],
-                    'niveau_etude' => $validated['niveau_etude'],
-                ]
+                $stagiaireData
             );
 
             // Upload des fichiers s'ils existent

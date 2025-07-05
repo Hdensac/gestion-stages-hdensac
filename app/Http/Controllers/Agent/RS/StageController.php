@@ -12,6 +12,7 @@ use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Log;
 use Inertia\Inertia;
 use Barryvdh\DomPDF\Facade\Pdf;
+use Illuminate\Support\Facades\Mail;
 
 class StageController extends Controller
 {
@@ -57,7 +58,8 @@ class StageController extends Controller
                 'affectationsMaitreStage.maitreStage',
                 'affectationsMaitreStage.agentAffectant.user'
             ])
-            ->whereIn('structure_id', $allStructureIds);
+            ->whereIn('structure_id', $allStructureIds)
+            ->orderByDesc('updated_at');
             
             // Filtres
             if ($request->has('status') && $request->status !== 'all') {
@@ -189,10 +191,42 @@ class StageController extends Controller
                 });
             }
             
+            // Récupérer la dernière affectation de maître de stage
+            $affectationMaitreStage = \App\Models\AffectationMaitreStage::where('stage_id', $stage->id)
+                ->orderByDesc('date_affectation')
+                ->orderByDesc('id')
+                ->first();
+
+            $maitre_stage_nom = $maitre_stage_prenom = $maitre_stage_email = null;
+            if ($affectationMaitreStage && $affectationMaitreStage->maitreStage) {
+                $maitre_stage_nom = $affectationMaitreStage->maitreStage->nom;
+                $maitre_stage_prenom = $affectationMaitreStage->maitreStage->prenom;
+                $maitre_stage_email = $affectationMaitreStage->maitreStage->email;
+            }
+            
+            Log::info('DEBUG MS', [
+                'affectations' => $stage->affectationsMaitreStage->map(function($affectation) {
+                    return [
+                        'id' => $affectation->id,
+                        'maitre_stage_id' => $affectation->maitre_stage_id,
+                        'maitre_stage' => $affectation->maitreStage ? [
+                            'id' => $affectation->maitreStage->id,
+                            'user_id' => $affectation->maitreStage->id,
+                            'nom' => $affectation->maitreStage->nom,
+                            'prenom' => $affectation->maitreStage->prenom,
+                            'email' => $affectation->maitreStage->email,
+                        ] : null,
+                    ];
+                })
+            ]);
+            
             return Inertia::render('Agent/RS/Stages/Show', [
                 'stage' => $stage,
                 'structure' => $structure,
                 'membres_groupe' => $membresGroupe,
+                'maitre_stage_nom' => $maitre_stage_nom,
+                'maitre_stage_prenom' => $maitre_stage_prenom,
+                'maitre_stage_email' => $maitre_stage_email,
             ]);
             
         } catch (\Exception $e) {
@@ -276,6 +310,37 @@ class StageController extends Controller
                 'statut' => 'En cours',
                 'updated_at' => now()
             ]);
+
+            // Notifier le(s) stagiaire(s) par email
+            try {
+                // Charger les relations nécessaires
+                $stage->load(['demandeStage.stagiaire.user', 'demandeStage.membres.user']);
+                $stagiaires = [];
+                if ($stage->demandeStage && $stage->demandeStage->nature === 'Groupe') {
+                    // Tous les membres du groupe
+                    foreach ($stage->demandeStage->membres as $membre) {
+                        if ($membre->user && $membre->user->email) {
+                            $stagiaires[] = $membre->user;
+                        }
+                    }
+                } else {
+                    // Stagiaire individuel
+                    if ($stage->demandeStage && $stage->demandeStage->stagiaire && $stage->demandeStage->stagiaire->user && $stage->demandeStage->stagiaire->user->email) {
+                        $stagiaires[] = $stage->demandeStage->stagiaire->user;
+                    }
+                }
+                // Envoi du mail à chaque stagiaire
+                foreach ($stagiaires as $stagiaireUser) {
+                    Mail::to($stagiaireUser->email)->send(new \App\Mail\AffectationMaitreStageMail($stagiaireUser, $stage, $maitreStage));
+                }
+            } catch (\Exception $e) {
+                \Log::error('Erreur lors de l\'envoi de l\'email d\'affectation au(x) stagiaire(s)', [
+                    'error' => $e->getMessage(),
+                    'stage_id' => $stage->id,
+                    'maitre_stage_id' => $maitreStage->id,
+                    'stack' => $e->getTraceAsString()
+                ]);
+            }
 
             Log::info('Maître de stage affecté au stage', [
                 'stage_id' => $stage->id,

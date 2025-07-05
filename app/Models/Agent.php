@@ -33,7 +33,7 @@ class Agent extends Model
      */
     public function user(): BelongsTo
     {
-        return $this->belongsTo(User::class);
+        return $this->belongsTo(User::class, 'user_id');
     }
 
     /**
@@ -56,6 +56,14 @@ class Agent extends Model
      * Get the structure for which this agent is the responsable (if any).
      */
     public function structureResponsable(): BelongsTo
+    {
+        return $this->belongsTo(Structure::class, 'structure_id');
+    }
+
+    /**
+     * Structure d'affectation de l'agent (utilisée pour les maîtres de stage)
+     */
+    public function structureAffectation(): BelongsTo
     {
         return $this->belongsTo(Structure::class, 'structure_id');
     }

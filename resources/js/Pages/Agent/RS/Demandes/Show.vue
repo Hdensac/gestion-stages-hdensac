@@ -36,7 +36,7 @@
 
           <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
             <!-- Informations sur la demande - thème bleu -->
-            <div class="bg-gradient-to-br from-blue-50 via-indigo-50 to-blue-50 rounded-3xl shadow-xl border-2 border-blue-200/50 overflow-hidden">
+            <div class="bg-gradient-to-br from-blue-50 via-indigo-50 to-blue-50 rounded-xl shadow-lg border border-blue-200 overflow-hidden">
               <div class="bg-gradient-to-r from-blue-600 via-blue-700 to-indigo-700 py-6 px-8 relative overflow-hidden">
                 <div class="absolute inset-0 bg-white/10 backdrop-blur-sm"></div>
                 <h3 class="text-xl font-bold text-white flex items-center gap-3 relative z-10">
@@ -53,7 +53,7 @@
               </h3>
             </div>
               <div class="p-8 space-y-5">
-                <div class="bg-white/80 p-5 rounded-2xl border border-blue-200/50 shadow-sm">
+                <div class="bg-white/80 p-5 rounded-lg border border-blue-200 shadow-sm">
                   <span class="text-sm text-blue-700 font-bold block mb-3">Statut</span>
                   <span class="px-4 py-2 text-sm font-bold rounded-2xl inline-flex items-center shadow-lg" :class="getEnhancedStatusColor(getStatutAffichageRS(demande.statut))">
                     <span class="h-2 w-2 rounded-full mr-2" :class="getStatusDotColor(getStatutAffichageRS(demande.statut))"></span>
@@ -61,7 +61,7 @@
                 </span>
               </div>
 
-                <div class="bg-white/80 p-5 rounded-2xl border border-blue-200/50 shadow-sm">
+                <div class="bg-white/80 p-5 rounded-lg border border-blue-200 shadow-sm">
                   <span class="text-sm text-blue-700 font-bold block mb-2">Structure</span>
                   <div class="flex flex-col gap-3">
                     <div class="font-bold text-slate-800 text-lg">
@@ -74,32 +74,32 @@
                   </div>
               </div>
 
-                <div class="bg-white/80 p-5 rounded-2xl border border-blue-200/50 shadow-sm">
+                <div class="bg-white/80 p-5 rounded-lg border border-blue-200 shadow-sm">
                   <span class="text-sm text-blue-700 font-bold block mb-2">Type de stage</span>
                   <span class="font-bold text-slate-800">{{ demande.type }}</span>
               </div>
 
-                <div class="bg-white/80 p-5 rounded-2xl border border-blue-200/50 shadow-sm">
+                <div class="bg-white/80 p-5 rounded-lg border border-blue-200 shadow-sm">
                   <span class="text-sm text-blue-700 font-bold block mb-2">Nature</span>
                   <span class="font-bold text-slate-800">{{ demande.nature }}</span>
               </div>
 
-                <div class="bg-white/80 p-5 rounded-2xl border border-blue-200/50 shadow-sm">
+                <div class="bg-white/80 p-5 rounded-lg border border-blue-200 shadow-sm">
                   <span class="text-sm text-blue-700 font-bold block mb-2">Période</span>
                   <span class="font-bold text-slate-800">Du {{ formatDate(demande.date_debut) }} au {{ formatDate(demande.date_fin) }}</span>
               </div>
 
-                <div class="bg-white/80 p-5 rounded-2xl border border-blue-200/50 shadow-sm">
+                <div class="bg-white/80 p-5 rounded-lg border border-blue-200 shadow-sm">
                   <span class="text-sm text-blue-700 font-bold block mb-2">Date de soumission</span>
                   <span class="font-bold text-slate-800">{{ formatDate(demande.created_at) }}</span>
               </div>
 
-                <div v-if="demande.date_traitement" class="bg-white/80 p-5 rounded-2xl border border-blue-200/50 shadow-sm">
+                <div v-if="demande.date_traitement" class="bg-white/80 p-5 rounded-lg border border-blue-200 shadow-sm">
                   <span class="text-sm text-blue-700 font-bold block mb-2">Date de traitement</span>
                   <span class="font-bold text-slate-800">{{ formatDate(demande.date_traitement) }}</span>
               </div>
 
-                <div v-if="demande.motif_rejet" class="bg-gradient-to-r from-red-100 to-rose-100 p-5 rounded-2xl border-2 border-red-300/50 shadow-lg">
+                <div v-if="demande.motif_rejet" class="bg-gradient-to-r from-red-100 to-rose-100 p-5 rounded-lg border-2 border-red-300 shadow-lg">
                   <span class="text-sm font-bold text-red-700 block mb-3">Motif de rejet</span>
                   <span class="text-red-800 font-medium">{{ demande.motif_rejet }}</span>
                 </div>
@@ -107,7 +107,7 @@
           </div>
 
             <!-- Informations du stagiaire - thème violet -->
-            <div class="bg-gradient-to-br from-purple-50 via-pink-50 to-purple-50 rounded-3xl shadow-xl border-2 border-purple-200/50 overflow-hidden">
+            <div class="bg-gradient-to-br from-purple-50 via-pink-50 to-purple-50 rounded-xl shadow-lg border border-purple-200 overflow-hidden">
               <div class="bg-gradient-to-r from-purple-600 via-purple-700 to-pink-700 py-6 px-8 relative overflow-hidden">
                 <div class="absolute inset-0 bg-white/10 backdrop-blur-sm"></div>
                 <h3 class="text-xl font-bold text-white flex items-center gap-3 relative z-10">
@@ -122,7 +122,7 @@
             </div>
               <div class="p-8">
                 <!-- Photo et nom du stagiaire -->
-                <div class="mb-8 flex items-center bg-white/80 p-6 rounded-2xl border border-purple-200/50 shadow-lg">
+                <div class="mb-8 flex items-center bg-white/80 p-6 rounded-lg border border-purple-200 shadow-lg">
                   <div class="h-20 w-20 rounded-2xl flex items-center justify-center text-xl font-bold shadow-xl mr-6 overflow-hidden bg-gradient-to-br from-purple-600 to-pink-600 text-white">
                     <img v-if="demande.visage_path"
                          :src="'/storage/' + demande.visage_path"
@@ -139,22 +139,22 @@
               </div>
 
               <div class="space-y-4">
-                  <div class="bg-white/80 p-5 rounded-2xl border border-purple-200/50 shadow-sm">
+                  <div class="bg-white/80 p-5 rounded-lg border border-purple-200 shadow-sm">
                     <span class="text-sm text-purple-700 font-bold block mb-2">Téléphone</span>
                     <span class="font-bold text-slate-800">{{ demande.stagiaire?.user?.telephone }}</span>
                 </div>
 
-                  <div class="bg-white/80 p-5 rounded-2xl border border-purple-200/50 shadow-sm">
+                  <div class="bg-white/80 p-5 rounded-lg border border-purple-200 shadow-sm">
                     <span class="text-sm text-purple-700 font-bold block mb-2">Université</span>
                     <span class="font-bold text-slate-800">{{ demande.stagiaire?.universite }}</span>
                 </div>
 
-                  <div class="bg-white/80 p-5 rounded-2xl border border-purple-200/50 shadow-sm">
+                  <div class="bg-white/80 p-5 rounded-lg border border-purple-200 shadow-sm">
                     <span class="text-sm text-purple-700 font-bold block mb-2">Filière</span>
                     <span class="font-bold text-slate-800">{{ demande.stagiaire?.filiere }}</span>
                 </div>
 
-                  <div class="bg-white/80 p-5 rounded-2xl border border-purple-200/50 shadow-sm">
+                  <div class="bg-white/80 p-5 rounded-lg border border-purple-200 shadow-sm">
                     <span class="text-sm text-purple-700 font-bold block mb-2">Niveau d'étude</span>
                     <span class="font-bold text-slate-800">{{ demande.stagiaire?.niveau_etude }}</span>
                   </div>
@@ -171,7 +171,7 @@
                     <h4 class="text-lg font-bold text-emerald-800">Autres membres du groupe</h4>
                   </div>
                   <div class="space-y-4">
-                    <div v-for="membre in membres" :key="membre.id" class="bg-gradient-to-r from-emerald-100 to-teal-100 p-6 rounded-2xl border-2 border-emerald-200/50 shadow-lg">
+                    <div v-for="membre in membres" :key="membre.id" class="bg-gradient-to-r from-emerald-100 to-teal-100 p-6 rounded-lg border-2 border-emerald-200 shadow-lg">
                       <div class="flex items-center mb-3">
                         <div class="h-12 w-12 bg-gradient-to-br from-emerald-600 to-teal-600 text-white rounded-xl flex items-center justify-center text-sm font-bold mr-4 shadow-lg">
                         {{ getInitials(membre.user?.nom, membre.user?.prenom) }}
@@ -190,7 +190,7 @@
         </div>
 
           <!-- Documents attachés - thème orange -->
-          <div class="mt-8 bg-gradient-to-br from-orange-50 via-amber-50 to-orange-50 rounded-3xl shadow-xl border-2 border-orange-200/50 overflow-hidden">
+          <div class="mt-8 bg-gradient-to-br from-orange-50 via-amber-50 to-orange-50 rounded-xl shadow-lg border border-orange-200 overflow-hidden">
             <div class="bg-gradient-to-r from-orange-600 via-orange-700 to-amber-700 py-6 px-8 relative overflow-hidden">
               <div class="absolute inset-0 bg-white/10 backdrop-blur-sm"></div>
               <h3 class="text-xl font-bold text-white flex items-center gap-3 relative z-10">
@@ -209,7 +209,7 @@
 
             <div class="p-8">
               <div v-if="demande.lettre_cv_path" class="grid grid-cols-1 md:grid-cols-3 gap-6">
-                <div class="bg-white/80 rounded-2xl p-6 border-2 border-orange-200/50 shadow-lg hover:shadow-xl transition-all duration-300 flex flex-col">
+                <div class="bg-white/80 rounded-2xl p-6 border-2 border-orange-200 shadow-lg hover:shadow-xl transition-all duration-300 flex flex-col">
                   <span class="text-sm font-bold text-orange-700 mb-4 block">{{ demande.type === 'Académique' ? 'Lettre de recommandation' : 'CV' }}</span>
                 <a :href="'/storage/' + demande.lettre_cv_path"
                   target="_blank"
@@ -221,7 +221,7 @@
                 </a>
               </div>
             </div>
-              <div v-else class="text-center py-12 bg-white/80 rounded-2xl border-2 border-orange-200/50 shadow-lg">
+              <div v-else class="text-center py-12 bg-white/80 rounded-2xl border-2 border-orange-200 shadow-lg">
                 <div class="flex flex-col items-center gap-4">
                   <div class="p-4 bg-gradient-to-br from-gray-400 to-gray-500 rounded-2xl shadow-lg">
                     <svg class="w-12 h-12 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -235,7 +235,7 @@
         </div>
 
           <!-- Actions - thème vert -->
-          <div v-if="demande.statut === 'En cours' || demande.statut === 'Encours'" class="mt-8 bg-gradient-to-br from-green-50 via-emerald-50 to-green-50 rounded-3xl shadow-xl border-2 border-green-200/50 overflow-hidden">
+          <div v-if="demande.statut === 'En cours' || demande.statut === 'Encours'" class="mt-8 bg-gradient-to-br from-green-50 via-emerald-50 to-green-50 rounded-xl shadow-lg border border-green-200 overflow-hidden">
             <div class="bg-gradient-to-r from-green-600 via-green-700 to-emerald-700 py-6 px-8 relative overflow-hidden">
               <div class="absolute inset-0 bg-white/10 backdrop-blur-sm"></div>
               <h3 class="text-xl font-bold text-white flex items-center gap-3 relative z-10">
@@ -274,7 +274,7 @@
         </div>
         
           <!-- Actions pour demande acceptée - thème indigo -->
-          <div v-if="demande.statut === 'Acceptée' && !maitre_stage_deja_affecte" class="mt-8 bg-gradient-to-br from-indigo-50 via-blue-50 to-indigo-50 rounded-3xl shadow-xl border-2 border-indigo-200/50 overflow-hidden animate-fade-in-up hover:shadow-2xl transition-all duration-500">
+          <div v-if="demande.statut === 'Acceptée' && !maitre_stage_deja_affecte" class="mt-8 bg-gradient-to-br from-indigo-50 via-blue-50 to-indigo-50 rounded-xl shadow-lg border border-indigo-200 overflow-hidden animate-fade-in-up hover:shadow-2xl transition-all duration-500">
             <div class="bg-gradient-to-r from-indigo-600 via-indigo-700 to-blue-700 py-6 px-8 relative overflow-hidden">
             <div class="absolute inset-0 bg-white/10 backdrop-blur-sm"></div>
             <h3 class="text-xl font-bold text-white flex items-center gap-3 relative z-10">

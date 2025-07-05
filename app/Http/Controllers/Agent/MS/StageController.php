@@ -47,7 +47,6 @@ class StageController extends Controller
                     'stage.themeStage',
                     // Charger les autres affectations pour le même stage
                     'stage.affectationsMaitreStage.maitreStage',
-                    'stage.affectationsMaitreStage.maitreStage.agent.structuresResponsable'
                 ])
                 ->get();
 
@@ -96,18 +95,14 @@ class StageController extends Controller
                     $nouvelleAffectation = $stage->affectationsMaitreStage()
                         ->where('maitre_stage_id', '!=', $user->id)
                         ->whereIn('statut', ['En cours', 'Acceptée'])
-                        ->with(['maitreStage', 'maitreStage.agent.structuresResponsable'])
+                        ->with(['maitreStage'])
                         ->first();
 
                     if ($nouvelleAffectation && $nouvelleAffectation->maitreStage) {
                         $nouveauMS = $nouvelleAffectation->maitreStage;
 
-                        // Récupérer l'agent associé à l'utilisateur
-                        $nouveauMSAgent = \App\Models\Agent::where('user_id', $nouveauMS->id)->first();
-
-                        if ($nouveauMSAgent) {
                             // Récupérer la structure dont l'agent est responsable
-                            $structure = \App\Models\Structure::where('responsable_id', $nouveauMSAgent->id)->first();
+                        $structure = \App\Models\Structure::where('responsable_id', $nouveauMS->id)->first();
 
                             $stage->reaffectation_info = [
                                 'nouveau_ms_id' => $nouveauMS->id,
@@ -118,11 +113,15 @@ class StageController extends Controller
                                 'structure_sigle' => $structure ? $structure->sigle : '',
                                 'date_reaffectation' => $nouvelleAffectation->date_affectation,
                             ];
-                        }
                     }
                 }
 
                 return $stage;
+            });
+
+            // Trier les stages par date de modification décroissante
+            $stagesWithStagiaires = $stagesWithStagiaires->sortByDesc(function ($stage) {
+                return $stage->updated_at;
             });
 
             // Log pour débogage
@@ -190,18 +189,14 @@ class StageController extends Controller
                 $nouvelleAffectation = $stage->affectationsMaitreStage()
                     ->where('maitre_stage_id', '!=', $user->id)
                     ->whereIn('statut', ['En cours', 'Acceptée'])
-                    ->with(['maitreStage', 'maitreStage.agent.structuresResponsable'])
+                    ->with(['maitreStage'])
                     ->first();
 
                 if ($nouvelleAffectation && $nouvelleAffectation->maitreStage) {
                     $nouveauMS = $nouvelleAffectation->maitreStage;
 
-                    // Récupérer l'agent associé à l'utilisateur
-                    $nouveauMSAgent = \App\Models\Agent::where('user_id', $nouveauMS->id)->first();
-
-                    if ($nouveauMSAgent) {
                         // Récupérer la structure dont l'agent est responsable
-                        $structure = \App\Models\Structure::where('responsable_id', $nouveauMSAgent->id)->first();
+                    $structure = \App\Models\Structure::where('responsable_id', $nouveauMS->id)->first();
 
                         $stage->reaffectation_info = [
                             'nouveau_ms_id' => $nouveauMS->id,
@@ -212,7 +207,6 @@ class StageController extends Controller
                             'structure_sigle' => $structure ? $structure->sigle : '',
                             'date_reaffectation' => $nouvelleAffectation->date_affectation,
                         ];
-                    }
                 }
             }
 

@@ -155,11 +155,11 @@
                       </td>
                       
                       <td class="px-6 py-5 whitespace-nowrap">
-                        <div v-if="stage.structure" class="space-y-1">
-                          <div class="text-sm font-medium text-gray-900">{{ stage.structure.libelle }}</div>
-                          <div class="text-xs text-gray-500 font-mono bg-gray-100 px-2 py-1 rounded-md inline-block">
-                            {{ stage.structure.sigle }}
+                        <div v-if="stage.statut === 'En cours' && getCurrentMaitreStage(stage) && getCurrentMaitreStage(stage).structure && getCurrentMaitreStage(stage).structure.sigle" class="space-y-1">
+                          <div class="text-sm font-medium text-gray-900">{{ getCurrentMaitreStage(stage).structure.sigle }}</div>
                           </div>
+                        <div v-else-if="stage.structure" class="space-y-1">
+                          <div class="text-sm font-medium text-gray-900">{{ stage.structure.sigle }}</div>
                         </div>
                         <div v-else class="text-gray-400 italic text-sm flex items-center gap-2">
                           <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">

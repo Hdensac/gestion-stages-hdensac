@@ -789,11 +789,7 @@ const handleVisageUpload = (event) => {
           <div
             class="overflow-hidden bg-gradient-to-br from-indigo-100 via-blue-50 to-indigo-100 shadow-lg sm:rounded-2xl p-8 border border-indigo-100">
             <h1 class="text-3xl font-extrabold mb-6 text-indigo-800 flex items-center gap-2">
-              <svg class="w-8 h-8 text-indigo-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                  d="M16 7a4 4 0 01-8 0M12 3v4m0 0a4 4 0 01-4 4H4m8-4a4 4 0 014 4h4m-8 0v4m0 0a4 4 0 004 4h4m-8-4a 4 4 0 01-4 4H4" />
-              </svg>
-              Bienvenue, {{ auth.user.nom }}
+              
             </h1>
             <button @click="showModal = true"
               class="inline-flex items-center gap-2 px-6 py-3 bg-gradient-to-r from-indigo-500 to-blue-500 text-white rounded-xl shadow hover:from-indigo-600 hover:to-blue-600 focus:outline-none focus:ring-2 focus:ring-indigo-400 focus:ring-offset-2 font-semibold text-lg transition-all duration-200">

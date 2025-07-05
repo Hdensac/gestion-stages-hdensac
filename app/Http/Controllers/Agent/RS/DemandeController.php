@@ -48,7 +48,8 @@ class DemandeController extends Controller
 
             // Construction de la requête de base (demandes dont la dernière affectation est pour ce RS)
             $query = DemandeStage::with(['stagiaire.user'])
-                ->whereIn('id', $idsDemandesActivesPourRS);
+                ->whereIn('id', $idsDemandesActivesPourRS)
+                ->orderByDesc('updated_at');
 
             // Ajouter la relation avec les affectations pour récupérer la date d'affectation
             $query->with(['affectations' => function($query) use ($structure) {
@@ -108,13 +109,32 @@ class DemandeController extends Controller
             // Récupération des demandes avec pagination
             $demandes = $query->latest()->paginate(10)->withQueryString();
 
-            // Injecter la date d'affectation (created_at de la dernière affectation) pour chaque demande
+            // Injecter la date d'affectation (created_at de la dernière affectation) et le mapping du maître de stage pour chaque demande
             $demandes->getCollection()->transform(function ($demande) {
                 $affectation = \App\Models\AffectationResponsableStructure::where('id_demande_stages', $demande->id)
                     ->orderByDesc('created_at')
                     ->orderByDesc('id')
                     ->first();
                 $demande->date_affectation = $affectation ? $affectation->created_at : null;
+
+                // Ajout du mapping maître de stage harmonisé
+                $stage = \App\Models\Stage::where('demande_stage_id', $demande->id)->first();
+                $affectationMaitreStage = null;
+                if ($stage) {
+                    $affectationMaitreStage = \App\Models\AffectationMaitreStage::where('stage_id', $stage->id)
+                        ->orderByDesc('date_affectation')
+                        ->orderByDesc('id')
+                        ->first();
+                }
+                if ($affectationMaitreStage && $affectationMaitreStage->maitreStage) {
+                    $demande->maitre_stage_nom = $affectationMaitreStage->maitreStage->nom;
+                    $demande->maitre_stage_prenom = $affectationMaitreStage->maitreStage->prenom;
+                    $demande->maitre_stage_email = $affectationMaitreStage->maitreStage->email;
+                } else {
+                    $demande->maitre_stage_nom = null;
+                    $demande->maitre_stage_prenom = null;
+                    $demande->maitre_stage_email = null;
+                }
                 return $demande;
             });
 
@@ -197,16 +217,39 @@ class DemandeController extends Controller
             $stage = \App\Models\Stage::where('demande_stage_id', $demande->id)->first();
             $maitre_stage_deja_affecte = false;
             $maitreStageAffecte = null;
+            $affectation_maitre_stage = null;
             if ($stage) {
-                $maitre_stage_deja_affecte = AffectationMaitreStage::where('stage_id', $stage->id)
+                $maitre_stage_deja_affecte = \App\Models\AffectationMaitreStage::where('stage_id', $stage->id)
                     ->whereIn('statut', ['En cours', 'Acceptée'])
                     ->exists();
+                $affectationMaitreStage = \App\Models\AffectationMaitreStage::where('stage_id', $stage->id)
+                    ->orderByDesc('date_affectation')
+                    ->orderByDesc('id')
+                    ->first();
+                if ($affectationMaitreStage && $affectationMaitreStage->maitreStage) {
+                    $affectation_maitre_stage = [
+                        'nom' => $affectationMaitreStage->maitreStage->nom,
+                        'prenom' => $affectationMaitreStage->maitreStage->prenom,
+                        'email' => $affectationMaitreStage->maitreStage->email,
+                    ];
+                }
+            }
 
-                if ($maitre_stage_deja_affecte) {
-                    $maitreStageAffecte = AffectationMaitreStage::where('stage_id', $stage->id)
-                        ->whereIn('statut', ['En cours', 'Acceptée'])
-                        ->with('agentAffectant.user')
+            // Ajout mapping maître de stage harmonisé
+            $stage = \App\Models\Stage::where('demande_stage_id', $demande->id)->first();
+            $affectationMaitreStage = null;
+            $maitre_stage_nom = null;
+            $maitre_stage_prenom = null;
+            $maitre_stage_email = null;
+            if ($stage) {
+                $affectationMaitreStage = \App\Models\AffectationMaitreStage::where('stage_id', $stage->id)
+                    ->orderByDesc('date_affectation')
+                    ->orderByDesc('id')
                         ->first();
+                if ($affectationMaitreStage && $affectationMaitreStage->maitreStage) {
+                    $maitre_stage_nom = $affectationMaitreStage->maitreStage->nom;
+                    $maitre_stage_prenom = $affectationMaitreStage->maitreStage->prenom;
+                    $maitre_stage_email = $affectationMaitreStage->maitreStage->email;
                 }
             }
 
@@ -218,6 +261,10 @@ class DemandeController extends Controller
                 'maitre_stage_deja_affecte' => $maitre_stage_deja_affecte,
                 'maitreStageAffecte' => $maitreStageAffecte,
                 'structure' => $structure,
+                'affectation_maitre_stage' => $affectation_maitre_stage,
+                'maitre_stage_nom' => $maitre_stage_nom,
+                'maitre_stage_prenom' => $maitre_stage_prenom,
+                'maitre_stage_email' => $maitre_stage_email,
             ]);
 
         } catch (\Exception $e) {
@@ -362,8 +409,16 @@ class DemandeController extends Controller
                     $demande->structure_id = $structure->id;
                 }
 
-                    // Convertir le type au format attendu par la base de données
-                    $typeFormatted = strtolower(str_replace('é', 'e', $demande->type));
+                // Mapping explicite pour correspondre à l'ENUM MySQL
+                $typeMap = [
+                    'academique' => 'academique',
+                    'académique' => 'academique',
+                    'professionnel' => 'professionnel',
+                    'professionnelle' => 'professionnel',
+                ];
+                $typeFormatted = strtolower(str_replace('é', 'e', $demande->type));
+                $typeFormatted = $typeMap[$typeFormatted] ?? 'academique'; // valeur par défaut si non trouvée
+                Log::info('Type envoyé à la base', ['type' => $typeFormatted, 'demande_type' => $demande->type]);
 
                 if ($demande->nature === 'Groupe') {
                     // Récupérer tous les user_id des membres du groupe (table membre_groupes)
@@ -399,7 +454,7 @@ class DemandeController extends Controller
                                 'structure_id' => $demande->structure_id,
                                 'date_debut' => $demande->date_debut,
                                 'date_fin' => $demande->date_fin,
-                                'type' => $demande->type,
+                                'type' => $typeFormatted,
                                 'statut' => 'En cours',
                             ]);
                         }
@@ -861,7 +916,7 @@ class DemandeController extends Controller
             ]);
 
             // Envoyer un email de notification au maître de stage
-            Mail::to($maitreStage->user->email)->send(new AffectationMaitreStageMail($demande->stagiaire->user, $stage, $maitreStage->user));
+            Mail::to($maitreStage->email)->send(new AffectationMaitreStageMail($demande->stagiaire->user, $stage, $maitreStage));
 
             Log::info('Email d\'affectation du maître de stage envoyé avec succès.', [
                 'demande_id' => $demande->id,
