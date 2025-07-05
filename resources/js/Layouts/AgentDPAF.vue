@@ -64,6 +64,20 @@
                 </Link>
 
                 <Link 
+                    :href="route('agent.stages-dpaf.index')" 
+                    class="menu-link flex items-center px-3 py-2 text-sm font-medium rounded-lg transition-colors duration-200"
+                    :class="[route().current('agent.stages-dpaf.index') ? 'active' : 'text-blue-100 hover:bg-blue-700 hover:text-white']"
+                    tabindex="0"
+                >
+                    <span v-if="route().current('agent.stages-dpaf.index')" class="active-indicator"></span>
+                    <svg xmlns="http://www.w3.org/2000/svg" class="w-6 h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 17v-2a4 4 0 014-4h4m0 0V7a4 4 0 00-8 0v4m8 4v2a4 4 0 01-4 4H7a4 4 0 01-4-4v-2" />
+                    </svg>
+                    <span v-if="expanded" class="ml-3">Stages</span>
+                    <span v-else class="tooltip">Stages</span>
+                </Link>
+
+                <Link 
                     v-if="isRSAgent"
                     :href="route('agent.rs.dashboard')"
                     class="menu-link flex items-center px-3 py-2 text-sm font-medium rounded-lg transition-colors duration-200"

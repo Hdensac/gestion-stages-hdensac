@@ -237,6 +237,9 @@ Route::get('/dashboard', function () {
             // Route pour permettre au maître de stage de proposer un thème
             Route::post('/stages/{stage}/themes', [App\Http\Controllers\Agent\MS\StageController::class, 'proposerTheme'])->name('stages.proposer-theme');
         });
+
+        // Route pour la DPAF : voir tous les stages en cours
+        Route::get('/stages-dpaf', [App\Http\Controllers\Agent\StagesDpafController::class, 'index'])->name('stages-dpaf.index');
     });
 
     // Routes pour les stagiaires
