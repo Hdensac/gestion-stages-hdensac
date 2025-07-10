@@ -26,14 +26,18 @@ class StagesDpafController extends Controller
                 $q->orderByDesc('date_affectation');
             },
             'affectationsMaitreStage.maitreStage',
+            'demandeStage',
         ])
-        ->orderByDesc('updated_at');
+        ->join('demande_stages', 'stages.demande_stage_id', '=', 'demande_stages.id')
+        ->whereColumn('stages.stagiaire_id', 'demande_stages.stagiaire_id')
+        ->orderByDesc('stages.updated_at')
+        ->select('stages.*');
 
         if ($statut !== 'all') {
-            $query->where('statut', $statut);
+            $query->where('stages.statut', $statut);
         }
         if ($structureId !== 'all') {
-            $query->where('structure_id', $structureId);
+            $query->where('stages.structure_id', $structureId);
         }
 
         $paginated = $query->paginate($perPage)->withQueryString();
@@ -67,6 +71,20 @@ class StagesDpafController extends Controller
                 'statut' => $statut,
                 'structure_id' => $structureId,
             ]
+        ]);
+    }
+
+    public function show($id)
+    {
+        $stage = \App\Models\Stage::with([
+            'structure',
+            'themeStage',
+            'stagiaire.user',
+            'demandeStage.membres.user.stagiaire',
+        ])->findOrFail($id);
+
+        return inertia('Agent/StagesDpafShow', [
+            'stage' => $stage,
         ]);
     }
 } 

@@ -348,7 +348,7 @@
                   <div v-if="stage.themeStage" class="space-y-6">
                     <div class="p-4 bg-purple-100 rounded-2xl border border-purple-300">
                       <span class="text-lg font-bold text-purple-800 block mb-2">Titre</span>
-                      <span class="text-xl font-black text-slate-800">{{ stage.themeStage.titre }}</span>
+                      <span class="text-xl font-black text-slate-800">{{ stage.themeStage.intitule }}</span>
                     </div>
                     <div class="p-4 bg-purple-100 rounded-2xl border border-purple-300">
                       <span class="text-lg font-bold text-purple-800 block mb-3">Description</span>
@@ -1023,6 +1023,65 @@
     </div>
   </MSLayout>
 
+  <!-- Modal de confirmation de fin de stage -->
+  <div v-if="showConfirmFinModal" class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+    <div class="bg-white rounded-2xl shadow-2xl max-w-md w-full mx-4 transform transition-all duration-300">
+      <div class="p-6">
+        <!-- En-tête du modal -->
+        <div class="flex items-center mb-4">
+          <div class="flex-shrink-0">
+            <div class="w-12 h-12 bg-green-100 rounded-full flex items-center justify-center">
+              <svg class="w-6 h-6 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
+              </svg>
+            </div>
+          </div>
+          <div class="ml-4">
+            <h3 class="text-lg font-bold text-gray-900">Confirmer la fin du stage</h3>
+            <p class="text-sm text-gray-500">Cette action est irréversible</p>
+          </div>
+        </div>
+
+        <!-- Contenu du modal -->
+        <div class="mb-6">
+          <p class="text-gray-700 mb-4">
+            Êtes-vous sûr de vouloir confirmer la fin de ce stage ?
+          </p>
+          <div class="bg-amber-50 border border-amber-200 rounded-lg p-4">
+            <div class="flex">
+              <div class="flex-shrink-0">
+                <svg class="h-5 w-5 text-amber-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" />
+                </svg>
+              </div>
+              <div class="ml-3">
+                <p class="text-sm text-amber-700">
+                  Une fois confirmée, cette action ne pourra pas être annulée. Le stage sera marqué comme terminé.
+                </p>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Boutons d'action -->
+        <div class="flex justify-end space-x-3">
+          <button
+            @click="showConfirmFinModal = false"
+            class="px-4 py-2 border border-gray-300 rounded-lg text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 transition-colors duration-200"
+          >
+            Annuler
+          </button>
+          <button
+            @click="confirmerFinStageDefinitif"
+            class="px-4 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-green-500 transition-colors duration-200 font-medium"
+          >
+            Confirmer la fin du stage
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+
   <!-- Après la liste des membres à évaluer dans l'onglet 'Évaluation' -->
   <div v-if="modalEvalOuvert" class="fixed inset-0 bg-black bg-opacity-60 flex items-center justify-center z-50">
     <div class="bg-white rounded-3xl p-8 max-w-2xl w-full shadow-3xl border-2 border-gray-200">
@@ -1082,6 +1141,7 @@ const error = ref(null)
 const success = ref(null)
 const activeTab = ref('infos')
 const toast = ref(null)
+const showConfirmFinModal = ref(false)
 
 // Variables pour la gestion des thèmes
 const themesProposes = ref([])
@@ -1829,10 +1889,12 @@ const membresEvaluation = computed(() => {
   return membres;
 });
 
-const confirmerFinStage = async () => {
-  if (!confirm('Êtes-vous sûr de vouloir confirmer la fin de ce stage ?')) {
-    return;
-  }
+const confirmerFinStage = () => {
+  showConfirmFinModal.value = true;
+};
+
+const confirmerFinStageDefinitif = async () => {
+  showConfirmFinModal.value = false;
   try {
     const response = await axios.post(`/agent/ms/stages/${props.stage.id}/confirmer-fin`);
     if (response.data.success) {

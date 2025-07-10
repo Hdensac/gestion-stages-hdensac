@@ -76,7 +76,7 @@
                     </span>
                   </td>
                   <td class="px-6 py-5 whitespace-nowrap">
-                    <span class="text-gray-400 italic">À venir</span>
+                    <Link :href="route('agent.stages-dpaf.show', stage.id)" class="text-blue-600 hover:underline font-semibold">Voir</Link>
                   </td>
                 </tr>
                 <tr v-if="stages.data.length === 0">
@@ -114,7 +114,7 @@
 <script setup>
 import AgentDPAF from '@/Layouts/AgentDPAF.vue';
 import { ref } from 'vue';
-import { router } from '@inertiajs/vue3';
+import { router, Link } from '@inertiajs/vue3';
 
 const props = defineProps({
   stages: Object,

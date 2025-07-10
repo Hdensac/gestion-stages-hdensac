@@ -406,6 +406,7 @@ class StageController extends Controller
                     'description' => $validated['description'],
                     'etat' => $validated['etat'],
                     'mots_cles' => $motsCles,
+                    'user_id' => $user->id, // Indiquer que c'est le MS qui a modifié le thème
                 ]);
 
                 // Envoyer un mail au stagiaire si le thème est proposé ou modifié
@@ -479,6 +480,7 @@ class StageController extends Controller
                     'description' => $validated['description'],
                     'etat' => $validated['etat'],
                     'mots_cles' => $motsCles,
+                    'user_id' => $user->id, // Indiquer que c'est le MS qui a proposé le thème
                 ]);
 
                 // Associer le thème au stage
@@ -1191,6 +1193,7 @@ class StageController extends Controller
             'etat' => 'Validé',
             'mots_cles' => $validated['mots_cles'] ?? null,
             'propose_par' => 'ms',
+            'user_id' => $user->id, // Indiquer que c'est le MS qui a proposé le thème
         ]);
         // Associer ce thème comme thème validé du stage
         $stage->theme_stage_id = $theme->id;

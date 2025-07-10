@@ -59,7 +59,7 @@ class Stage extends Model
      */
     public function themeStage(): BelongsTo
     {
-        return $this->belongsTo(ThemeStage::class);
+        return $this->belongsTo(ThemeStage::class, 'theme_stage_id');
     }
 
     /**

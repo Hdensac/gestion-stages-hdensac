@@ -234,15 +234,13 @@
                     <td class="px-8 py-6 whitespace-nowrap">
                       <span class="px-4 py-2 text-base font-bold rounded-2xl shadow-lg"
                         :class="{
-                          'bg-gradient-to-r from-green-100 to-emerald-100 text-green-800 border-2 border-green-300': stage.statut === 'Terminé',
-                          'bg-gradient-to-r from-blue-100 to-sky-100 text-blue-800 border-2 border-blue-300': stage.statut === 'En cours',
-                          'bg-gradient-to-r from-yellow-100 to-amber-100 text-yellow-800 border-2 border-yellow-300': stage.statut === 'En attente',
+                          'bg-gradient-to-r from-yellow-100 to-amber-100 text-yellow-800 border-2 border-yellow-300': stage.est_reaffecte,
+                          'bg-gradient-to-r from-green-100 to-emerald-100 text-green-800 border-2 border-green-300': !stage.est_reaffecte && stage.statut === 'Terminé',
+                          'bg-gradient-to-r from-blue-100 to-sky-100 text-blue-800 border-2 border-blue-300': !stage.est_reaffecte && stage.statut === 'En cours',
+                          'bg-gradient-to-r from-yellow-100 to-amber-100 text-yellow-800 border-2 border-yellow-300': !stage.est_reaffecte && stage.statut === 'En attente',
                         }">
-                          {{ stage.statut }}
+                          {{ stage.est_reaffecte ? 'Réaffectée' : stage.statut }}
                         </span>
-                      <span v-if="stage.est_reaffecte" class="mt-3 block px-4 py-2 bg-gradient-to-r from-gray-100 to-slate-100 text-slate-800 border-2 border-slate-300 rounded-2xl font-bold text-sm shadow-lg">
-                        Réaffecté
-                      </span>
                     </td>
                   </tr>
                 </tbody>

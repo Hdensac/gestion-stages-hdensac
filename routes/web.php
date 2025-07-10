@@ -240,6 +240,7 @@ Route::get('/dashboard', function () {
 
         // Route pour la DPAF : voir tous les stages en cours
         Route::get('/stages-dpaf', [App\Http\Controllers\Agent\StagesDpafController::class, 'index'])->name('stages-dpaf.index');
+        Route::get('/stages-dpaf/{id}', [App\Http\Controllers\Agent\StagesDpafController::class, 'show'])->name('stages-dpaf.show');
     });
 
     // Routes pour les stagiaires
