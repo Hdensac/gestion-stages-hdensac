@@ -81,10 +81,64 @@ class StagesDpafController extends Controller
             'themeStage',
             'stagiaire.user',
             'demandeStage.membres.user.stagiaire',
+            'affectationsMaitreStage' => function($q) {
+                $q->orderByDesc('date_affectation');
+            },
+            'affectationsMaitreStage.maitreStage',
+            'evaluation',
         ])->findOrFail($id);
+
+        // Récupérer les informations du maître de stage actuel (statut "En cours" ou "Acceptée")
+        $affectationActuelle = $stage->affectationsMaitreStage
+            ->whereIn('statut', ['En cours', 'Acceptée'])
+            ->first();
+        $maitreStageActuel = $affectationActuelle?->maitreStage;
+        // Chercher la structure dont ce MS est responsable (via l'id de l'agent)
+        $structureMS = null;
+        if ($maitreStageActuel) {
+            $agent = \App\Models\Agent::where('user_id', $maitreStageActuel->id)->first();
+            if ($agent) {
+                $structureMS = \App\Models\Structure::where('responsable_id', $agent->id)->first();
+            }
+        }
+
+        // Récupérer les membres du groupe avec leurs stages et évaluations
+        $membresGroupe = [];
+        if ($stage->demandeStage && $stage->demandeStage->nature === 'Groupe') {
+            $membresGroupe = $stage->demandeStage->membres->map(function($membre) use ($stage) {
+                $stagiaire = \App\Models\Stagiaire::where('user_id', $membre->user_id)->first();
+                $stageMembre = null;
+                $evaluationMembre = null;
+
+                if ($stagiaire) {
+                    $stageMembre = \App\Models\Stage::where('demande_stage_id', $stage->demande_stage_id)
+                        ->where('stagiaire_id', $stagiaire->id_stagiaire)
+                        ->with('evaluation')
+                        ->first();
+
+                    if ($stageMembre) {
+                        $evaluationMembre = $stageMembre->evaluation;
+                    }
+                }
+
+                return [
+                    'user' => $membre->user,
+                    'stage' => $stageMembre,
+                    'evaluation' => $evaluationMembre,
+                ];
+            });
+        }
 
         return inertia('Agent/StagesDpafShow', [
             'stage' => $stage,
+            'maitre_stage' => $maitreStageActuel ? array_merge($maitreStageActuel->toArray(), [
+                'structure' => $structureMS ? [
+                    'id' => $structureMS->id,
+                    'libelle' => $structureMS->libelle,
+                    'sigle' => $structureMS->sigle,
+                ] : null
+            ]) : null,
+            'membres_groupe' => $membresGroupe,
         ]);
     }
 } 
