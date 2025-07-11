@@ -217,94 +217,200 @@ onMounted(() => {
         <!-- Illustration SVG modernisée avec animations -->
         <div class="flex-1 flex items-center justify-center mb-12">
             <div class="relative max-w-lg w-full">
-                <!-- Dashboard moderne -->
+                <!-- Interface de gestion des stages -->
                 <svg viewBox="0 0 500 350" class="w-full h-auto drop-shadow-2xl">
-                    <!-- Écran principal avec effet glassmorphism -->
+                    <!-- Définitions des gradients et filtres spécialisés -->
                     <defs>
                         <linearGradient id="screenGradient" x1="0%" y1="0%" x2="100%" y2="100%">
                             <stop offset="0%" style="stop-color:rgba(255,255,255,0.15);stop-opacity:1" />
                             <stop offset="100%" style="stop-color:rgba(255,255,255,0.05);stop-opacity:1" />
                         </linearGradient>
-                        <linearGradient id="blueGradient" x1="0%" y1="0%" x2="100%" y2="100%">
+                        <linearGradient id="stageGradient" x1="0%" y1="0%" x2="100%" y2="100%">
+                            <stop offset="0%" style="stop-color:rgba(34,197,94,0.8);stop-opacity:1" />
+                            <stop offset="100%" style="stop-color:rgba(16,185,129,0.8);stop-opacity:1" />
+                        </linearGradient>
+                        <linearGradient id="internGradient" x1="0%" y1="0%" x2="100%" y2="100%">
                             <stop offset="0%" style="stop-color:rgba(59,130,246,0.8);stop-opacity:1" />
-                            <stop offset="100%" style="stop-color:rgba(99,102,241,0.6);stop-opacity:1" />
+                            <stop offset="100%" style="stop-color:rgba(99,102,241,0.8);stop-opacity:1" />
+                        </linearGradient>
+                        <linearGradient id="followUpGradient" x1="0%" y1="0%" x2="100%" y2="100%">
+                            <stop offset="0%" style="stop-color:rgba(168,85,247,0.8);stop-opacity:1" />
+                            <stop offset="100%" style="stop-color:rgba(147,51,234,0.8);stop-opacity:1" />
                         </linearGradient>
                         <filter id="glow" x="-50%" y="-50%" width="200%" height="200%">
                             <feGaussianBlur stdDeviation="3" result="coloredBlur"/>
-                            <feMerge> 
+                            <feMerge>
                                 <feMergeNode in="coloredBlur"/>
                                 <feMergeNode in="SourceGraphic"/>
                             </feMerge>
                         </filter>
                     </defs>
-                    
-                    <!-- Écran principal -->
+
+                    <!-- Écran principal - Interface de gestion -->
                     <rect x="60" y="60" width="280" height="180" rx="20" fill="url(#screenGradient)" stroke="rgba(255,255,255,0.3)" stroke-width="2" filter="url(#glow)"/>
-                    
-                    <!-- Barre de navigation -->
-                    <rect x="75" y="75" width="250" height="30" rx="15" fill="rgba(59,130,246,0.3)"/>
-                    <circle cx="90" cy="90" r="4" fill="rgba(255,255,255,0.8)"/>
-                    <circle cx="105" cy="90" r="4" fill="rgba(255,255,255,0.6)"/>
-                    <circle cx="120" cy="90" r="4" fill="rgba(255,255,255,0.4)"/>
-                    
-                    <!-- Dashboard Cards -->
-                    <rect x="85" y="120" width="70" height="50" rx="8" fill="url(#blueGradient)">
+
+                    <!-- Barre de navigation avec icônes de stages -->
+                    <rect x="75" y="75" width="250" height="30" rx="15" fill="rgba(34,197,94,0.3)"/>
+                    <!-- Icône dossier stage -->
+                    <rect x="85" y="85" width="8" height="10" rx="1" fill="rgba(255,255,255,0.8)"/>
+                    <rect x="83" y="87" width="12" height="8" rx="1" fill="rgba(255,255,255,0.6)"/>
+                    <!-- Icône utilisateur stagiaire -->
+                    <circle cx="110" cy="90" r="3" fill="rgba(255,255,255,0.8)"/>
+                    <path d="M105 95 Q110 93 115 95" stroke="rgba(255,255,255,0.8)" stroke-width="1" fill="none"/>
+                    <!-- Icône calendrier -->
+                    <rect x="125" y="85" width="10" height="10" rx="1" fill="rgba(255,255,255,0.6)"/>
+                    <line x1="127" y1="83" x2="127" y2="87" stroke="rgba(255,255,255,0.8)" stroke-width="1"/>
+                    <line x1="133" y1="83" x2="133" y2="87" stroke="rgba(255,255,255,0.8)" stroke-width="1"/>
+
+                    <!-- Section Stagiaires -->
+                    <rect x="85" y="120" width="70" height="50" rx="8" fill="url(#internGradient)">
                         <animate attributeName="opacity" values="0.6;1;0.6" dur="3s" repeatCount="indefinite"/>
                     </rect>
-                    <rect x="170" y="120" width="70" height="50" rx="8" fill="rgba(34,197,94,0.4)">
+                    <!-- Icônes stagiaires dans la carte -->
+                    <circle cx="105" cy="135" r="6" fill="rgba(255,255,255,0.8)"/>
+                    <path d="M99 145 Q105 143 111 145" stroke="rgba(255,255,255,0.9)" stroke-width="1.5" fill="none"/>
+                    <circle cx="125" cy="135" r="6" fill="rgba(255,255,255,0.6)"/>
+                    <path d="M119 145 Q125 143 131 145" stroke="rgba(255,255,255,0.7)" stroke-width="1.5" fill="none"/>
+                    <text x="120" y="160" text-anchor="middle" fill="rgba(255,255,255,0.9)" font-size="6" font-weight="bold">STAGIAIRES</text>
+
+                    <!-- Section Stages -->
+                    <rect x="170" y="120" width="70" height="50" rx="8" fill="url(#stageGradient)">
                         <animate attributeName="opacity" values="0.4;0.8;0.4" dur="2.5s" repeatCount="indefinite"/>
                     </rect>
-                    <rect x="255" y="120" width="70" height="50" rx="8" fill="rgba(168,85,247,0.4)">
+                    <!-- Icônes documents/stages dans la carte -->
+                    <rect x="185" y="130" width="10" height="12" rx="1" fill="rgba(255,255,255,0.8)"/>
+                    <line x1="187" y1="134" x2="193" y2="134" stroke="rgba(34,197,94,0.8)" stroke-width="0.8"/>
+                    <line x1="187" y1="136" x2="193" y2="136" stroke="rgba(34,197,94,0.8)" stroke-width="0.8"/>
+                    <line x1="187" y1="138" x2="191" y2="138" stroke="rgba(34,197,94,0.8)" stroke-width="0.8"/>
+                    <rect x="205" y="130" width="10" height="12" rx="1" fill="rgba(255,255,255,0.6)"/>
+                    <line x1="207" y1="134" x2="213" y2="134" stroke="rgba(16,185,129,0.8)" stroke-width="0.8"/>
+                    <line x1="207" y1="136" x2="213" y2="136" stroke="rgba(16,185,129,0.8)" stroke-width="0.8"/>
+                    <line x1="207" y1="138" x2="211" y2="138" stroke="rgba(16,185,129,0.8)" stroke-width="0.8"/>
+                    <text x="205" y="160" text-anchor="middle" fill="rgba(255,255,255,0.9)" font-size="6" font-weight="bold">STAGES</text>
+
+                    <!-- Section Suivi -->
+                    <rect x="255" y="120" width="70" height="50" rx="8" fill="url(#followUpGradient)">
                         <animate attributeName="opacity" values="0.5;0.9;0.5" dur="3.5s" repeatCount="indefinite"/>
                     </rect>
-                    
-                    <!-- Graphique en temps réel -->
-                    <path d="M85 190 Q120 180 155 185 Q190 195 225 180 Q260 170 295 175" 
+                    <!-- Icône graphique de suivi -->
+                    <path d="M265 140 L275 135 L285 138 L295 133 L305 136" stroke="rgba(255,255,255,0.8)" stroke-width="2" fill="none"/>
+                    <circle cx="275" cy="135" r="1.5" fill="rgba(255,255,255,0.9)"/>
+                    <circle cx="285" cy="138" r="1.5" fill="rgba(255,255,255,0.9)"/>
+                    <circle cx="295" cy="133" r="1.5" fill="rgba(255,255,255,0.9)"/>
+                    <text x="290" y="160" text-anchor="middle" fill="rgba(255,255,255,0.9)" font-size="6" font-weight="bold">SUIVI</text>
+
+                    <!-- Barre de progression des stages -->
+                    <rect x="85" y="190" width="210" height="25" rx="12" fill="rgba(255,255,255,0.1)" stroke="rgba(255,255,255,0.2)" stroke-width="1"/>
+                    <rect x="90" y="195" width="160" height="8" rx="4" fill="rgba(255,255,255,0.2)"/>
+                    <rect x="90" y="195" width="120" height="8" rx="4" fill="url(#stageGradient)">
+                        <animate attributeName="width" values="80;140;120" dur="4s" repeatCount="indefinite"/>
+                    </rect>
+                    <text x="190" y="210" text-anchor="middle" fill="rgba(255,255,255,0.8)" font-size="7" font-weight="bold">PROGRESSION DES STAGES</text>
+
+                    <!-- Graphique de suivi des stages -->
+                    <path d="M85 185 Q120 175 155 180 Q190 190 225 175 Q260 165 295 170"
                           stroke="rgba(34,197,94,0.8)" stroke-width="3" fill="none" filter="url(#glow)">
-                        <animate attributeName="d" 
-                                 values="M85 190 Q120 180 155 185 Q190 195 225 180 Q260 170 295 175;
-                                         M85 195 Q120 185 155 180 Q190 190 225 175 Q260 165 295 170;
-                                         M85 190 Q120 180 155 185 Q190 195 225 180 Q260 170 295 175" 
+                        <animate attributeName="d"
+                                 values="M85 185 Q120 175 155 180 Q190 190 225 175 Q260 165 295 170;
+                                         M85 190 Q120 180 155 175 Q190 185 225 170 Q260 160 295 165;
+                                         M85 185 Q120 175 155 180 Q190 190 225 175 Q260 165 295 170"
                                  dur="4s" repeatCount="indefinite"/>
                     </path>
-                    
-                    <!-- Indicateurs en temps réel -->
-                    <circle cx="380" cy="100" r="20" fill="rgba(255,255,255,0.15)" stroke="rgba(59,130,246,0.6)" stroke-width="2">
+
+                    <!-- Indicateur de validation des stages -->
+                    <circle cx="380" cy="100" r="20" fill="rgba(255,255,255,0.15)" stroke="rgba(34,197,94,0.6)" stroke-width="2">
                         <animate attributeName="r" values="20;25;20" dur="2s" repeatCount="indefinite"/>
                     </circle>
-                    <text x="380" y="105" text-anchor="middle" fill="rgba(255,255,255,0.9)" font-size="10" font-weight="bold">€</text>
-                    
-                    <!-- Notifications flottantes -->
+                    <!-- Icône de validation (checkmark) -->
+                    <path d="M375 100 L378 103 L385 96" stroke="rgba(34,197,94,0.9)" stroke-width="2" fill="none">
+                        <animate attributeName="stroke-opacity" values="0.9;0.5;0.9" dur="2s" repeatCount="indefinite"/>
+                    </path>
+
+                    <!-- Notifications de stages -->
                     <rect x="350" y="160" width="80" height="25" rx="12" fill="rgba(59,130,246,0.6)" opacity="0">
                         <animate attributeName="opacity" values="0;1;0" dur="3s" repeatCount="indefinite" begin="1s"/>
                         <animate attributeName="x" values="350;340;350" dur="3s" repeatCount="indefinite" begin="1s"/>
                     </rect>
-                    
+                    <text x="390" y="175" text-anchor="middle" fill="rgba(255,255,255,0.9)" font-size="6" font-weight="bold" opacity="0">
+                        <animate attributeName="opacity" values="0;1;0" dur="3s" repeatCount="indefinite" begin="1s"/>
+                        NOUVEAU STAGIAIRE
+                    </text>
+
                     <rect x="360" y="200" width="60" height="20" rx="10" fill="rgba(34,197,94,0.6)" opacity="0">
                         <animate attributeName="opacity" values="0;1;0" dur="2.5s" repeatCount="indefinite" begin="2s"/>
                         <animate attributeName="x" values="360;350;360" dur="2.5s" repeatCount="indefinite" begin="2s"/>
                     </rect>
-                    
-                    <!-- Particules connectées -->
+                    <text x="390" y="212" text-anchor="middle" fill="rgba(255,255,255,0.9)" font-size="5" font-weight="bold" opacity="0">
+                        <animate attributeName="opacity" values="0;1;0" dur="2.5s" repeatCount="indefinite" begin="2s"/>
+                        STAGE VALIDÉ
+                    </text>
+
+                    <!-- Notification d'évaluation -->
+                    <rect x="370" y="240" width="50" height="18" rx="9" fill="rgba(168,85,247,0.6)" opacity="0">
+                        <animate attributeName="opacity" values="0;1;0" dur="2s" repeatCount="indefinite" begin="3s"/>
+                        <animate attributeName="x" values="370;360;370" dur="2s" repeatCount="indefinite" begin="3s"/>
+                    </rect>
+                    <text x="395" y="251" text-anchor="middle" fill="rgba(255,255,255,0.9)" font-size="5" font-weight="bold" opacity="0">
+                        <animate attributeName="opacity" values="0;1;0" dur="2s" repeatCount="indefinite" begin="3s"/>
+                        ÉVALUATION
+                    </text>
+
+                    <!-- Éléments flottants - Indicateurs de stages -->
+                    <circle cx="380" cy="140" r="25" fill="rgba(34,197,94,0.2)" stroke="rgba(34,197,94,0.4)" stroke-width="2">
+                        <animate attributeName="cy" values="140;130;140" dur="4s" repeatCount="indefinite"/>
+                    </circle>
+                    <!-- Icône validation dans le cercle -->
+                    <path d="M375 140 L378 143 L385 136" stroke="rgba(34,197,94,0.8)" stroke-width="2" fill="none"/>
+                    <text x="380" y="155" text-anchor="middle" fill="rgba(34,197,94,0.8)" font-size="6" font-weight="bold">VALIDÉ</text>
+
+                    <circle cx="420" cy="180" r="20" fill="rgba(59,130,246,0.2)" stroke="rgba(59,130,246,0.4)" stroke-width="2">
+                        <animate attributeName="cy" values="180;170;180" dur="3s" repeatCount="indefinite"/>
+                    </circle>
+                    <!-- Icône utilisateur stagiaire dans le cercle -->
+                    <circle cx="420" cy="180" r="6" fill="rgba(59,130,246,0.6)"/>
+                    <path d="M414 188 Q420 186 426 188" stroke="rgba(59,130,246,0.8)" stroke-width="1" fill="none"/>
+                    <text x="420" y="200" text-anchor="middle" fill="rgba(59,130,246,0.8)" font-size="5" font-weight="bold">STAGIAIRE</text>
+
+                    <circle cx="400" cy="220" r="15" fill="rgba(168,85,247,0.2)" stroke="rgba(168,85,247,0.4)" stroke-width="2">
+                        <animate attributeName="cy" values="220;210;220" dur="3.5s" repeatCount="indefinite"/>
+                    </circle>
+                    <!-- Icône calendrier dans le cercle -->
+                    <rect x="396" y="217" width="8" height="6" rx="1" fill="rgba(168,85,247,0.6)"/>
+                    <line x1="397" y1="215" x2="397" y2="219" stroke="rgba(168,85,247,0.8)" stroke-width="0.5"/>
+                    <line x1="403" y1="215" x2="403" y2="219" stroke="rgba(168,85,247,0.8)" stroke-width="0.5"/>
+                    <text x="400" y="235" text-anchor="middle" fill="rgba(168,85,247,0.8)" font-size="5" font-weight="bold">PLANNING</text>
+
+                    <!-- Connexions entre éléments - Flux de données -->
+                    <path d="M340 160 Q360 150 380 140" stroke="rgba(255,255,255,0.2)" stroke-width="2" fill="none" opacity="0.6">
+                        <animate attributeName="opacity" values="0.6;1;0.6" dur="2s" repeatCount="indefinite"/>
+                    </path>
+                    <path d="M380 165 Q400 175 420 180" stroke="rgba(255,255,255,0.2)" stroke-width="2" fill="none" opacity="0.4">
+                        <animate attributeName="opacity" values="0.4;0.8;0.4" dur="2.5s" repeatCount="indefinite"/>
+                    </path>
+                    <path d="M420 200 Q410 210 400 220" stroke="rgba(255,255,255,0.2)" stroke-width="2" fill="none" opacity="0.5">
+                        <animate attributeName="opacity" values="0.5;0.9;0.5" dur="3s" repeatCount="indefinite"/>
+                    </path>
+
+                    <!-- Particules de données connectées -->
                     <g opacity="0.6">
-                        <circle cx="150" cy="280" r="3" fill="rgba(255,255,255,0.8)">
+                        <circle cx="150" cy="280" r="3" fill="rgba(34,197,94,0.8)">
                             <animate attributeName="cy" values="280;270;280" dur="4s" repeatCount="indefinite"/>
                         </circle>
                         <circle cx="200" cy="290" r="4" fill="rgba(59,130,246,0.6)">
                             <animate attributeName="cy" values="290;275;290" dur="3s" repeatCount="indefinite"/>
                         </circle>
-                        <circle cx="250" cy="285" r="2" fill="rgba(34,197,94,0.8)">
+                        <circle cx="250" cy="285" r="2" fill="rgba(168,85,247,0.8)">
                             <animate attributeName="cy" values="285;275;285" dur="3.5s" repeatCount="indefinite"/>
                         </circle>
-                        
-                        <!-- Connexions animées -->
+
+                        <!-- Connexions animées entre données -->
                         <path d="M150 280 L200 290 L250 285" stroke="rgba(255,255,255,0.2)" stroke-width="1" fill="none" opacity="0.5">
                             <animate attributeName="opacity" values="0.5;1;0.5" dur="2s" repeatCount="indefinite"/>
                         </path>
                     </g>
-                    
-                    <!-- Effet de scan moderne -->
-                    <rect x="60" y="60" width="280" height="2" fill="rgba(59,130,246,0.8)" opacity="0.8">
+
+                    <!-- Effet de scan pour la gestion des stages -->
+                    <rect x="60" y="60" width="280" height="2" fill="rgba(34,197,94,0.8)" opacity="0.8">
                         <animate attributeName="y" values="60;240;60" dur="4s" repeatCount="indefinite"/>
                         <animate attributeName="opacity" values="0.8;0.3;0.8" dur="4s" repeatCount="indefinite"/>
                     </rect>
@@ -312,66 +418,68 @@ onMounted(() => {
             </div>
         </div>
 
-        <!-- Statistiques modernisées avec animations -->
+        <!-- Statistiques de gestion des stages -->
         <div class="grid grid-cols-3 gap-4">
             <div class="group relative bg-white/10 backdrop-blur-xl rounded-2xl p-6 border border-white/20 hover:bg-white/15 transition-all duration-300 hover:scale-105">
-                <div class="absolute inset-0 bg-gradient-to-br from-cyan-400/20 to-transparent rounded-2xl opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
+                <div class="absolute inset-0 bg-gradient-to-br from-blue-400/20 to-transparent rounded-2xl opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
                 <div class="relative">
                     <div class="flex items-center justify-between mb-2">
-                        <div class="text-3xl font-black text-white">50+</div>
-                        <div class="w-8 h-8 bg-cyan-400/30 rounded-full flex items-center justify-center">
-                            <svg class="w-4 h-4 text-cyan-200" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"/>
+                        <div class="text-3xl font-black text-white">150+</div>
+                        <div class="w-8 h-8 bg-blue-400/30 rounded-full flex items-center justify-center">
+                            <svg class="w-4 h-4 text-blue-200" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197m13.5-9a2.5 2.5 0 11-5 0 2.5 2.5 0 015 0z"/>
                             </svg>
                         </div>
                     </div>
-                    <div class="text-cyan-100 text-sm font-medium">Services Digitaux</div>
+                    <div class="text-blue-100 text-sm font-medium">Stagiaires Actifs</div>
                     <div class="w-full bg-white/20 rounded-full h-1 mt-2">
-                        <div class="bg-gradient-to-r from-cyan-400 to-blue-400 h-1 rounded-full animate-pulse" style="width: 85%"></div>
+                        <div class="bg-gradient-to-r from-blue-400 to-cyan-400 h-1 rounded-full animate-pulse" style="width: 85%"></div>
                     </div>
                 </div>
             </div>
-            
+
             <div class="group relative bg-white/10 backdrop-blur-xl rounded-2xl p-6 border border-white/20 hover:bg-white/15 transition-all duration-300 hover:scale-105">
                 <div class="absolute inset-0 bg-gradient-to-br from-green-400/20 to-transparent rounded-2xl opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
                 <div class="relative">
                     <div class="flex items-center justify-between mb-2">
-                        <div class="text-3xl font-black text-white">24/7</div>
+                        <div class="text-3xl font-black text-white">95%</div>
                         <div class="w-8 h-8 bg-green-400/30 rounded-full flex items-center justify-center">
-                            <div class="w-2 h-2 bg-green-400 rounded-full animate-pulse"></div>
+                            <svg class="w-4 h-4 text-green-200" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/>
+                            </svg>
                         </div>
                     </div>
-                    <div class="text-green-100 text-sm font-medium">Disponibilité</div>
+                    <div class="text-green-100 text-sm font-medium">Stages Validés</div>
                     <div class="w-full bg-white/20 rounded-full h-1 mt-2">
-                        <div class="bg-gradient-to-r from-green-400 to-emerald-400 h-1 rounded-full animate-pulse" style="width: 100%"></div>
+                        <div class="bg-gradient-to-r from-green-400 to-emerald-400 h-1 rounded-full animate-pulse" style="width: 95%"></div>
                     </div>
                 </div>
             </div>
-            
+
             <div class="group relative bg-white/10 backdrop-blur-xl rounded-2xl p-6 border border-white/20 hover:bg-white/15 transition-all duration-300 hover:scale-105">
                 <div class="absolute inset-0 bg-gradient-to-br from-purple-400/20 to-transparent rounded-2xl opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
                 <div class="relative">
                     <div class="flex items-center justify-between mb-2">
-                        <div class="text-3xl font-black text-white">99%</div>
+                        <div class="text-3xl font-black text-white">24/7</div>
                         <div class="w-8 h-8 bg-purple-400/30 rounded-full flex items-center justify-center">
                             <svg class="w-4 h-4 text-purple-200" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z"/>
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v10a2 2 0 002 2h8a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-3 7h3m-3 4h3m-6-4h.01M9 16h.01"/>
                             </svg>
                         </div>
                     </div>
-                    <div class="text-purple-100 text-sm font-medium">Sécurité</div>
+                    <div class="text-purple-100 text-sm font-medium">Suivi Continu</div>
                     <div class="w-full bg-white/20 rounded-full h-1 mt-2">
-                        <div class="bg-gradient-to-r from-purple-400 to-indigo-400 h-1 rounded-full animate-pulse" style="width: 99%"></div>
+                        <div class="bg-gradient-to-r from-purple-400 to-indigo-400 h-1 rounded-full animate-pulse" style="width: 100%"></div>
                     </div>
                 </div>
             </div>
         </div>
         
-        <!-- Badge "Powered by" moderne -->
+        <!-- Badge de gestion des stages -->
         <div class="mt-8 flex justify-center">
             <div class="bg-white/5 backdrop-blur-xl rounded-full px-6 py-2 border border-white/20 flex items-center space-x-2">
                 <div class="w-2 h-2 bg-green-400 rounded-full animate-pulse"></div>
-                <span class="text-white/80 text-xs font-medium">Plateforme Sécurisée</span>
+                <span class="text-white/80 text-xs font-medium">Gestion & Suivi des Stages</span>
                 <div class="w-2 h-2 bg-blue-400 rounded-full animate-pulse delay-500"></div>
             </div>
         </div>

@@ -162,7 +162,7 @@
                         {{ stage.stagiaire.niveau_etude || 'Non renseigné' }}
                       </div>
                     </div>
-                    <div class="space-y-3">
+                    <div v-if="stage.type !== 'professionnel'" class="space-y-3">
                       <div class="text-sm font-bold text-gray-600 uppercase tracking-wider flex items-center gap-2">
                         <div class="w-3 h-3 bg-pink-500 rounded-full"></div>
                         Université

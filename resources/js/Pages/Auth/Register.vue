@@ -78,11 +78,11 @@ const updatePasswordStrength = () => {
                 <div class="relative z-10 text-center">
                     <div class="w-16 h-16 bg-white/20 backdrop-blur-sm rounded-2xl flex items-center justify-center mx-auto mb-4">
                         <svg class="w-8 h-8 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M18 9v3m0 0v3m0-3h3m-3 0h-3m-2-5a4 4 0 11-8 0 4 4 0 018 0zM3 20a6 6 0 0112 0v1H3v-1z"/>
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.246 18 16.5 18c-1.746 0-3.332.477-4.5 1.253"/>
                         </svg>
                     </div>
-                    <h1 class="text-2xl font-bold mb-2">Rejoignez-nous</h1>
-                    <p class="text-blue-100">Programme de Stages</p>
+                    <h1 class="text-2xl font-bold mb-2">Candidature de Stage</h1>
+                    <p class="text-blue-100">Ministère des Finances</p>
                 </div>
             </div>
             
@@ -289,7 +289,7 @@ const updatePasswordStrength = () => {
                 </div>
             </div>
 
-            <!-- Illustration SVG moderne et interactive -->
+            <!-- Illustration SVG spécialisée pour l'inscription aux stages -->
             <div class="flex-1 flex items-center justify-center mb-12">
                 <div class="relative max-w-lg w-full">
                     <svg viewBox="0 0 500 350" class="w-full h-auto">
@@ -302,131 +302,184 @@ const updatePasswordStrength = () => {
                                 <stop offset="0%" style="stop-color:rgba(255,255,255,0.2);stop-opacity:1" />
                                 <stop offset="100%" style="stop-color:rgba(255,255,255,0.05);stop-opacity:1" />
                             </linearGradient>
+                            <linearGradient id="internGradient" x1="0%" y1="0%" x2="100%" y2="100%">
+                                <stop offset="0%" style="stop-color:rgba(59,130,246,0.8);stop-opacity:1" />
+                                <stop offset="100%" style="stop-color:rgba(99,102,241,0.6);stop-opacity:1" />
+                            </linearGradient>
+                            <linearGradient id="stageGradient" x1="0%" y1="0%" x2="100%" y2="100%">
+                                <stop offset="0%" style="stop-color:rgba(34,197,94,0.8);stop-opacity:1" />
+                                <stop offset="100%" style="stop-color:rgba(16,185,129,0.6);stop-opacity:1" />
+                            </linearGradient>
                         </defs>
-                        
+
                         <!-- Grille de fond -->
                         <rect width="500" height="350" fill="url(#grid)" opacity="0.3"/>
-                        
-                        <!-- Personnes connectées - Design moderne -->
+
+                        <!-- Stagiaires en formation - Design moderne -->
                         <g class="animate-float-1">
-                            <!-- Personne 1 -->
-                            <circle cx="120" cy="140" r="35" fill="url(#cardGradient)" stroke="rgba(255,255,255,0.3)" stroke-width="2"/>
-                            <circle cx="120" cy="130" r="12" fill="rgba(255,255,255,0.8)"/>
-                            <path d="M105 150 Q120 145 135 150 Q135 160 120 165 Q105 160 105 150" fill="rgba(255,255,255,0.6)"/>
+                            <!-- Stagiaire 1 -->
+                            <circle cx="120" cy="140" r="35" fill="url(#cardGradient)" stroke="rgba(59,130,246,0.4)" stroke-width="2"/>
+                            <circle cx="120" cy="130" r="12" fill="rgba(59,130,246,0.8)"/>
+                            <path d="M105 150 Q120 145 135 150 Q135 160 120 165 Q105 160 105 150" fill="rgba(59,130,246,0.6)"/>
+                            <!-- Badge stagiaire -->
+                            <rect x="135" y="125" width="15" height="10" rx="2" fill="rgba(59,130,246,0.6)"/>
+                            <text x="142" y="132" text-anchor="middle" fill="white" font-size="4" font-weight="bold">S</text>
                         </g>
-                        
+
                         <g class="animate-float-2">
-                            <!-- Personne 2 (centrale) -->
-                            <circle cx="250" cy="120" r="40" fill="url(#cardGradient)" stroke="rgba(255,255,255,0.4)" stroke-width="3"/>
-                            <circle cx="250" cy="108" r="15" fill="rgba(255,255,255,0.9)"/>
-                            <path d="M230 140 Q250 135 270 140 Q270 155 250 160 Q230 155 230 140" fill="rgba(255,255,255,0.7)"/>
-                            <!-- Couronne pour la personne centrale -->
-                            <path d="M235 95 L245 85 L255 95 L265 85 L270 95 L260 100 L240 100 Z" fill="rgba(255,215,0,0.6)"/>
+                            <!-- Maître de stage (central) -->
+                            <circle cx="250" cy="120" r="40" fill="url(#cardGradient)" stroke="rgba(34,197,94,0.4)" stroke-width="3"/>
+                            <circle cx="250" cy="108" r="15" fill="rgba(34,197,94,0.8)"/>
+                            <path d="M230 140 Q250 135 270 140 Q270 155 250 160 Q230 155 230 140" fill="rgba(34,197,94,0.6)"/>
+                            <!-- Badge maître de stage -->
+                            <rect x="235" y="95" width="30" height="8" rx="4" fill="rgba(34,197,94,0.8)"/>
+                            <text x="250" y="101" text-anchor="middle" fill="white" font-size="4" font-weight="bold">MAÎTRE DE STAGE</text>
                         </g>
-                        
+
                         <g class="animate-float-3">
-                            <!-- Personne 3 -->
-                            <circle cx="380" cy="145" r="32" fill="url(#cardGradient)" stroke="rgba(255,255,255,0.3)" stroke-width="2"/>
-                            <circle cx="380" cy="135" r="11" fill="rgba(255,255,255,0.8)"/>
-                            <path d="M368 155 Q380 150 392 155 Q392 165 380 170 Q368 165 368 155" fill="rgba(255,255,255,0.6)"/>
+                            <!-- Stagiaire 2 -->
+                            <circle cx="380" cy="145" r="32" fill="url(#cardGradient)" stroke="rgba(99,102,241,0.4)" stroke-width="2"/>
+                            <circle cx="380" cy="135" r="11" fill="rgba(99,102,241,0.8)"/>
+                            <path d="M368 155 Q380 150 392 155 Q392 165 380 170 Q368 165 368 155" fill="rgba(99,102,241,0.6)"/>
+                            <!-- Badge stagiaire -->
+                            <rect x="395" y="130" width="15" height="10" rx="2" fill="rgba(99,102,241,0.6)"/>
+                            <text x="402" y="137" text-anchor="middle" fill="white" font-size="4" font-weight="bold">S</text>
                         </g>
-                        
-                        <!-- Connexions modernes avec animation -->
-                        <g stroke="rgba(255,255,255,0.4)" stroke-width="3" fill="none">
+
+                        <!-- Connexions de formation avec animation -->
+                        <g stroke="rgba(34,197,94,0.4)" stroke-width="3" fill="none">
                             <path d="M155 140 Q200 130 215 120" class="animate-draw"/>
                             <path d="M285 125 Q330 130 348 140" class="animate-draw" style="animation-delay: 1s;"/>
                         </g>
-                        
-                        <!-- Éléments technologiques -->
+
+                        <!-- Documents de stage -->
                         <g class="animate-pulse-tech">
-                            <!-- Tablette/Document digital -->
-                            <rect x="80" y="220" width="100" height="70" rx="12" fill="url(#cardGradient)" stroke="rgba(255,255,255,0.3)" stroke-width="2"/>
-                            <rect x="90" y="235" width="80" height="4" rx="2" fill="rgba(255,255,255,0.6)"/>
-                            <rect x="90" y="245" width="60" height="4" rx="2" fill="rgba(255,255,255,0.4)"/>
-                            <rect x="90" y="255" width="70" height="4" rx="2" fill="rgba(255,255,255,0.5)"/>
-                            <circle cx="90" cy="270" r="8" fill="rgba(59,130,246,0.6)"/>
-                            <circle cx="110" cy="270" r="8" fill="rgba(99,102,241,0.6)"/>
+                            <!-- Dossier de candidature -->
+                            <rect x="80" y="220" width="100" height="70" rx="12" fill="url(#cardGradient)" stroke="rgba(59,130,246,0.3)" stroke-width="2"/>
+                            <rect x="90" y="235" width="80" height="4" rx="2" fill="rgba(59,130,246,0.6)"/>
+                            <rect x="90" y="245" width="60" height="4" rx="2" fill="rgba(59,130,246,0.4)"/>
+                            <rect x="90" y="255" width="70" height="4" rx="2" fill="rgba(59,130,246,0.5)"/>
+                            <!-- Icônes de documents -->
+                            <rect x="85" y="265" width="12" height="15" rx="2" fill="rgba(59,130,246,0.6)"/>
+                            <line x1="87" y1="270" x2="95" y2="270" stroke="white" stroke-width="0.8"/>
+                            <line x1="87" y1="273" x2="95" y2="273" stroke="white" stroke-width="0.8"/>
+                            <line x1="87" y1="276" x2="93" y2="276" stroke="white" stroke-width="0.8"/>
+                            <rect x="105" y="265" width="12" height="15" rx="2" fill="rgba(34,197,94,0.6)"/>
+                            <line x1="107" y1="270" x2="115" y2="270" stroke="white" stroke-width="0.8"/>
+                            <line x1="107" y1="273" x2="115" y2="273" stroke="white" stroke-width="0.8"/>
+                            <line x1="107" y1="276" x2="113" y2="276" stroke="white" stroke-width="0.8"/>
+                            <text x="130" y="280" text-anchor="middle" fill="rgba(255,255,255,0.8)" font-size="6" font-weight="bold">CANDIDATURE</text>
                         </g>
-                        
-                        <!-- Graphique de progression -->
+
+                        <!-- Graphique de progression des stages -->
                         <g class="animate-chart">
-                            <rect x="320" y="200" width="120" height="80" rx="12" fill="url(#cardGradient)" stroke="rgba(255,255,255,0.3)" stroke-width="2"/>
-                            <!-- Barres du graphique -->
-                            <rect x="335" y="250" width="12" height="20" rx="2" fill="rgba(34,197,94,0.6)"/>
-                            <rect x="355" y="240" width="12" height="30" rx="2" fill="rgba(59,130,246,0.6)"/>
-                            <rect x="375" y="230" width="12" height="40" rx="2" fill="rgba(99,102,241,0.6)"/>
-                            <rect x="395" y="220" width="12" height="50" rx="2" fill="rgba(168,85,247,0.6)"/>
+                            <rect x="320" y="200" width="120" height="80" rx="12" fill="url(#cardGradient)" stroke="rgba(34,197,94,0.3)" stroke-width="2"/>
+                            <!-- Barres du graphique représentant les étapes du stage -->
+                            <rect x="335" y="250" width="12" height="20" rx="2" fill="rgba(59,130,246,0.6)"/>
+                            <rect x="355" y="240" width="12" height="30" rx="2" fill="rgba(34,197,94,0.6)"/>
+                            <rect x="375" y="230" width="12" height="40" rx="2" fill="rgba(16,185,129,0.6)"/>
+                            <rect x="395" y="220" width="12" height="50" rx="2" fill="rgba(34,197,94,0.8)"/>
+                            <!-- Labels des étapes -->
+                            <text x="341" y="275" text-anchor="middle" fill="rgba(255,255,255,0.6)" font-size="4">CANDIDAT</text>
+                            <text x="361" y="275" text-anchor="middle" fill="rgba(255,255,255,0.6)" font-size="4">ACCEPTÉ</text>
+                            <text x="381" y="275" text-anchor="middle" fill="rgba(255,255,255,0.6)" font-size="4">EN COURS</text>
+                            <text x="401" y="275" text-anchor="middle" fill="rgba(255,255,255,0.6)" font-size="4">VALIDÉ</text>
+                            <text x="370" y="215" text-anchor="middle" fill="rgba(255,255,255,0.8)" font-size="6" font-weight="bold">PROGRESSION</text>
                         </g>
-                        
-                        <!-- Notifications/badges de réussite -->
+
+                        <!-- Notifications de validation de stage -->
                         <g class="animate-notification">
                             <circle cx="450" cy="80" r="25" fill="rgba(34,197,94,0.2)" stroke="rgba(34,197,94,0.6)" stroke-width="2"/>
                             <path d="M440 80 L448 88 L462 72" stroke="rgba(34,197,94,0.8)" stroke-width="3" fill="none" stroke-linecap="round"/>
+                            <text x="450" y="110" text-anchor="middle" fill="rgba(34,197,94,0.8)" font-size="6" font-weight="bold">STAGE VALIDÉ</text>
                         </g>
-                        
+
                         <g class="animate-notification" style="animation-delay: 2s;">
                             <circle cx="50" cy="90" r="20" fill="rgba(59,130,246,0.2)" stroke="rgba(59,130,246,0.6)" stroke-width="2"/>
-                            <path d="M45 90 Q50 85 55 90 Q50 95 45 90" fill="rgba(59,130,246,0.8)"/>
+                            <circle cx="50" cy="90" r="6" fill="rgba(59,130,246,0.8)"/>
+                            <path d="M44 96 Q50 94 56 96" stroke="rgba(59,130,246,0.8)" stroke-width="1" fill="none"/>
+                            <text x="50" y="115" text-anchor="middle" fill="rgba(59,130,246,0.8)" font-size="5" font-weight="bold">NOUVEAU STAGIAIRE</text>
                         </g>
-                        
-                        <!-- Flèches de flux modernes -->
-                        <g stroke="rgba(255,255,255,0.5)" stroke-width="2" fill="none" marker-end="url(#modernArrow)">
+
+                        <!-- Badge d'évaluation -->
+                        <g class="animate-notification" style="animation-delay: 4s;">
+                            <circle cx="450" cy="300" r="22" fill="rgba(168,85,247,0.2)" stroke="rgba(168,85,247,0.6)" stroke-width="2"/>
+                            <rect x="445" y="295" width="10" height="8" rx="1" fill="rgba(168,85,247,0.6)"/>
+                            <line x1="447" y1="298" x2="453" y2="298" stroke="white" stroke-width="0.8"/>
+                            <line x1="447" y1="300" x2="453" y2="300" stroke="white" stroke-width="0.8"/>
+                            <text x="450" y="325" text-anchor="middle" fill="rgba(168,85,247,0.8)" font-size="5" font-weight="bold">ÉVALUATION</text>
+                        </g>
+
+                        <!-- Flèches de flux de candidature -->
+                        <g stroke="rgba(34,197,94,0.5)" stroke-width="2" fill="none" marker-end="url(#modernArrow)">
                             <path d="M180 230 Q220 210 280 220" class="animate-flow"/>
                             <path d="M200 150 Q240 170 300 160" class="animate-flow" style="animation-delay: 1.5s;"/>
                         </g>
-                        
+
                         <defs>
                             <marker id="modernArrow" markerWidth="12" markerHeight="8" refX="10" refY="4" orient="auto" markerUnits="strokeWidth">
-                                <path d="M0,0 L0,8 L12,4 z" fill="rgba(255,255,255,0.5)"/>
+                                <path d="M0,0 L0,8 L12,4 z" fill="rgba(34,197,94,0.5)"/>
                             </marker>
                         </defs>
                     </svg>
                 </div>
             </div>
 
-            <!-- Avantages modernisés avec icônes et animations -->
+            <!-- Avantages des stages avec icônes et animations -->
             <div class="space-y-6">
                 <div class="flex items-center space-x-4 group hover:translate-x-2 transition-transform duration-300">
                     <div class="w-12 h-12 bg-gradient-to-br from-white/20 to-white/10 backdrop-blur-sm rounded-2xl flex items-center justify-center group-hover:scale-110 transition-transform duration-300 border border-white/20">
                         <svg class="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z"/>
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.246 18 16.5 18c-1.746 0-3.332.477-4.5 1.253"/>
                         </svg>
                     </div>
                     <div>
-                        <span class="text-white font-semibold text-lg">Formation Accélérée</span>
-                        <p class="text-blue-100 text-sm">Développement de compétences intensif</p>
+                        <span class="text-white font-semibold text-lg">Formation Pratique</span>
+                        <p class="text-blue-100 text-sm">Expérience professionnelle concrète</p>
                     </div>
                 </div>
-                
+
                 <div class="flex items-center space-x-4 group hover:translate-x-2 transition-transform duration-300">
                     <div class="w-12 h-12 bg-gradient-to-br from-white/20 to-white/10 backdrop-blur-sm rounded-2xl flex items-center justify-center group-hover:scale-110 transition-transform duration-300 border border-white/20">
                         <svg class="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z"/>
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"/>
                         </svg>
                     </div>
                     <div>
-                        <span class="text-white font-semibold text-lg">Mentorat Expert</span>
-                        <p class="text-blue-100 text-sm">Accompagnement personnalisé</p>
+                        <span class="text-white font-semibold text-lg">Maître de Stage</span>
+                        <p class="text-blue-100 text-sm">Encadrement professionnel expert</p>
                     </div>
                 </div>
-                
+
                 <div class="flex items-center space-x-4 group hover:translate-x-2 transition-transform duration-300">
                     <div class="w-12 h-12 bg-gradient-to-br from-white/20 to-white/10 backdrop-blur-sm rounded-2xl flex items-center justify-center group-hover:scale-110 transition-transform duration-300 border border-white/20">
                         <svg class="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4M7.835 4.697a3.42 3.42 0 001.946-.806 3.42 3.42 0 014.438 0 3.42 3.42 0 001.946.806 3.42 3.42 0 013.138 3.138 3.42 3.42 0 00.806 1.946 3.42 3.42 0 010 4.438 3.42 3.42 0 00-.806 1.946 3.42 3.42 0 01-3.138 3.138 3.42 3.42 0 00-1.946.806 3.42 3.42 0 01-4.438 0 3.42 3.42 0 00-1.946-.806 3.42 3.42 0 01-3.138-3.138 3.42 3.42 0 00-.806-1.946 3.42 3.42 0 010-4.438 3.42 3.42 0 00.806-1.946 3.42 3.42 0 013.138-3.138z"/>
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/>
                         </svg>
                     </div>
                     <div>
-                        <span class="text-white font-semibold text-lg">Certification Reconnue</span>
-                        <p class="text-blue-100 text-sm">Valorisation professionnelle garantie</p>
+                        <span class="text-white font-semibold text-lg">Validation Officielle</span>
+                        <p class="text-blue-100 text-sm">Attestation de stage reconnue</p>
+                    </div>
+                </div>
+
+                <div class="flex items-center space-x-4 group hover:translate-x-2 transition-transform duration-300">
+                    <div class="w-12 h-12 bg-gradient-to-br from-white/20 to-white/10 backdrop-blur-sm rounded-2xl flex items-center justify-center group-hover:scale-110 transition-transform duration-300 border border-white/20">
+                        <svg class="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"/>
+                        </svg>
+                    </div>
+                    <div>
+                        <span class="text-white font-semibold text-lg">Suivi Personnalisé</span>
+                        <p class="text-blue-100 text-sm">Évaluation continue et feedback</p>
                     </div>
                 </div>
             </div>
-            
+
             <!-- Call-to-action subtil -->
             <div class="mt-8 text-center opacity-70">
                 <p class="text-blue-100 text-sm italic">
-                    "L'excellence ne naît pas du hasard, elle se cultive."
+                    "Un stage réussi est le premier pas vers une carrière épanouie."
                 </p>
             </div>
         </div>
@@ -447,10 +500,10 @@ const updatePasswordStrength = () => {
                     <!-- En-tête du formulaire -->
                     <div class="text-center mb-6">
                         <h2 class="text-3xl font-black bg-gradient-to-r from-gray-900 via-indigo-800 to-purple-700 bg-clip-text text-transparent mb-2">
-                            Créez votre compte
+                            Candidature de Stage
                         </h2>
-                        <p class="text-gray-600 font-medium">Rejoignez le programme de stages</p>
-                        <p class="text-blue-600 text-sm font-semibold"></p>
+                        <p class="text-gray-600 font-medium">Rejoignez le programme de stages du Ministère</p>
+                        <p class="text-blue-600 text-sm font-semibold">Première étape vers votre avenir professionnel</p>
                     </div>
 
                     <!-- Carte du formulaire -->
