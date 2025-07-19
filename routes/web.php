@@ -200,6 +200,15 @@ Route::get('/dashboard', function () {
             Route::get('/stages/{stage}', [App\Http\Controllers\Agent\RS\StageController::class, 'show'])->name('stages.show');
             Route::post('/stages/{stage}/affecter-maitre', [App\Http\Controllers\Agent\RS\StageController::class, 'affecterMaitreStage'])->name('stages.affecter-maitre');
             Route::get('/stages/{stage}/attestation', [App\Http\Controllers\Agent\RS\StageController::class, 'attestation'])->name('stages.attestation');
+
+            // Routes pour les attestations RS
+            Route::prefix('attestations')->name('attestations.')->group(function () {
+                Route::get('/', [App\Http\Controllers\Agent\RS\AttestationController::class, 'index'])->name('index');
+                Route::post('/{stage}/generate', [App\Http\Controllers\Agent\RS\AttestationController::class, 'generate'])->name('generate');
+                Route::get('/{stage}/show', [App\Http\Controllers\Agent\RS\AttestationController::class, 'show'])->name('show');
+                Route::delete('/{stage}/revoke', [App\Http\Controllers\Agent\RS\AttestationController::class, 'revoke'])->name('revoke');
+            });
+
             // CRUD agents sans rôle
             Route::resource('agents', App\Http\Controllers\Agent\RS\AgentController::class);
             // ROUTE PERSONNALISÉE D'ABORD
@@ -241,6 +250,20 @@ Route::get('/dashboard', function () {
         // Route pour la DPAF : voir tous les stages en cours
         Route::get('/stages-dpaf', [App\Http\Controllers\Agent\StagesDpafController::class, 'index'])->name('stages-dpaf.index');
         Route::get('/stages-dpaf/{id}', [App\Http\Controllers\Agent\StagesDpafController::class, 'show'])->name('stages-dpaf.show');
+
+        // Routes pour les attestations DPAF
+        Route::prefix('dpaf')->name('dpaf.')->group(function () {
+            Route::get('/attestations', [App\Http\Controllers\Agent\DPAF\AttestationController::class, 'index'])->name('attestations.index');
+            Route::post('/attestations/{stage}/generate', [App\Http\Controllers\Agent\DPAF\AttestationController::class, 'generate'])->name('attestations.generate');
+            Route::get('/attestations/{stage}/show', [App\Http\Controllers\Agent\DPAF\AttestationController::class, 'show'])->name('attestations.show');
+            Route::delete('/attestations/{stage}/revoke', [App\Http\Controllers\Agent\DPAF\AttestationController::class, 'revoke'])->name('attestations.revoke');
+        });
+
+        // Routes pour les notifications des agents
+        Route::post('/notifications/mark-all-read', function() {
+            Auth::user()->unreadNotifications->markAsRead();
+            return back();
+        })->name('notifications.mark-all-read');
     });
 
     // Routes pour les stagiaires

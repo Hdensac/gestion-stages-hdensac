@@ -69,25 +69,31 @@ const props = defineProps({
 </script>
 
 <template>
-    <div class="flex h-screen stagiaire-bg">
-        <!-- SIDEBAR -->
-        <aside 
+    <div class="flex h-screen bg-gradient-to-br from-slate-50 via-blue-50 to-indigo-100 relative overflow-hidden">
+        <!-- Background Image with Overlay -->
+        <div class="absolute inset-0 bg-cover bg-center bg-no-repeat opacity-5"
+             style="background-image: url('/images/bg.png')"></div>
+        <div class="absolute inset-0 bg-gradient-to-br from-blue-900/3 via-indigo-900/2 to-slate-900/3"></div>
+        <!-- SIDEBAR moderne -->
+        <aside
             :class="[
-                'bg-gradient-to-b from-blue-600 to-blue-700 text-white transition-all duration-300 ease-in-out flex flex-col shadow-lg z-30',
+                'sidebar-modern text-white transition-all duration-300 ease-in-out flex flex-col shadow-lg z-30 relative',
                 sidebarExpanded ? 'w-64' : 'w-20'
             ]"
         >
             <!-- Header du Sidebar -->
             <div class="p-4 border-b border-blue-500/30">
                 <div class="flex items-center justify-between">
-                    <Link :href="route('dashboard')" class="flex items-center space-x-3">
-                        <div class="w-10 h-10 bg-white rounded-lg flex items-center justify-center shadow-md">
-                            <span class="text-blue-600 font-bold text-lg">GS</span>
+                    <Link :href="route('stagiaire.dashboard')" class="flex items-center space-x-3">
+                        <div class="logo-modern flex-shrink-0">
+                            <svg class="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"/>
+                            </svg>
                         </div>
                         <transition name='fade' mode='out-in'>
                           <div v-if="sidebarExpanded" key="logo-text" class="transition-all duration-300">
-                            <h1 class="text-sm font-bold text-white">GestionStages</h1>
-                            <p class="text-xs text-blue-200"></p>
+                            <h1 class="text-sm font-bold text-white">Espace Stagiaire</h1>
+                            <p class="text-xs text-blue-200">Mon parcours</p>
                         </div>
                         </transition>
                     </Link>
@@ -227,10 +233,10 @@ const props = defineProps({
             </div>
         </aside>
 
-        <!-- MAIN CONTENT -->
-        <div class="flex-1 flex flex-col">
-            <!-- Top Header modernisé et professionnel -->
-            <header class="bg-white shadow-sm border-b border-gray-200 z-20">
+        <!-- MAIN CONTENT moderne -->
+        <div class="flex-1 flex flex-col relative z-10">
+            <!-- Top Header moderne -->
+            <header class="header-modern bg-white/95 backdrop-blur-sm shadow-sm border-b border-gray-200/50 z-20">
                 <div class="flex items-center justify-between px-8 py-6">
                     <div class="flex items-center space-x-6">
                         <!-- Logo avec container moderne -->
@@ -249,11 +255,11 @@ const props = defineProps({
                         
                         <!-- Informations textuelles avec hiérarchie claire -->
                         <div class="hidden md:block space-y-1">
-                            <h1 class="text-xl font-semibold text-gray-900 tracking-tight">
-                                Programme de Stages
+                            <h1 class="text-lg font-semibold text-gray-900 tracking-tight">
+                                Gestion des Stages - Stagiaire
                             </h1>
                             <div class="flex items-center space-x-2">
-                                <p class="text-sm font-medium text-blue-600">Ministère des Finances</p>
+                                <p class="text-sm font-medium text-blue-600">Ministère de l'Économie et des Finances</p>
                                 <span class="text-gray-300">•</span>
                                 <p class="text-sm text-gray-500">République du Bénin</p>
                             </div>
@@ -264,19 +270,19 @@ const props = defineProps({
                     <div class="flex items-center space-x-4">
                         <!-- Badge statut pour desktop -->
                         <div class="hidden lg:flex items-center space-x-3">
-                            <div class="flex items-center space-x-2 bg-green-50 text-green-700 px-3 py-2 rounded-full text-sm font-medium border border-green-200">
-                                <div class="w-2 h-2 bg-green-500 rounded-full animate-pulse"></div>
+                            <div class="flex items-center space-x-2 bg-gradient-to-r from-indigo-50 to-purple-50 text-indigo-700 px-4 py-2 rounded-lg text-sm font-medium border border-indigo-200">
+                                <div class="w-2 h-2 bg-indigo-500 rounded-full animate-pulse"></div>
                                 <span>Espace Stagiaire</span>
                             </div>
                         </div>
-                        
+
                         <!-- Badge mobile/tablet -->
-                        <div class="lg:hidden bg-gradient-to-r from-blue-600 to-blue-700 text-white px-4 py-2 rounded-full text-sm font-medium shadow-md">
+                        <div class="lg:hidden bg-gradient-to-r from-indigo-600 to-purple-600 text-white px-4 py-2 rounded-lg text-sm font-medium shadow-lg">
                             <div class="flex items-center space-x-2">
                                 <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
                                 </svg>
-                                <span></span>
+                                <span>Stagiaire</span>
                             </div>
                         </div>
                         
@@ -414,21 +420,45 @@ const props = defineProps({
   transform: translateY(10px);
 }
 
-.stagiaire-bg {
-  position: relative;
-  min-height: 100vh;
+/* Sidebar moderne */
+.sidebar-modern {
+    background: linear-gradient(135deg,
+        rgba(59, 130, 246, 0.96) 0%,
+        rgba(79, 70, 229, 0.98) 50%,
+        rgba(67, 56, 202, 0.96) 100%
+    );
+    backdrop-filter: blur(16px);
+    border-right: 1px solid rgba(255, 255, 255, 0.15);
+    box-shadow:
+        0 20px 40px rgba(0, 0, 0, 0.08),
+        inset 0 1px 0 rgba(255, 255, 255, 0.15);
 }
-.stagiaire-bg::before {
-  content: '';
-  position: fixed;
-  top: 0;
-  left: 0;
-  right: 0;
-  bottom: 0;
-  background: url('/images/bg-stagiaire.jpg') center/cover no-repeat;
-  opacity: 0.12;
-  z-index: -1;
-  pointer-events: none;
+
+/* Header moderne */
+.header-modern {
+    background: rgba(255, 255, 255, 0.95);
+    backdrop-filter: blur(8px);
+    border-bottom: 1px solid rgba(229, 231, 235, 0.5);
+}
+
+/* Logo moderne */
+.logo-modern {
+    width: 32px;
+    height: 32px;
+    background: linear-gradient(135deg, rgba(255, 255, 255, 0.2) 0%, rgba(255, 255, 255, 0.1) 100%);
+    border-radius: 10px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    backdrop-filter: blur(10px);
+    border: 1px solid rgba(255, 255, 255, 0.2);
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+    transition: all 0.3s ease;
+}
+
+.logo-modern:hover {
+    transform: scale(1.05);
+    box-shadow: 0 6px 20px rgba(0, 0, 0, 0.15);
 }
 
 /* Animation pour le panel de notifications */

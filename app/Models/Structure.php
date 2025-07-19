@@ -71,5 +71,13 @@ class Structure extends Model
         return $this->hasMany(Structure::class, 'parent_id');
     }
 
+    /**
+     * Alias pour les sous-structures.
+     */
+    public function sousStructures(): HasMany
+    {
+        return $this->children();
+    }
+
     // Définir d'autres relations Eloquent ici ultérieurement
 }

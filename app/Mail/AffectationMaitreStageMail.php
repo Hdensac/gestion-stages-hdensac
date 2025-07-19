@@ -37,6 +37,8 @@ class AffectationMaitreStageMail extends Mailable
                 'stage' => $this->stage,
                 'maitreStage' => $this->maitreStage,
                 'isReaffectation' => $this->isReaffectation,
+                'stagiaireNom' => $this->stagiaire->nom . ' ' . $this->stagiaire->prenom,
+                'msNom' => $this->maitreStage->nom . ' ' . $this->maitreStage->prenom,
             ]);
     }
 } 

@@ -48,6 +48,16 @@ class HandleInertiaRequests extends Middleware
             }
         }
 
+        // Récupérer les notifications de l'utilisateur connecté
+        $notifications = [];
+        if ($user) {
+            $notifications = $user->notifications
+                ->sortByDesc('created_at')
+                ->take(10)
+                ->values()
+                ->toArray();
+        }
+
         return [
             ...parent::share($request),
             'auth' => [
@@ -58,6 +68,7 @@ class HandleInertiaRequests extends Middleware
                 'error'   => fn () => $request->session()->get('error'),
                 'toast'   => fn () => $request->session()->get('toast'),
             ],
+            'notifications' => $notifications,
             'isDpafResponsable' => $isDpafResponsable,
             'isRSAgent' => $isRSAgent,
         ];

@@ -1068,24 +1068,28 @@ class StageController extends Controller
                 $stagiaire = $stage->demandeStage ? $stage->demandeStage->stagiaire : null;
                 $nouveauMS = \App\Models\User::find($validated['nouveau_maitre_stage_id']);
                 if ($stagiaire && $stagiaire->user && $nouveauMS) {
-                    $stagiaire->user->notify(new StagiaireNotification(
-                        'Votre stage a été réaffecté à un nouveau maître de stage.',
-                        route('stagiaire.stages')
-                    ));
+                    // Envoyer email de réaffectation
+                    Mail::to($stagiaire->user->email)
+                        ->send(new \App\Mail\AffectationMaitreStageMail($stagiaire->user, $stage, $nouveauMS, true));
+                    
+                    // Envoyer notification in-app
+                    $stagiaire->user->notify(new \App\Notifications\AffectationMaitreStageNotification($stage, $nouveauMS, true));
                 }
                 $demande = $stage->demandeStage;
                 if ($demande && $demande->nature === 'Groupe' && $demande->membres) {
                     foreach ($demande->membres as $membre) {
                         if ($membre->user && $membre->user->id !== $stagiaire->user->id) {
-                            $membre->user->notify(new StagiaireNotification(
-                                'Votre groupe a été réaffecté à un nouveau maître de stage.',
-                                route('stagiaire.stages')
-                            ));
+                            // Envoyer email de réaffectation
+                            Mail::to($membre->user->email)
+                                ->send(new \App\Mail\AffectationMaitreStageMail($membre->user, $stage, $nouveauMS, true));
+                            
+                            // Envoyer notification in-app
+                            $membre->user->notify(new \App\Notifications\AffectationMaitreStageNotification($stage, $nouveauMS, true));
                         }
                     }
                 }
             } catch (\Exception $e) {
-                \Log::error('Erreur lors de l\'envoi de la notification Laravel (réaffectation)', [
+                \Log::error('Erreur lors de l\'envoi de l\'email et notification de réaffectation', [
                     'error' => $e->getMessage(),
                     'stage_id' => $stage->id
                 ]);

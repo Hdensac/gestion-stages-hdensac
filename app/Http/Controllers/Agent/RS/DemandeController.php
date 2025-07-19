@@ -612,7 +612,7 @@ class DemandeController extends Controller
                     }
                 }
             } catch (\Exception $e) {
-                \Log::error('Erreur lors de l\'envoi de la notification Laravel', [
+                Log::error('Erreur lors de l\'envoi de la notification Laravel', [
                     'error' => $e->getMessage(),
                     'demande_id' => $demande->id
                 ]);
@@ -922,6 +922,56 @@ class DemandeController extends Controller
                 'demande_id' => $demande->id,
                 'maitre_stage_id' => $maitreStage->id
             ]);
+
+            // Envoyer un email de notification aux stagiaires et notifications in-app
+            try {
+                // Charger les relations nécessaires
+                $demande->load(['stagiaire.user', 'membres.user']);
+
+                // Envoyer l'email et notification au stagiaire principal
+                if ($demande->stagiaire && $demande->stagiaire->user) {
+                    Mail::to($demande->stagiaire->user->email)
+                        ->send(new AffectationMaitreStageMail($demande->stagiaire->user, $stage, $maitreStage));
+
+                    // Envoyer notification in-app
+                    $demande->stagiaire->user->notify(new \App\Notifications\AffectationMaitreStageNotification($stage, $maitreStage->user));
+
+                    Log::info('Email et notification d\'affectation envoyés au stagiaire principal', [
+                        'demande_id' => $demande->id,
+                        'stagiaire_email' => $demande->stagiaire->user->email
+                    ]);
+                }
+
+                // Si c'est un stage de groupe, envoyer l'email et notification aux membres
+                if ($demande->nature === 'Groupe' && $demande->membres) {
+                    foreach ($demande->membres as $membre) {
+                        if ($membre && $membre->user && $membre->user->email) {
+                            // Éviter d'envoyer deux fois au même stagiaire
+                            if ($demande->stagiaire && $demande->stagiaire->user &&
+                                $membre->user->email !== $demande->stagiaire->user->email) {
+                                Mail::to($membre->user->email)
+                                    ->send(new AffectationMaitreStageMail($membre->user, $stage, $maitreStage));
+
+                                // Envoyer notification in-app
+                                $membre->user->notify(new \App\Notifications\AffectationMaitreStageNotification($stage, $maitreStage->user));
+
+                                Log::info('Email et notification d\'affectation envoyés au membre du groupe', [
+                                    'demande_id' => $demande->id,
+                                    'membre_email' => $membre->user->email
+                                ]);
+                            }
+                        }
+                    }
+                }
+
+            } catch (\Exception $e) {
+                Log::error('Erreur lors de l\'envoi des emails et notifications aux stagiaires', [
+                    'error' => $e->getMessage(),
+                    'demande_id' => $demande->id,
+                    'maitre_stage_id' => $maitreStage->id,
+                    'stack' => $e->getTraceAsString()
+                ]);
+            }
 
             return redirect()->back()->with('success', 'Maître de stage affecté avec succès.');
 

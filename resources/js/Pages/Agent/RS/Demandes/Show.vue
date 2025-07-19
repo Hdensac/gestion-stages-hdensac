@@ -451,7 +451,7 @@
             <svg class="h-6 w-6 text-yellow-600" viewBox="0 0 20 20" fill="currentColor">
               <path fill-rule="evenodd" d="M8.257 3.099c.765-1.36 2.722-1.36 3.486 0l5.58 9.92c.75 1.334-.213 2.98-1.742 2.98H4.42c-1.53 0-2.493-1.646-1.743-2.98l5.58-9.92zM11 13a1 1 0 11-2 0 1 1 0 012 0zm-1-8a1 1 0 00-1 1v3a1 1 0 002 0V6a1 1 0 00-1-1z" clip-rule="evenodd" />
             </svg>
-            <span class="text-yellow-800 font-bold">Aucun agent avec le rôle MS n'a été trouvé. Veuillez vérifier que des agents avec ce rôle existent dans le système.</span>
+            <span class="text-yellow-800 font-bold">Aucun agent  n'a été trouvé. Veuillez vérifier  dans votre organigrammes que des agents  existent .</span>
           </div>
         </div>
       </div>
@@ -574,16 +574,18 @@ function rejectDemande() {
     onSuccess: () => {
       closeRejectModal();
       if (toast.value) {
-        toast.value.show({
+        toast.value.addToast({
           type: 'success',
           title: 'Succès',
           message: 'La demande a été rejetée avec succès.'
         });
       }
+      // Recharger la page pour voir les changements
+      window.location.reload();
     },
     onError: () => {
       if (toast.value) {
-        toast.value.show({
+        toast.value.addToast({
           type: 'error',
           title: 'Erreur',
           message: 'Une erreur est survenue lors du rejet de la demande.'
@@ -602,16 +604,18 @@ function approveDemande() {
     onSuccess: () => {
       closeApproveModal();
       if (toast.value) {
-        toast.value.show({
+        toast.value.addToast({
           type: 'success',
           title: 'Succès',
           message: 'La demande a été approuvée avec succès.'
         });
       }
+      // Recharger la page pour voir les changements
+      window.location.reload();
     },
     onError: () => {
       if (toast.value) {
-        toast.value.show({
+        toast.value.addToast({
           type: 'error',
           title: 'Erreur',
           message: 'Une erreur est survenue lors de l\'approbation de la demande.'
@@ -642,19 +646,50 @@ async function fetchMaitreStageAgents() {
 }
 
 function submitMaitreStage() {
-  if (!selectedMaitreStageId.value) return;
+  console.log('=== DÉBUT AFFECTATION MAÎTRE DE STAGE ===');
+  console.log('selectedMaitreStageId:', selectedMaitreStageId.value);
+  console.log('demande.id:', props.demande.id);
+
+  if (!selectedMaitreStageId.value) {
+    console.log('❌ Aucun maître de stage sélectionné');
+    return;
+  }
 
   maitreStageForm.maitre_stage_id = selectedMaitreStageId.value;
 
+  console.log('Données du formulaire:', maitreStageForm);
+  console.log('Route:', route('agent.rs.demandes.affecter-maitre', props.demande.id));
+
   maitreStageForm.post(route('agent.rs.demandes.affecter-maitre', props.demande.id), {
-    onSuccess: () => {
+    onStart: () => {
+      console.log('🚀 Début de la requête POST');
+    },
+    onSuccess: (response) => {
+      console.log('✅ Succès de l\'affectation:', response);
       closeMaitreStageModal();
-      setTimeout(() => {
-      router.reload();
-      }, 250);
+      if (toast.value) {
+        toast.value.addToast({
+          type: 'success',
+          title: 'Succès',
+          message: 'Maître de stage affecté avec succès.'
+        });
+      }
+      // Recharger la page pour voir les changements
+      window.location.reload();
     },
     onError: (errors) => {
-      console.error('Erreur lors de l\'affectation du maître de stage:', errors);
+      console.error('❌ Erreur lors de l\'affectation du maître de stage:', errors);
+      console.error('Détails des erreurs:', JSON.stringify(errors, null, 2));
+      if (toast.value) {
+        toast.value.addToast({
+          type: 'error',
+          title: 'Erreur',
+          message: 'Une erreur est survenue lors de l\'affectation du maître de stage.'
+        });
+      }
+    },
+    onFinish: () => {
+      console.log('🏁 Fin de la requête');
     }
   });
 }

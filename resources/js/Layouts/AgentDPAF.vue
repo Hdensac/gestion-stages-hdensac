@@ -1,16 +1,20 @@
 <template>
-    <div class="flex h-screen bg-gray-100">
-        <!-- SIDEBAR avec glassmorphism et micro-interactions -->
-        <aside 
+    <div class="flex h-screen bg-gradient-to-br from-slate-50 via-blue-50 to-indigo-100 relative overflow-hidden">
+        <!-- Background Image with Overlay -->
+        <div class="absolute inset-0 bg-cover bg-center bg-no-repeat opacity-5"
+             style="background-image: url('/images/bg.png')"></div>
+        <div class="absolute inset-0 bg-gradient-to-br from-blue-900/3 via-indigo-900/2 to-slate-900/3"></div>
+        <!-- SIDEBAR moderne -->
+        <aside
             :class="[
-                'sidebar-glass fixed inset-y-0 left-0 z-40 transition-all duration-300 ease-in-out',
+                'sidebar-modern fixed inset-y-0 left-0 z-40 transition-all duration-300 ease-in-out',
                 expanded ? 'w-64' : 'w-20'
             ]"
         >
             <!-- Bouton Toggle Modern -->
-            <button 
-                @click="toggleSidebar" 
-                class="sidebar-toggle absolute -right-3 top-20 bg-white rounded-full p-1.5 shadow-md border border-gray-200 z-50 hover:bg-blue-50 transition-colors duration-200 hover:shadow-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-opacity-50"
+            <button
+                @click="toggleSidebar"
+                class="sidebar-toggle absolute -right-3 top-20 bg-white rounded-full p-1.5 shadow-lg border border-blue-200 z-50 hover:bg-blue-50 transition-all duration-200 hover:shadow-xl hover:scale-105 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-opacity-50"
                 :aria-label="expanded ? 'Réduire le menu' : 'Développer le menu'"
             >
                 <svg v-if="expanded" class="w-4 h-4 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -21,16 +25,18 @@
                 </svg>
             </button>
 
-            <!-- Logo Section avec effet gradient -->
-            <div class="flex items-center h-16 px-4 border-b border-blue-700">
-                <Link :href="route('dashboard')" class="flex items-center">
-                    <div class="logo-gradient flex-shrink-0">
-                        GS
-                </div>
+            <!-- Logo Section moderne -->
+            <div class="flex items-center h-16 px-4 border-b border-white/20">
+                <Link :href="route('agent.dashboard')" class="flex items-center">
+                    <div class="logo-modern flex-shrink-0">
+                        <svg class="w-8 h-8 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/>
+                        </svg>
+                    </div>
                     <h1 v-if="expanded" class="ml-3 text-xl font-bold text-white whitespace-nowrap transition-all duration-300">
-                        GestionStages
+                        DPAF Stages
                     </h1>
-              </Link>
+                </Link>
             </div>
 
             <!-- Menu Items -->
@@ -63,8 +69,8 @@
                     <span v-else class="tooltip">Demandes</span>
                 </Link>
 
-                <Link 
-                    :href="route('agent.stages-dpaf.index')" 
+                <Link
+                    :href="route('agent.stages-dpaf.index')"
                     class="menu-link flex items-center px-3 py-2 text-sm font-medium rounded-lg transition-colors duration-200"
                     :class="[route().current('agent.stages-dpaf.index') ? 'active' : 'text-blue-100 hover:bg-blue-700 hover:text-white']"
                     tabindex="0"
@@ -75,6 +81,20 @@
                     </svg>
                     <span v-if="expanded" class="ml-3">Stages</span>
                     <span v-else class="tooltip">Stages</span>
+                </Link>
+
+                <Link
+                    :href="route('agent.dpaf.attestations.index')"
+                    class="menu-link flex items-center px-3 py-2 text-sm font-medium rounded-lg transition-colors duration-200"
+                    :class="[route().current('agent.dpaf.attestations.*') ? 'active' : 'text-blue-100 hover:bg-blue-700 hover:text-white']"
+                    tabindex="0"
+                >
+                    <span v-if="route().current('agent.dpaf.attestations.*')" class="active-indicator"></span>
+                    <svg xmlns="http://www.w3.org/2000/svg" class="w-6 h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
+                    </svg>
+                    <span v-if="expanded" class="ml-3">Attestations DPAF</span>
+                    <span v-else class="tooltip">Attestations DPAF</span>
                 </Link>
 
                 <Link 
@@ -151,10 +171,10 @@
           </div>
         </div>
 
-        <!-- MAIN CONTENT AREA -->
-        <div :class="['flex flex-col flex-1 w-full transition-all duration-300', expanded ? 'lg:pl-64' : 'lg:pl-20']">
-            <!-- Header glassmorphism modernisé -->
-            <header class="header-glass shadow-sm border-b border-gray-200 z-20 transition-all duration-300">
+        <!-- MAIN CONTENT AREA moderne -->
+        <div :class="['flex flex-col flex-1 w-full transition-all duration-300 relative z-10', expanded ? 'lg:pl-64' : 'lg:pl-20']">
+            <!-- Header moderne -->
+            <header class="header-modern bg-white/95 backdrop-blur-sm shadow-sm border-b border-gray-200/50 z-20 transition-all duration-300">
                 <div class="flex items-center justify-between px-8 py-6">
                     <div class="flex items-center space-x-6">
                         <!-- Logo Ministère -->
@@ -169,11 +189,11 @@
                         </div>
                         <div class="hidden md:block w-px h-12 bg-gradient-to-b from-transparent via-gray-300 to-transparent"></div>
                         <div class="hidden md:block space-y-1">
-                            <h1 class="text-xl font-semibold text-gray-900 tracking-tight">
-                                Programme de Stages
+                            <h1 class="text-lg font-semibold text-gray-900 tracking-tight">
+                                Gestion des Stages - DPAF
                             </h1>
                             <div class="flex items-center space-x-2">
-                                <p class="text-sm font-medium text-blue-600">Ministère des Finances</p>
+                                <p class="text-sm font-medium text-blue-600">Ministère de l'Économie et des Finances</p>
                                 <span class="text-gray-300">•</span>
                                 <p class="text-sm text-gray-500">République du Bénin</p>
                             </div>
@@ -181,17 +201,17 @@
                     </div>
                     <div class="flex items-center space-x-4">
                         <div class="hidden lg:flex items-center space-x-3">
-                            <div class="flex items-center space-x-2 bg-green-50 text-green-700 px-3 py-2 rounded-full text-sm font-medium border border-green-200">
-                                <div class="w-2 h-2 bg-green-500 rounded-full animate-pulse"></div>
+                            <div class="flex items-center space-x-2 bg-gradient-to-r from-blue-50 to-indigo-50 text-blue-700 px-4 py-2 rounded-lg text-sm font-medium border border-blue-200">
+                                <div class="w-2 h-2 bg-blue-500 rounded-full animate-pulse"></div>
                                 <span>Espace DPAF</span>
                             </div>
                         </div>
-                        <div class="lg:hidden bg-gradient-to-r from-blue-600 to-blue-700 text-white px-4 py-2 rounded-full text-sm font-medium shadow-md">
+                        <div class="lg:hidden bg-gradient-to-r from-blue-600 to-indigo-600 text-white px-4 py-2 rounded-lg text-sm font-medium shadow-lg">
                             <div class="flex items-center space-x-2">
                                 <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/>
                                 </svg>
-                                <span>Espace Agent</span>
+                                <span>Espace DPAF</span>
                             </div>
                         </div>
                         <div class="hidden xl:block text-xs text-gray-400 font-mono bg-gray-50 px-2 py-1 rounded border">
@@ -199,14 +219,80 @@
                         </div>
                         <!-- Cloche de notifications modernisée -->
                         <div class="relative">
-                            <button class="relative focus:outline-none group" aria-label="Notifications">
+                            <button
+                                @click="toggleNotifications"
+                                @mouseenter="onNotificationHover"
+                                @mouseleave="onNotificationLeave"
+                                class="relative focus:outline-none group"
+                                aria-label="Notifications"
+                                :class="{ 'animate-ring': isRinging }"
+                            >
                                 <div class="bg-white p-3 rounded-full shadow-lg border border-gray-200 group-hover:shadow-xl transition-all duration-200 group-hover:border-blue-300">
                                     <svg class="w-6 h-6 text-blue-600 group-hover:text-blue-700 transition-colors" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 17h5l-1.405-1.405A2.032 2.032 0 0118 14.158V11a6.002 6.002 0 00-4-5.659V5a2 2 0 10-4 0v.341C7.67 6.165 6 8.388 6 11v3.159c0 .538-.214 1.055-.595 1.436L4 17h5m6 0v1a3 3 0 11-6 0v-1m6 0H9" />
                                     </svg>
                                 </div>
-                                <span class="badge-notif">1</span>
+                                <span v-if="notificationCount > 0" class="badge-notif">{{ notificationCount }}</span>
                             </button>
+
+                            <!-- Panneau de notifications -->
+                            <div v-if="showNotifications"
+                                class="absolute right-0 mt-4 w-96 bg-white rounded-xl shadow-2xl border border-gray-200 overflow-hidden animate-fade-in z-50">
+                                <div class="bg-gradient-to-r from-blue-50 to-blue-100 p-4 border-b border-blue-200">
+                                    <div class="flex items-center justify-between">
+                                        <div class="flex items-center space-x-2">
+                                            <svg class="w-5 h-5 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 17h5l-5 5v-5zM10.07 2.82l3.93 3.93-8.49 8.49a2 2 0 01-1.42.59H1v-3.09a2 2 0 01.59-1.41l8.48-8.5zM15 6l3-3" />
+                                            </svg>
+                                            <span class="font-semibold text-gray-800">Notifications</span>
+                                            <span v-if="notifications.length" class="bg-blue-500 text-white text-xs px-2 py-1 rounded-full">{{ notifications.length }}</span>
+                                        </div>
+                                        <div class="flex items-center space-x-2">
+                                            <button @click="markAllAsRead" v-if="hasUnreadNotifications" class="text-xs text-blue-600 hover:text-blue-800 font-medium">
+                                                Tout marquer comme lu
+                                            </button>
+                                            <button @click="closeNotifications" class="text-gray-400 hover:text-gray-600">
+                                                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
+                                                </svg>
+                                            </button>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div v-if="!notifications.length" class="p-8 text-center">
+                                    <svg class="w-12 h-12 text-gray-300 mx-auto mb-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20 13V6a2 2 0 00-2-2H6a2 2 0 00-2 2v7m16 0v5a2 2 0 01-2 2H6a2 2 0 01-2-2v-5m16 0h-2.586a1 1 0 00-.707.293l-2.414 2.414a1 1 0 01-.707.293h-3.172a1 1 0 01-.707-.293l-2.414-2.414A1 1 0 006.586 13H4" />
+                                    </svg>
+                                    <p class="text-gray-500 font-medium">Aucune notification</p>
+                                    <p class="text-sm text-gray-400 mt-1">Vous êtes à jour !</p>
+                                </div>
+                                <ul v-else class="divide-y divide-gray-100 max-h-96 overflow-y-auto">
+                                    <li v-for="notif in notifications" :key="notif.id" class="p-4 hover:bg-gray-50 transition-colors">
+                                        <div class="flex items-start gap-3">
+                                            <div class="pt-1">
+                                                <div class="w-8 h-8 rounded-full flex items-center justify-center" :class="getNotificationIconClass(notif.data.type)">
+                                                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
+                                                    </svg>
+                                                </div>
+                                            </div>
+                                            <div class="flex-1 min-w-0">
+                                                <div class="flex items-center justify-between">
+                                                    <p class="text-sm font-medium text-gray-900 truncate">{{ notif.data.title || 'Notification' }}</p>
+                                                    <span v-if="!notif.read_at" class="w-2 h-2 bg-blue-500 rounded-full"></span>
+                                                </div>
+                                                <p class="text-sm text-gray-600 mt-1">{{ notif.data.message }}</p>
+                                                <div class="flex items-center justify-between mt-2">
+                                                    <span class="text-xs text-gray-400">{{ formatDate(notif.created_at) }}</span>
+                                                    <a v-if="notif.data.url" :href="notif.data.url" class="text-xs text-blue-600 hover:text-blue-800 font-medium">
+                                                        Voir détails
+                                                    </a>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </li>
+                                </ul>
+                            </div>
                         </div>
                     </div>
                 </div>
@@ -239,16 +325,35 @@
 </template>
 
 <script setup>
-import { ref, computed } from 'vue';
+import { ref, computed, onMounted } from 'vue';
 import { Link, usePage, router } from '@inertiajs/vue3';
 import AdminToast from '@/Components/AdminToast.vue';
 
+const page = usePage();
 const sidebarOpen = ref(false);
 const expanded = ref(true);
 const isRSAgent = computed(() => usePage().props.isRSAgent || false);
 const toast = ref(null);
 const showLogoutModal = ref(false);
 const showUserMenu = ref(false);
+
+// Variables pour les notifications
+const showNotifications = ref(false);
+const notifications = computed(() => page.props.notifications || []);
+const isRinging = ref(false);
+
+// Computed properties pour les notifications
+const notificationCount = computed(() => {
+    return notifications.value.filter(n => !n.read_at).length;
+});
+
+const hasUnreadNotifications = computed(() => {
+    return notifications.value.some(n => !n.read_at);
+});
+
+const hasNewNotifications = computed(() => {
+    return notificationCount.value > 0;
+});
 
 const toggleSidebar = () => {
   expanded.value = !expanded.value;
@@ -263,6 +368,84 @@ const closeUserMenu = () => {
 const logout = () => {
     router.post(route('logout'));
 };
+
+// Fonctions pour les notifications
+const toggleNotifications = () => {
+    showNotifications.value = !showNotifications.value;
+    if (showNotifications.value) {
+        triggerBellRing();
+    }
+};
+
+const closeNotifications = () => {
+    showNotifications.value = false;
+};
+
+const onNotificationHover = () => {
+    if (!showNotifications.value) {
+        triggerBellRing();
+    }
+};
+
+const onNotificationLeave = () => {
+    isRinging.value = false;
+};
+
+const triggerBellRing = () => {
+    isRinging.value = true;
+    setTimeout(() => {
+        isRinging.value = false;
+    }, 600);
+};
+
+const markAllAsRead = () => {
+    // Marquer toutes les notifications comme lues localement
+    notifications.value.forEach(n => n.read_at = new Date().toISOString());
+
+    // Optionnel : Envoyer une requête au serveur pour persister le changement
+    // router.post(route('agent.notifications.mark-all-read'), {}, { preserveState: true });
+};
+
+const getNotificationIconClass = (type) => {
+    switch (type) {
+        case 'attestation':
+            return 'bg-green-100 text-green-600';
+        case 'stage':
+            return 'bg-blue-100 text-blue-600';
+        case 'evaluation':
+            return 'bg-orange-100 text-orange-600';
+        case 'system':
+            return 'bg-gray-100 text-gray-600';
+        default:
+            return 'bg-gray-100 text-gray-600';
+    }
+};
+
+const formatDate = (dateString) => {
+    const date = new Date(dateString);
+    const now = new Date();
+    const diffInHours = Math.floor((now - date) / (1000 * 60 * 60));
+
+    if (diffInHours < 1) {
+        return 'À l\'instant';
+    } else if (diffInHours < 24) {
+        return `Il y a ${diffInHours}h`;
+    } else {
+        return date.toLocaleDateString('fr-FR', {
+            day: 'numeric',
+            month: 'short'
+        });
+    }
+};
+
+// Fermer les notifications quand on clique ailleurs
+onMounted(() => {
+    document.addEventListener('click', (e) => {
+        if (!e.target.closest('.relative')) {
+            showNotifications.value = false;
+        }
+    });
+});
 </script>
 
 <style scoped>
@@ -291,43 +474,124 @@ aside {
     }
 }
 
-/**** GLASSMORPHISM & DEPTH ****/
-.sidebar-glass {
-  background: rgba(30, 64, 175, 0.7);
-  backdrop-filter: blur(12px) saturate(1.2);
-  box-shadow: 0 8px 32px 0 rgba(31, 38, 135, 0.18);
-  border-right: 1.5px solid rgba(255,255,255,0.12);
-}
-.header-glass {
-  background: rgba(255,255,255,0.85);
-  backdrop-filter: blur(8px) saturate(1.1);
-  box-shadow: 0 4px 24px 0 rgba(31, 38, 135, 0.10);
+/* Sidebar moderne */
+.sidebar-modern {
+    background: linear-gradient(135deg,
+        rgba(59, 130, 246, 0.96) 0%,
+        rgba(79, 70, 229, 0.98) 50%,
+        rgba(67, 56, 202, 0.96) 100%
+    );
+    backdrop-filter: blur(16px);
+    border-right: 1px solid rgba(255, 255, 255, 0.15);
+    box-shadow:
+        0 20px 40px rgba(0, 0, 0, 0.08),
+        inset 0 1px 0 rgba(255, 255, 255, 0.15);
 }
 
-/**** MICRO-INTERACTIONS ****/
+/* Header moderne */
+.header-modern {
+    background: rgba(255, 255, 255, 0.95);
+    backdrop-filter: blur(8px);
+    border-bottom: 1px solid rgba(229, 231, 235, 0.5);
+}
+
+/* Logo moderne */
+.logo-modern {
+    width: 40px;
+    height: 40px;
+    background: linear-gradient(135deg, rgba(255, 255, 255, 0.2) 0%, rgba(255, 255, 255, 0.1) 100%);
+    border-radius: 12px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    backdrop-filter: blur(10px);
+    border: 1px solid rgba(255, 255, 255, 0.2);
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+    transition: all 0.3s ease;
+}
+
+.logo-modern:hover {
+    transform: scale(1.05);
+    box-shadow: 0 6px 20px rgba(0, 0, 0, 0.15);
+}
+
+/* Styles pour les notifications */
+.badge-notif {
+    position: absolute;
+    top: -8px;
+    right: -8px;
+    background: linear-gradient(135deg, #ef4444, #dc2626);
+    color: white;
+    border-radius: 50%;
+    width: 20px;
+    height: 20px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 11px;
+    font-weight: bold;
+    border: 2px solid white;
+    box-shadow: 0 2px 8px rgba(239, 68, 68, 0.3);
+}
+
+/* Animation de la cloche */
+@keyframes ring {
+    0%, 100% { transform: rotate(0deg); }
+    10%, 30%, 50%, 70%, 90% { transform: rotate(-10deg); }
+    20%, 40%, 60%, 80% { transform: rotate(10deg); }
+}
+
+.animate-ring {
+    animation: ring 0.6s ease-in-out;
+}
+
+/* Animation d'apparition du panneau */
+@keyframes fade-in {
+    from {
+        opacity: 0;
+        transform: translateY(-10px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+.animate-fade-in {
+    animation: fade-in 0.2s ease-out;
+}
+
+/* Menu items avec indicateur actif */
 .menu-link {
-  transition: background 0.18s, color 0.18s, box-shadow 0.18s;
-  position: relative;
+    position: relative;
+    border-radius: 12px;
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
 }
+
+.menu-link:hover {
+    background: rgba(255, 255, 255, 0.1);
+    backdrop-filter: blur(10px);
+    transform: translateX(4px);
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+}
+
 .menu-link.active {
-  background: linear-gradient(90deg, #2563eb 60%, #1e40af 100%);
-  color: #fff;
-  box-shadow: 0 2px 12px 0 rgba(37,99,235,0.10);
+    background: linear-gradient(135deg, rgba(255, 255, 255, 0.2), rgba(255, 255, 255, 0.1));
+    color: white;
+    box-shadow: 0 8px 25px rgba(0, 0, 0, 0.15);
+    backdrop-filter: blur(10px);
 }
-.menu-link .active-indicator {
-  position: absolute;
-  left: 0; top: 50%; transform: translateY(-50%);
-  width: 4px; height: 60%; border-radius: 6px;
-  background: linear-gradient(180deg, #38bdf8 0%, #6366f1 100%);
-  transition: height 0.2s;
-}
-.menu-link:hover:not(.active) {
-  background: rgba(59,130,246,0.10);
-  color: #fff;
-}
-.menu-link:focus {
-  outline: 2px solid #2563eb;
-  outline-offset: 2px;
+
+.active-indicator {
+    position: absolute;
+    left: -8px;
+    top: 50%;
+    transform: translateY(-50%);
+    width: 4px;
+    height: 24px;
+    background: linear-gradient(to bottom, #ffffff, #f1f5f9);
+    border-radius: 2px;
+    box-shadow: 0 2px 8px rgba(255, 255, 255, 0.3);
 }
 
 /**** SIDEBAR TOGGLE ANIMATION ****/

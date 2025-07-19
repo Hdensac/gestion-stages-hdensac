@@ -49,9 +49,9 @@
         <h1>ATTESTATION D'EFFECTIVITE DE STAGE</h1>
         <div class="content">
             Je soussigné <span class="bold">{{ mb_strtoupper($nom_rs, 'UTF-8') }}</span>, Responsable de la structure <span class="bold">{{ mb_strtoupper($libelle_structure, 'UTF-8') }}{{ $sigle_structure ? ' (' . mb_strtoupper($sigle_structure, 'UTF-8') . ')' : '' }}</span>,
-            atteste que Monsieur <span class="bold">{{ $stagiaire->user->nom }} {{ $stagiaire->user->prenom }}</span>, a été stagiaire à la <span class="bold">{{ mb_strtoupper($libelle_structure, 'UTF-8') }}{{ $sigle_structure ? ' (' . mb_strtoupper($sigle_structure, 'UTF-8') . ')' : '' }}</span>.
+            atteste que Monsieur <span class="bold">{{ $stagiaire && $stagiaire->user ? $stagiaire->user->nom . ' ' . $stagiaire->user->prenom : 'Nom non disponible' }}</span>, a été stagiaire à la <span class="bold">{{ mb_strtoupper($libelle_structure, 'UTF-8') }}{{ $sigle_structure ? ' (' . mb_strtoupper($sigle_structure, 'UTF-8') . ')' : '' }}</span>.
             <br><br>
-            Il est étudiant en <span class="bold">{{ $stagiaire_principal->niveau_etude }}</span> en <span class="bold">{{ $stagiaire_principal->filiere }}</span> à <span class="bold">{{ $stagiaire_principal->universite }}</span>.
+            Il est étudiant en <span class="bold">{{ $stagiaire_principal ? $stagiaire_principal->niveau_etude : 'Non spécifié' }}</span> en <span class="bold">{{ $stagiaire_principal ? $stagiaire_principal->filiere : 'Non spécifié' }}</span> à <span class="bold">{{ $stagiaire_principal ? $stagiaire_principal->universite : 'Non spécifié' }}</span>.
             <br><br>
             Mis à la disposition de la <span class="bold">{{ mb_strtoupper($libelle_structure, 'UTF-8') }}{{ $sigle_structure ? ' (' . mb_strtoupper($sigle_structure, 'UTF-8') . ')' : '' }}</span> pour un stage <span class="bold">{{ $stage->type }}</span>, pratique et bénévole d'une durée de
             @php

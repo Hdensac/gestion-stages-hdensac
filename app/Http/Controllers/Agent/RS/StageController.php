@@ -311,7 +311,23 @@ class StageController extends Controller
                 'updated_at' => now()
             ]);
 
-            // Notifier le(s) stagiaire(s) par email
+            // Envoyer un email de notification au maître de stage
+            try {
+                Mail::to($maitreStage->user->email)->send(new \App\Mail\AffectationMaitreStageMail($stage->demandeStage->stagiaire->user ?? $stage->stagiaire->user, $stage, $maitreStage));
+
+                Log::info('Email d\'affectation du maître de stage envoyé avec succès.', [
+                    'stage_id' => $stage->id,
+                    'maitre_stage_id' => $maitreStage->id
+                ]);
+            } catch (\Exception $e) {
+                Log::error('Erreur lors de l\'envoi de l\'email au maître de stage', [
+                    'error' => $e->getMessage(),
+                    'stage_id' => $stage->id,
+                    'maitre_stage_id' => $maitreStage->id
+                ]);
+            }
+
+            // Notifier le(s) stagiaire(s) par email et notification in-app
             try {
                 // Charger les relations nécessaires
                 $stage->load(['demandeStage.stagiaire.user', 'demandeStage.membres.user']);
@@ -329,12 +345,15 @@ class StageController extends Controller
                         $stagiaires[] = $stage->demandeStage->stagiaire->user;
                     }
                 }
-                // Envoi du mail à chaque stagiaire
+                // Envoi du mail et notification à chaque stagiaire
                 foreach ($stagiaires as $stagiaireUser) {
                     Mail::to($stagiaireUser->email)->send(new \App\Mail\AffectationMaitreStageMail($stagiaireUser, $stage, $maitreStage));
+                    
+                    // Envoyer notification in-app
+                    $stagiaireUser->notify(new \App\Notifications\AffectationMaitreStageNotification($stage, $maitreStage->user));
                 }
             } catch (\Exception $e) {
-                \Log::error('Erreur lors de l\'envoi de l\'email d\'affectation au(x) stagiaire(s)', [
+                Log::error('Erreur lors de l\'envoi de l\'email et notification d\'affectation au(x) stagiaire(s)', [
                     'error' => $e->getMessage(),
                     'stage_id' => $stage->id,
                     'maitre_stage_id' => $maitreStage->id,
@@ -368,6 +387,34 @@ class StageController extends Controller
     public function attestation(Stage $stage)
     {
         $stage->load(['stagiaire.user', 'structure']);
+
+        // Marquer l'attestation structure comme générée si ce n'est pas déjà fait
+        if (!$stage->attestation_structure_generee) {
+            $stage->update([
+                'attestation_structure_generee' => true,
+                'attestation_structure_date' => now(),
+                'attestation_structure_par' => Auth::user()->agent->id ?? null,
+            ]);
+
+            // Notifier le stagiaire (email + notification in-app)
+            if ($stage->stagiaire && $stage->stagiaire->user) {
+                try {
+                    // Envoyer l'email
+                    Mail::to($stage->stagiaire->user->email)
+                        ->send(new \App\Mail\AttestationStructureDisponibleMail($stage, $stage->structure, $stage->stagiaire));
+
+                    // Envoyer la notification in-app
+                    $stage->stagiaire->user->notify(new \App\Notifications\AttestationStructureDisponible($stage, $stage->structure));
+                } catch (\Exception $e) {
+                    Log::error('Erreur lors de l\'envoi de la notification d\'attestation', [
+                        'error' => $e->getMessage(),
+                        'stage_id' => $stage->id,
+                        'stagiaire_id' => $stage->stagiaire->id_stagiaire
+                    ]);
+                }
+            }
+        }
+
         $demande = $stage->demandeStage;
         $stagiairePrincipal = $demande ? $demande->stagiaire : $stage->stagiaire;
         $structure = $stage->structure;
