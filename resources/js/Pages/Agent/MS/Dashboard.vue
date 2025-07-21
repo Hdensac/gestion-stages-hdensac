@@ -121,7 +121,7 @@
 
           <!-- Actions rapides MS -->
           <div class="bg-white/80 backdrop-blur-sm rounded-3xl shadow-2xl border-2 border-slate-200/50 overflow-hidden mb-8">
-            <div class="bg-gradient-to-r from-slate-600 to-slate-700 py-6 px-8">
+            <div class="bg-gradient-to-r from-green-600 to-emerald-700 py-6 px-8">
               <h3 class="text-xl font-bold text-white flex items-center gap-3">
                 <div class="p-2 bg-white/20 rounded-xl">
                   <svg class="h-6 w-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -185,44 +185,86 @@
             </div>
           </div>
 
-          <!-- Filtres pour les stages - thème orange -->
-          <div class="bg-gradient-to-br from-orange-50 via-amber-50 to-orange-50 rounded-3xl shadow-2xl border-2 border-orange-200 mb-8">
-            <div class="p-8">
-              <div class="flex flex-wrap items-center justify-between gap-6 mb-6">
-                <h2 class="text-3xl font-black bg-gradient-to-r from-slate-800 to-slate-600 bg-clip-text text-transparent">
-                Mes stages
-              </h2>
-                <Link :href="route('agent.ms.stages')" 
-                  class="px-8 py-4 bg-gradient-to-r from-green-600 to-emerald-600 hover:from-green-700 hover:to-emerald-700 text-white rounded-2xl font-bold shadow-xl transition-all duration-300 transform hover:scale-105">
+          <!-- Section Mes stages moderne -->
+          <div class="bg-white/80 backdrop-blur-sm rounded-3xl shadow-2xl border-2 border-slate-200/50 overflow-hidden mb-8">
+            <!-- En-tête avec titre et bouton -->
+            <div class="bg-gradient-to-r from-blue-600 to-indigo-700 py-6 px-8">
+              <div class="flex items-center justify-between">
+                <div class="flex items-center gap-3">
+                  <div class="p-2 bg-white/20 rounded-xl">
+                    <svg class="h-6 w-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2"/>
+                    </svg>
+                  </div>
+                  <h2 class="text-xl font-bold text-white">Mes stages</h2>
+                </div>
+                <Link :href="route('agent.ms.stages')"
+                  class="inline-flex items-center gap-2 px-4 py-2 bg-white/20 hover:bg-white/30 text-white rounded-xl font-medium transition-all duration-300">
+                  <svg class="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"/>
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"/>
+                  </svg>
                   Voir tous
                 </Link>
               </div>
+            </div>
 
-              <div class="flex flex-wrap gap-4">
-                <select 
-                  v-model="filters.statut" 
-                  class="bg-orange-100 border-2 border-orange-300 rounded-2xl px-4 py-3 shadow-lg focus:border-orange-500 focus:ring-2 focus:ring-orange-200 transition-all duration-300 font-medium text-slate-800"
-                >
-                  <option value="">Tous les statuts</option>
-                  <option value="En cours">En cours</option>
-                  <option value="Terminé">Terminés</option>
-                  <option value="En attente">En attente</option>
-                </select>
-                <input
-                  v-model="filters.search"
-                  type="text"
-                  placeholder="Rechercher un stagiaire..."
-                  class="bg-orange-100 border-2 border-orange-300 rounded-2xl px-4 py-3 shadow-lg focus:border-orange-500 focus:ring-2 focus:ring-orange-200 transition-all duration-300 font-medium text-slate-800 placeholder-slate-500"
-                />
-                <button
-                  @click="resetFilters"
-                  class="px-6 py-3 bg-gradient-to-r from-slate-200 to-slate-300 text-slate-700 rounded-2xl hover:from-slate-300 hover:to-slate-400 transition-all duration-300 shadow-lg font-bold transform hover:scale-105"
-                >
-                  Réinitialiser
-                </button>
-              </div>
+            <!-- Filtres modernes -->
+            <div class="p-6 bg-gradient-to-br from-blue-50 to-indigo-50">
+              <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+                <!-- Filtre par statut -->
+                <div class="relative">
+                  <label class="block text-xs font-bold text-blue-700 mb-2 uppercase tracking-wider">Statut</label>
+                  <div class="relative">
+                    <select
+                      v-model="filters.statut"
+                      class="w-full bg-white border border-slate-300 rounded-xl px-4 py-2.5 text-sm font-medium text-slate-800 focus:ring-2 focus:ring-blue-200 focus:border-blue-500 transition-all duration-300 appearance-none">
+                      <option value="">Tous les statuts</option>
+                      <option value="En cours">En cours</option>
+                      <option value="Terminé">Terminés</option>
+                      <option value="En attente">En attente</option>
+                    </select>
+                    <div class="absolute inset-y-0 right-0 flex items-center pr-3 pointer-events-none">
+                      <svg class="h-4 w-4 text-slate-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/>
+                      </svg>
+                    </div>
+                  </div>
+                </div>
+
+                <!-- Recherche -->
+                <div class="relative">
+                  <label class="block text-xs font-bold text-blue-700 mb-2 uppercase tracking-wider">Recherche</label>
+                  <div class="relative">
+                    <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                      <svg class="h-4 w-4 text-slate-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"/>
+                      </svg>
+                    </div>
+                    <input
+                      v-model="filters.search"
+                      type="text"
+                      placeholder="Rechercher un stagiaire..."
+                      class="w-full bg-white border border-slate-300 rounded-xl pl-10 pr-4 py-2.5 text-sm font-medium text-slate-800 placeholder-slate-400 focus:ring-2 focus:ring-blue-200 focus:border-blue-500 transition-all duration-300"
+                    />
+                  </div>
+                </div>
+
+                <!-- Bouton réinitialiser -->
+                <div class="flex items-end">
+                  <button
+                    @click="resetFilters"
+                    class="w-full md:w-auto px-4 py-2.5 bg-blue-100 hover:bg-blue-200 text-blue-700 rounded-xl font-medium transition-all duration-300 flex items-center justify-center gap-2"
+                  >
+                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" />
+                    </svg>
+                    Réinitialiser
+                  </button>
+                </div>
               </div>
             </div>
+          </div>
 
           <!-- Tableau des stages avec couleurs pleines -->
           <div v-if="filteredStages.length === 0" class="text-center py-20">
@@ -239,7 +281,8 @@
                 <thead class="bg-gradient-to-r from-indigo-100 to-blue-100">
                   <tr>
                     <th scope="col" class="px-8 py-6 text-left text-sm font-black text-indigo-800 uppercase tracking-wider">Stagiaire</th>
-                    <th scope="col" class="px-8 py-6 text-left text-sm font-black text-indigo-800 uppercase tracking-wider">Structure</th>
+                    <th scope="col" class="px-8 py-6 text-left text-sm font-black text-indigo-800 uppercase tracking-wider">Nature</th>
+                    <th scope="col" class="px-8 py-6 text-left text-sm font-black text-indigo-800 uppercase tracking-wider">Type</th>
                     <th scope="col" class="px-8 py-6 text-left text-sm font-black text-indigo-800 uppercase tracking-wider">Période</th>
                     <th scope="col" class="px-8 py-6 text-left text-sm font-black text-indigo-800 uppercase tracking-wider">Statut</th>
                   </tr>
@@ -271,13 +314,27 @@
                       </div>
                     </td>
                     <td class="px-8 py-6 whitespace-nowrap">
-                      <div class="text-lg font-bold text-slate-900">{{ stage.structure?.libelle }}</div>
-                      <div class="text-base text-slate-600 font-medium">{{ stage.structure?.sigle }}</div>
-                      <div v-if="stage.est_reaffecte && stage.reaffectation_info" class="mt-3 bg-gradient-to-r from-yellow-100 to-amber-100 p-4 rounded-2xl border-2 border-yellow-300 shadow-lg">
-                        <p class="font-bold text-yellow-800">Réaffecté à:</p>
-                        <p class="text-slate-800 font-bold">{{ stage.reaffectation_info.nouveau_ms_prenom }} {{ stage.reaffectation_info.nouveau_ms_nom }}</p>
-                        <p class="text-slate-700 font-medium">{{ stage.reaffectation_info.structure_libelle }}</p>
-                        <p class="text-slate-600 text-sm mt-1">Le {{ formatDate(stage.reaffectation_info.date_reaffectation) }}</p>
+                      <div class="flex items-center gap-2">
+                        <div class="p-2 bg-purple-100 rounded-xl">
+                          <svg class="h-4 w-4 text-purple-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z"/>
+                          </svg>
+                        </div>
+                        <div>
+                          <div class="text-sm font-bold text-slate-900">{{ stage.demandeStage?.nature || 'Non spécifié' }}</div>
+                        </div>
+                      </div>
+                    </td>
+                    <td class="px-8 py-6 whitespace-nowrap">
+                      <div class="flex items-center gap-2">
+                        <div class="p-2 bg-teal-100 rounded-xl">
+                          <svg class="h-4 w-4 text-teal-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/>
+                          </svg>
+                        </div>
+                        <div>
+                          <div class="text-sm font-bold text-slate-900">{{ stage.demandeStage?.type || 'Non spécifié' }}</div>
+                        </div>
                       </div>
                     </td>
                     <td class="px-8 py-6 whitespace-nowrap">
@@ -486,14 +543,14 @@ const filteredStages = computed(() => {
       const stagiaireNom = stage.demandeStage?.stagiaire?.user?.nom?.toLowerCase() || '';
       const stagiairePrenom = stage.demandeStage?.stagiaire?.user?.prenom?.toLowerCase() || '';
       const stagiaireEmail = stage.demandeStage?.stagiaire?.user?.email?.toLowerCase() || '';
-      const structureLibelle = stage.structure?.libelle?.toLowerCase() || '';
-      const structureSigle = stage.structure?.sigle?.toLowerCase() || '';
-      
-      return stagiaireNom.includes(searchTerm) || 
-             stagiairePrenom.includes(searchTerm) || 
+      const natureStage = stage.demandeStage?.nature?.toLowerCase() || '';
+      const typeStage = stage.demandeStage?.type?.toLowerCase() || '';
+
+      return stagiaireNom.includes(searchTerm) ||
+             stagiairePrenom.includes(searchTerm) ||
              stagiaireEmail.includes(searchTerm) ||
-             structureLibelle.includes(searchTerm) ||
-             structureSigle.includes(searchTerm);
+             natureStage.includes(searchTerm) ||
+             typeStage.includes(searchTerm);
     }
     
     return true;
@@ -526,7 +583,7 @@ const viewStageDetails = (stage) => {
 const contactStagiaire = (stage) => {
   selectedStage.value = stage;
   contactForm.value = {
-    subject: `Stage - ${stage.structure?.libelle || 'Non spécifié'}`,
+    subject: `Stage ${stage.demandeStage?.nature || 'Non spécifié'} - ${stage.demandeStage?.type || 'Non spécifié'}`,
     message: ''
   };
   showContactModal.value = true;

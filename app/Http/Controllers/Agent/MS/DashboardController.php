@@ -230,6 +230,8 @@ class DashboardController extends Controller
                     'est_actif' => $stage->est_actif ?? true,
                     'demandeStage' => $stage->demandeStage ? [
                         'id' => $stage->demandeStage->id,
+                        'nature' => $stage->demandeStage->nature,
+                        'type' => $stage->demandeStage->type,
                         'stagiaire' => $stage->demandeStage->stagiaire ? [
                             'id_stagiaire' => $stage->demandeStage->stagiaire->id_stagiaire,
                             'niveau_etude' => $stage->demandeStage->stagiaire->niveau_etude,
