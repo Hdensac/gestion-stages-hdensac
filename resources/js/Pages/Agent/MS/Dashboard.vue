@@ -5,22 +5,41 @@
     <!-- Composant Toast pour les notifications -->
     <AdminToast ref="toast" />
     
-    <!-- En-tête amélioré sans glassmorphism -->
+    <!-- En-tête compact et moderne -->
     <template #header>
-      <div class="flex items-center gap-4 mb-2">
-        <div class="bg-gradient-to-br from-green-600 via-green-700 to-emerald-600 text-white rounded-2xl w-18 h-18 flex items-center justify-center shadow-xl shadow-green-500/30">
-              <svg class="w-10 h-10" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+      <div class="flex items-center gap-3 mb-2">
+        <div class="bg-gradient-to-br from-green-600 via-green-700 to-emerald-600 text-white rounded-xl w-12 h-12 flex items-center justify-center shadow-lg shadow-green-500/20">
+          <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253" />
           </svg>
         </div>
-        <div>
-          <h1 class="text-3xl font-black bg-gradient-to-r from-slate-800 to-slate-600 bg-clip-text text-transparent leading-tight">
-            Tableau de bord
-              </h1>
-          <p v-if="structureResponsable" class="text-base text-slate-600 mt-1 font-mono bg-slate-200 px-3 py-1 rounded-lg inline-block">
-            Responsable de : {{ structureResponsable.libelle }}
-            <span v-if="structureResponsable.sigle" class="text-slate-500">({{ structureResponsable.sigle }})</span>
+        <div class="flex-1">
+          <h1 class="text-2xl font-black bg-gradient-to-r from-slate-800 to-slate-600 bg-clip-text text-transparent leading-tight">
+            Tableau de bord MS
+          </h1>
+          <p class="text-sm text-slate-600 mt-1 font-medium">
+            <span v-if="structureResponsable">{{ structureResponsable.sigle }} - {{ structureResponsable.libelle }}</span>
+            <span v-else>Maître de Stage</span>
           </p>
+          <div class="flex items-center gap-3 mt-2">
+            <div class="flex items-center gap-2 bg-green-100 px-2 py-1 rounded-full">
+              <div class="w-1.5 h-1.5 bg-green-500 rounded-full animate-pulse"></div>
+              <span class="text-xs font-bold text-green-700">En ligne</span>
+            </div>
+            <div class="text-xs text-slate-500 font-mono">
+              {{ new Date().toLocaleTimeString('fr-FR') }}
+            </div>
+          </div>
+        </div>
+
+        <!-- Notifications rapides -->
+        <div class="flex items-center gap-2">
+          <div v-if="stats && stats.stagesEnCours > 0" class="bg-blue-100 border border-blue-300 text-blue-800 px-3 py-1 rounded-lg flex items-center gap-2 shadow-sm">
+            <svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2"/>
+            </svg>
+            <span class="text-xs font-bold">{{ stats.stagesEnCours }} en cours</span>
+          </div>
         </div>
       </div>
     </template>
@@ -44,35 +63,7 @@
             </div>
         </div>
 
-          <!-- Informations du maître de stage - thème vert -->
-          <div class="bg-gradient-to-br from-green-50 via-emerald-50 to-green-50 rounded-3xl shadow-2xl border-2 border-green-200 mb-8 p-10 transform transition-all duration-300 hover:shadow-3xl">
-            <div class="flex items-center gap-8">
-              <div class="bg-gradient-to-br from-green-600 to-emerald-700 text-white rounded-3xl w-24 h-24 flex items-center justify-center text-3xl font-bold shadow-xl shadow-green-500/30 transform hover:scale-105 transition-transform duration-300">
-                <svg class="w-14 h-14" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
-              </svg>
-              </div>
-              <div>
-                <h2 class="text-4xl font-black bg-gradient-to-r from-slate-800 to-slate-600 bg-clip-text text-transparent">
-                {{ agent?.user?.nom }} {{ agent?.user?.prenom }}
-              </h2>
-                <p class="text-slate-700 mt-2 text-lg font-medium">{{ agent?.fonction }}</p>
-                <p class="text-green-700 font-bold mt-2 flex items-center gap-3 text-lg">
-                  <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
-                </svg>
-                Maître de Stage
-              </p>
-                <p v-if="structureResponsable" class="text-blue-700 mt-3 flex items-center gap-3 text-lg font-medium">
-                  <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4" />
-                </svg>
-                  Responsable de : <span class="font-bold">{{ structureResponsable.libelle }}</span>
-                  <span v-if="structureResponsable.sigle" class="text-slate-600">({{ structureResponsable.sigle }})</span>
-                </p>
-            </div>
-          </div>
-        </div>
+
 
           <!-- Statistiques avec couleurs pleines -->
           <div class="grid grid-cols-1 md:grid-cols-3 gap-8 mb-10">
@@ -127,6 +118,72 @@
             </div>
           </div>
         </div>
+
+          <!-- Actions rapides MS -->
+          <div class="bg-white/80 backdrop-blur-sm rounded-3xl shadow-2xl border-2 border-slate-200/50 overflow-hidden mb-8">
+            <div class="bg-gradient-to-r from-slate-600 to-slate-700 py-6 px-8">
+              <h3 class="text-xl font-bold text-white flex items-center gap-3">
+                <div class="p-2 bg-white/20 rounded-xl">
+                  <svg class="h-6 w-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z"/>
+                  </svg>
+                </div>
+                Actions rapides
+              </h3>
+            </div>
+            <div class="p-8">
+              <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+                <Link :href="route('agent.ms.stages')"
+                      class="group p-6 bg-gradient-to-br from-blue-50 to-indigo-50 rounded-2xl border-2 border-blue-200/50 hover:border-blue-300/50 hover:shadow-xl transition-all duration-300 hover:scale-105">
+                  <div class="flex flex-col items-center text-center">
+                    <div class="p-3 bg-gradient-to-br from-blue-500 to-indigo-600 rounded-xl text-white mb-4 group-hover:scale-110 transition-transform duration-300">
+                      <svg class="h-6 w-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2"/>
+                      </svg>
+                    </div>
+                    <h4 class="font-bold text-blue-900 mb-1">Mes Stages</h4>
+                    <p class="text-sm text-blue-700">Gérer tous les stages</p>
+                  </div>
+                </Link>
+
+                <div class="group p-6 bg-gradient-to-br from-emerald-50 to-green-50 rounded-2xl border-2 border-emerald-200/50 hover:border-emerald-300/50 hover:shadow-xl transition-all duration-300 hover:scale-105 cursor-pointer">
+                  <div class="flex flex-col items-center text-center">
+                    <div class="p-3 bg-gradient-to-br from-emerald-500 to-green-600 rounded-xl text-white mb-4 group-hover:scale-110 transition-transform duration-300">
+                      <svg class="h-6 w-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z"/>
+                      </svg>
+                    </div>
+                    <h4 class="font-bold text-emerald-900 mb-1">Contact</h4>
+                    <p class="text-sm text-emerald-700">Contacter stagiaires</p>
+                  </div>
+                </div>
+
+                <div class="group p-6 bg-gradient-to-br from-purple-50 to-indigo-50 rounded-2xl border-2 border-purple-200/50 hover:border-purple-300/50 hover:shadow-xl transition-all duration-300 hover:scale-105 cursor-pointer">
+                  <div class="flex flex-col items-center text-center">
+                    <div class="p-3 bg-gradient-to-br from-purple-500 to-indigo-600 rounded-xl text-white mb-4 group-hover:scale-110 transition-transform duration-300">
+                      <svg class="h-6 w-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"/>
+                      </svg>
+                    </div>
+                    <h4 class="font-bold text-purple-900 mb-1">Évaluations</h4>
+                    <p class="text-sm text-purple-700">Noter les stages</p>
+                  </div>
+                </div>
+
+                <div class="group p-6 bg-gradient-to-br from-amber-50 to-orange-50 rounded-2xl border-2 border-amber-200/50 hover:border-amber-300/50 hover:shadow-xl transition-all duration-300 hover:scale-105 cursor-pointer">
+                  <div class="flex flex-col items-center text-center">
+                    <div class="p-3 bg-gradient-to-br from-amber-500 to-orange-600 rounded-xl text-white mb-4 group-hover:scale-110 transition-transform duration-300">
+                      <svg class="h-6 w-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7h12m0 0l-4-4m4 4l-4 4m0 6H4m0 0l4 4m-4-4l4-4"/>
+                      </svg>
+                    </div>
+                    <h4 class="font-bold text-amber-900 mb-1">Réaffectation</h4>
+                    <p class="text-sm text-amber-700">Transférer stages</p>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
 
           <!-- Filtres pour les stages - thème orange -->
           <div class="bg-gradient-to-br from-orange-50 via-amber-50 to-orange-50 rounded-3xl shadow-2xl border-2 border-orange-200 mb-8">
@@ -245,6 +302,65 @@
                   </tr>
                 </tbody>
               </table>
+            </div>
+          </div>
+
+          <!-- Section conseils MS -->
+          <div class="bg-gradient-to-br from-green-50 via-emerald-50 to-green-50 rounded-3xl shadow-2xl border-2 border-green-200/50 overflow-hidden mt-8">
+            <div class="bg-gradient-to-r from-green-600 to-emerald-700 py-4 px-6">
+              <h3 class="text-lg font-bold text-white flex items-center gap-3">
+                <div class="p-2 bg-white/20 rounded-xl">
+                  <svg class="h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/>
+                  </svg>
+                </div>
+                Conseils et bonnes pratiques MS
+              </h3>
+            </div>
+            <div class="p-6">
+              <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+                <div class="bg-white/80 rounded-xl p-4 border border-green-200/50 hover:shadow-lg transition-all duration-300">
+                  <div class="flex items-start gap-3">
+                    <div class="p-2 bg-gradient-to-br from-blue-500 to-indigo-600 rounded-lg text-white flex-shrink-0">
+                      <svg class="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z"/>
+                      </svg>
+                    </div>
+                    <div>
+                      <h4 class="font-bold text-green-900 mb-1 text-sm">Communication régulière</h4>
+                      <p class="text-xs text-green-700">Maintenez un contact hebdomadaire avec vos stagiaires pour un suivi optimal.</p>
+                    </div>
+                  </div>
+                </div>
+
+                <div class="bg-white/80 rounded-xl p-4 border border-green-200/50 hover:shadow-lg transition-all duration-300">
+                  <div class="flex items-start gap-3">
+                    <div class="p-2 bg-gradient-to-br from-purple-500 to-indigo-600 rounded-lg text-white flex-shrink-0">
+                      <svg class="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"/>
+                      </svg>
+                    </div>
+                    <div>
+                      <h4 class="font-bold text-green-900 mb-1 text-sm">Évaluation continue</h4>
+                      <p class="text-xs text-green-700">Évaluez régulièrement les progrès et donnez des retours constructifs.</p>
+                    </div>
+                  </div>
+                </div>
+
+                <div class="bg-white/80 rounded-xl p-4 border border-green-200/50 hover:shadow-lg transition-all duration-300">
+                  <div class="flex items-start gap-3">
+                    <div class="p-2 bg-gradient-to-br from-emerald-500 to-green-600 rounded-lg text-white flex-shrink-0">
+                      <svg class="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"/>
+                      </svg>
+                    </div>
+                    <div>
+                      <h4 class="font-bold text-green-900 mb-1 text-sm">Suivi des échéances</h4>
+                      <p class="text-xs text-green-700">Respectez les délais de fin de stage et préparez les évaluations finales.</p>
+                    </div>
+                  </div>
+                </div>
+              </div>
             </div>
           </div>
         </div>

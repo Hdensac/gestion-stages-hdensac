@@ -918,6 +918,11 @@ class DemandeController extends Controller
             // Envoyer un email de notification au maître de stage
             Mail::to($maitreStage->email)->send(new AffectationMaitreStageMail($demande->stagiaire->user, $stage, $maitreStage));
 
+            // Envoyer une notification in-app au maître de stage
+            if ($maitreStage->user) {
+                $maitreStage->user->notify(new \App\Notifications\AffectationMaitreStageNotification($stage, $maitreStage->user));
+            }
+
             Log::info('Email d\'affectation du maître de stage envoyé avec succès.', [
                 'demande_id' => $demande->id,
                 'maitre_stage_id' => $maitreStage->id

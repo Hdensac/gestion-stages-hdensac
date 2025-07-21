@@ -62,6 +62,13 @@ class AttestationController extends Controller
      */
     public function generate(Stage $stage)
     {
+        // LOG DE DÉBOGAGE - MÉTHODE APPELÉE
+        Log::info('=== MÉTHODE GENERATE APPELÉE ===', [
+            'stage_id' => $stage->id,
+            'timestamp' => now(),
+            'user_id' => Auth::id()
+        ]);
+
         // Vérifier que l'agent a le droit de générer l'attestation pour ce stage
         $user = Auth::user();
         $agent = Agent::where('user_id', $user->id)->first();
@@ -113,16 +120,38 @@ class AttestationController extends Controller
 
         // Notifier les agents DPAF qu'une nouvelle attestation est prête pour validation
         try {
+            Log::info('Début de l\'envoi de notification DPAF', ['stage_id' => $stage->id]);
+
             $dpafStructure = Structure::where('sigle', 'DPAF')->first();
+            Log::info('Structure DPAF recherchée', [
+                'found' => $dpafStructure ? true : false,
+                'structure_id' => $dpafStructure ? $dpafStructure->id : null
+            ]);
+
             if ($dpafStructure && $dpafStructure->responsable && $dpafStructure->responsable->user) {
+                Log::info('Responsable DPAF trouvé, envoi de la notification', [
+                    'responsable_id' => $dpafStructure->responsable->id,
+                    'user_id' => $dpafStructure->responsable->user->id,
+                    'user_email' => $dpafStructure->responsable->user->email
+                ]);
+
                 $dpafStructure->responsable->user->notify(
                     new \App\Notifications\AttestationStructureGenereePourDPAF($stage, $stage->structure)
                 );
+
+                Log::info('Notification DPAF envoyée avec succès', ['stage_id' => $stage->id]);
+            } else {
+                Log::warning('Impossible d\'envoyer la notification DPAF', [
+                    'dpaf_structure_exists' => $dpafStructure ? true : false,
+                    'has_responsable' => $dpafStructure && $dpafStructure->responsable ? true : false,
+                    'has_user' => $dpafStructure && $dpafStructure->responsable && $dpafStructure->responsable->user ? true : false
+                ]);
             }
         } catch (\Exception $e) {
             Log::error('Erreur lors de l\'envoi de la notification DPAF', [
                 'error' => $e->getMessage(),
-                'stage_id' => $stage->id
+                'stage_id' => $stage->id,
+                'trace' => $e->getTraceAsString()
             ]);
         }
 

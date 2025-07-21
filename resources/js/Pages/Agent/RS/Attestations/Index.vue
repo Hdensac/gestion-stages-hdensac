@@ -523,8 +523,25 @@ const exportData = () => {
 }
 
 const generateAttestation = (stageId) => {
-    // Ouvrir directement l'attestation comme le fait le bouton "Imprimer l'attestation"
-    window.open(route('agent.rs.attestations.show', stageId), '_blank')
+    // D'abord générer l'attestation (POST), puis l'ouvrir
+    router.post(route('agent.rs.attestations.generate', stageId), {}, {
+        onSuccess: (response) => {
+            console.log('Génération réussie:', response)
+            // Recharger la page pour voir les changements
+            router.reload({
+                onSuccess: () => {
+                    // Après le rechargement, ouvrir l'attestation
+                    setTimeout(() => {
+                        window.open(route('agent.rs.attestations.show', stageId), '_blank')
+                    }, 1000)
+                }
+            })
+        },
+        onError: (errors) => {
+            console.error('Erreur lors de la génération de l\'attestation:', errors)
+            alert('Erreur lors de la génération de l\'attestation: ' + JSON.stringify(errors))
+        }
+    })
 }
 
 const viewAttestation = (stageId) => {

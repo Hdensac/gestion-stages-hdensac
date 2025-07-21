@@ -157,6 +157,7 @@ Route::get('/dashboard', function () {
     });
 
     // Routes pour les demandes de stage
+    Route::get('/nouvelle-demande', [DemandeController::class, 'createModern'])->name('demande.create.modern');
     Route::post('/demande-stages', [DemandeController::class, 'store'])->name('demande_stages.store');
     Route::get('/mes-demandes', [DemandeController::class, 'index'])->name('mes.demandes');
     Route::get('/mes-demandes/{id}', [DemandeController::class, 'show'])->name('mes.demandes.show');

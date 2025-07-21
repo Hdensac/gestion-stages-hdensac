@@ -27,12 +27,12 @@
                 <Link :href="route('agent.ms.dashboard')" class="flex items-center">
                     <div class="logo-modern flex-shrink-0">
                         <svg class="w-8 h-8 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197M13 7a4 4 0 11-8 0 4 4 0 018 0z"/>
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v10a2 2 0 002 2h8a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-3 7h3m-3 4h3m-6-4h.01M9 16h.01"/>
                         </svg>
                     </div>
                     <h1 v-if="expanded"
                         class="ml-3 text-xl font-bold text-white whitespace-nowrap transition-all duration-300">
-                        MS Stages
+                        Gestion Stages
                     </h1>
                 </Link>
             </div>
@@ -188,84 +188,7 @@
                             v2.1.0
                         </div>
                         <!-- Cloche de notifications modernisée -->
-                        <div class="relative">
-                            <button @click="toggleNotifications"
-                                class="notification-button bg-gradient-to-br from-blue-50 to-indigo-50 p-3 rounded-xl border border-blue-200/50 shadow-sm hover:shadow-md transition-all duration-200 hover:scale-105 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-opacity-50">
-                                <!-- Icône cloche -->
-                                <svg class="w-5 h-5 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 17h5l-5 5v-5z" fill="none"/>
-                                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M18 8a6 6 0 10-12 0c0 7-3 9-3 9h18s-3-2-3-9" />
-                                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13.73 21a2 2 0 01-3.46 0" />
-                                </svg>
-                            </button>
-                            <div
-                                class="notification-badge absolute -top-1 -right-1 w-5 h-5 bg-gradient-to-r from-red-500 to-red-600 rounded-full flex items-center justify-center">
-                                <span class="text-xs font-bold text-white">{{ notifications.length }}</span>
-                            </div>
-
-                            <!-- Panneau de notifications -->
-                            <div v-if="showNotifications"
-                                class="absolute right-0 mt-4 w-96 bg-white rounded-xl shadow-2xl border border-gray-200 overflow-hidden animate-fade-in z-50">
-                                <div class="bg-gradient-to-r from-blue-50 to-blue-100 p-4 border-b border-blue-200">
-                                    <div class="flex items-center justify-between">
-                                        <div class="flex items-center space-x-2">
-                                            <svg class="w-5 h-5 text-blue-600" fill="none" stroke="currentColor"
-                                                viewBox="0 0 24 24">
-                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                                    d="M15 17h5l-5 5v-5zM10.07 2.82l3.93 3.93-8.49 8.49a2 2 0 01-1.42.59H1v-3.09a2 2 0 01.59-1.41l8.48-8.5zM15 6l3-3" />
-                                            </svg>
-                                            <span class="font-semibold text-gray-800">Notifications</span>
-                                            <span v-if="notifications.length"
-                                                class="bg-blue-600 text-white text-xs px-2 py-1 rounded-full">{{
-                                                notifications.length }}</span>
-                                        </div>
-                                        <button @click="showNotifications = false"
-                                            class="text-gray-400 hover:text-gray-600 p-1 rounded-full hover:bg-white/50 transition-colors">
-                                            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                                    d="M6 18L18 6M6 6l12 12" />
-                                            </svg>
-                                        </button>
-                                    </div>
-                                </div>
-                                <div v-if="notifications.length === 0" class="p-8 text-center">
-                                    <svg class="w-12 h-12 text-gray-300 mx-auto mb-4" fill="none" stroke="currentColor"
-                                        viewBox="0 0 24 24">
-                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                            d="M20 13V6a2 2 0 00-2-2H6a2 2 0 00-2 2v7m16 0v5a2 2 0 01-2 2H6a2 2 0 01-2-2v-5m16 0h-2.586a1 1 0 00-.707.293l-2.414 2.414a1 1 0 01-.707.293h-3.172a1 1 0 01-.707-.293l-2.414-2.414A1 1 0 006.586 13H4" />
-                                    </svg>
-                                    <p class="text-gray-500 font-medium">Aucune notification</p>
-                                    <p class="text-sm text-gray-400 mt-1">Vous êtes à jour !</p>
-                                </div>
-                                <ul v-else class="divide-y divide-gray-100 max-h-96 overflow-y-auto">
-                                    <li v-for="notif in notifications" :key="notif.id"
-                                        class="p-4 hover:bg-gray-50 transition-colors">
-                                        <div class="flex items-start gap-3">
-                                            <div class="pt-1">
-                                                <svg class="w-6 h-6 text-blue-500" fill="none" stroke="currentColor"
-                                                    viewBox="0 0 24 24">
-                                                    <path stroke-linecap="round" stroke-linejoin="round"
-                                                        stroke-width="2"
-                                                        d="M13 16h-1v-4h-1m1-4h.01M12 20a8 8 0 100-16 8 8 0 000 16z" />
-                                                </svg>
-                                            </div>
-                                            <div class="flex-1 min-w-0">
-                                                <div class="text-sm text-gray-800 font-medium">
-                                                    {{ notif.data.message }}
-                                                </div>
-                                                <div v-if="notif.data.url" class="mt-1">
-                                                    <a :href="notif.data.url"
-                                                        class="text-xs text-blue-600 hover:underline">Voir le stage</a>
-                                                </div>
-                                                <div class="text-xs text-gray-400 mt-1">
-                                                    {{ formatDate(notif.created_at) }}
-                                                </div>
-                                            </div>
-                                        </div>
-                                    </li>
-                                </ul>
-                            </div>
-                        </div>
+                        <NotificationBell />
                     </div>
                 </div>
             </header>
@@ -314,6 +237,7 @@
 <script setup>
 import { ref, computed, onMounted } from 'vue'
 import { Link, usePage, router } from '@inertiajs/vue3'
+import NotificationBell from '../Components/NotificationBell.vue';
 
 const expanded = ref(true)
 const showUserMenu = ref(false)

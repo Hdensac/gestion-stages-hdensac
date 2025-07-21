@@ -105,4 +105,85 @@ public function getAvatarUrlAttribute()
     return asset('storage/' . $this->avatar);
 }
 
+/**
+ * Récupère tous les utilisateurs stagiaires disponibles pour une période donnée
+ *
+ * @param string $dateDebut Date de début au format Y-m-d
+ * @param string $dateFin Date de fin au format Y-m-d
+ * @param int|null $excludeUserId ID de l'utilisateur à exclure (généralement le demandeur principal)
+ * @return \Illuminate\Database\Eloquent\Collection
+ */
+public static function getAvailableStagiaires($dateDebut, $dateFin, $excludeUserId = null)
+{
+    // Récupérer tous les utilisateurs stagiaires
+    $query = self::where('role', 'stagiaire')
+        ->with(['stagiaire']);
+
+    if ($excludeUserId) {
+        $query->where('id', '!=', $excludeUserId);
+    }
+
+    $allStagiaires = $query->get();
+
+    // Filtrer ceux qui sont disponibles
+    $availableStagiaires = $allStagiaires->filter(function ($user) use ($dateDebut, $dateFin) {
+        if (!$user->stagiaire) {
+            return false; // Pas de profil stagiaire
+        }
+
+        // Vérifier les conflits via la méthode du modèle DemandeStage
+        $conflict = \App\Models\DemandeStage::checkPeriodConflict(
+            $user->stagiaire->id_stagiaire,
+            $dateDebut,
+            $dateFin
+        );
+
+        return !$conflict['hasConflict'];
+    });
+
+    return $availableStagiaires->values(); // Réindexer la collection
+}
+
+/**
+ * Vérifie si cet utilisateur stagiaire est disponible pour une période donnée
+ *
+ * @param string $dateDebut Date de début au format Y-m-d
+ * @param string $dateFin Date de fin au format Y-m-d
+ * @return array ['available' => bool, 'reason' => string|null, 'conflictData' => array|null]
+ */
+public function checkStagiaireAvailability($dateDebut, $dateFin)
+{
+    if ($this->role !== 'stagiaire' || !$this->stagiaire) {
+        return [
+            'available' => false,
+            'reason' => 'Utilisateur non stagiaire',
+            'conflictData' => null
+        ];
+    }
+
+    $conflict = \App\Models\DemandeStage::checkPeriodConflict(
+        $this->stagiaire->id_stagiaire,
+        $dateDebut,
+        $dateFin
+    );
+
+    if ($conflict['hasConflict']) {
+        $reason = $conflict['conflictType'] === 'demande'
+            ? "A déjà une demande {$conflict['conflictData']['statut']} pour cette période"
+            : "A déjà un stage {$conflict['conflictData']['statut']} pour cette période";
+
+        return [
+            'available' => false,
+            'reason' => $reason,
+            'conflictData' => $conflict['conflictData']
+        ];
+    }
+
+    return [
+        'available' => true,
+        'reason' => null,
+        'conflictData' => null
+    ];
+}
+
 }

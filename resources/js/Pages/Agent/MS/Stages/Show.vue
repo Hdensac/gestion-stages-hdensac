@@ -7,22 +7,29 @@
     <AdminToast ref="toast" />
 
     <template #header>
-      <div class="flex items-center gap-4 mb-2">
-        <div
-          class="bg-gradient-to-br from-blue-600 via-blue-700 to-indigo-600 text-white rounded-2xl w-18 h-18 flex items-center justify-center shadow-xl shadow-blue-500/30">
-          <svg class="w-10 h-10" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+      <div class="flex items-center gap-3 mb-2">
+        <div class="bg-gradient-to-br from-blue-600 via-blue-700 to-indigo-600 text-white rounded-xl w-12 h-12 flex items-center justify-center shadow-lg shadow-blue-500/20">
+          <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
               d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2" />
           </svg>
         </div>
-        <div>
-          <h1
-            class="text-3xl font-black bg-gradient-to-r from-slate-800 to-slate-600 bg-clip-text text-transparent leading-tight">
+        <div class="flex-1">
+          <h1 class="text-2xl font-black bg-gradient-to-r from-slate-800 to-slate-600 bg-clip-text text-transparent leading-tight">
             Détails du Stage
           </h1>
-          <p class="text-base text-slate-600 mt-1 font-mono bg-slate-200 px-3 py-1 rounded-lg inline-block">
+          <p class="text-sm text-slate-600 mt-1 font-medium">
             {{ getStagiaireName(stage) }}
           </p>
+          <div class="flex items-center gap-3 mt-2">
+            <div class="flex items-center gap-2 bg-blue-100 px-2 py-1 rounded-full">
+              <div class="w-1.5 h-1.5 bg-blue-500 rounded-full animate-pulse"></div>
+              <span class="text-xs font-bold text-blue-700">{{ stage.statut }}</span>
+            </div>
+            <div class="text-xs text-slate-500 font-mono">
+              {{ new Date().toLocaleTimeString('fr-FR') }}
+            </div>
+          </div>
         </div>
       </div>
     </template>
@@ -63,24 +70,24 @@
             </div>
           </div>
 
-          <!-- Navigation et badges d'état modernisés -->
-          <div class="mb-8 flex flex-wrap justify-between items-center gap-6">
+          <!-- Navigation moderne -->
+          <div class="mb-8 flex flex-wrap justify-between items-center gap-4">
             <Link :href="route('agent.ms.stages')"
-              class="inline-flex items-center px-6 py-3 bg-gradient-to-r from-slate-200 to-slate-300 border-2 border-slate-400 rounded-2xl font-bold text-lg text-slate-700 shadow-xl hover:from-slate-300 hover:to-slate-400 transition-all duration-300 transform hover:scale-105">
-            <svg class="w-5 h-5 mr-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18" />
-            </svg>
-            Retour à la liste
+              class="inline-flex items-center px-4 py-2 bg-blue-100 hover:bg-blue-200 border border-blue-300 rounded-xl font-medium text-blue-800 transition-all duration-300">
+              <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18" />
+              </svg>
+              Retour à la liste
             </Link>
 
-            <!-- Badge de réaffectation modernisé -->
+            <!-- Badge de réaffectation -->
             <div v-if="stage.est_reaffecte"
-              class="bg-gradient-to-r from-amber-100 to-yellow-100 text-amber-800 px-6 py-3 rounded-2xl border-2 border-amber-300 flex items-center shadow-xl">
-              <svg class="w-6 h-6 mr-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              class="bg-amber-100 text-amber-800 px-4 py-2 rounded-xl border border-amber-300 flex items-center">
+              <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
                   d="M13 9l3 3m0 0l-3 3m3-3H8m13 0a9 9 0 11-18 0 9 9 0 0118 0z" />
               </svg>
-              <span class="font-bold text-lg">Stage réaffecté - Consultation uniquement</span>
+              <span class="font-medium text-sm">Stage réaffecté - Consultation uniquement</span>
             </div>
           </div>
 
@@ -115,19 +122,18 @@
             </div>
           </div>
           <!-- Onglets modernisés -->
-          <div
-            class="bg-gradient-to-br from-indigo-50 via-blue-50 to-indigo-50 overflow-hidden shadow-2xl rounded-3xl mb-8 border-2 border-indigo-200">
-            <div class="bg-gradient-to-r from-indigo-100 to-blue-100 border-b-2 border-indigo-200">
-              <nav class="flex space-x-2 p-2">
+          <div class="bg-white/80 backdrop-blur-sm rounded-3xl shadow-2xl border-2 border-slate-200/50 overflow-hidden mb-8">
+            <div class="bg-gradient-to-r from-slate-50 to-blue-50 border-b border-slate-200">
+              <nav class="flex space-x-1 p-2">
                 <button v-for="tab in tabs" :key="tab.id" @click="activeTab = tab.id" :class="[
-                  'relative py-4 px-8 text-base font-bold focus:outline-none focus:ring-4 focus:ring-indigo-300 transition-all duration-300 rounded-2xl transform hover:scale-105',
+                  'relative py-3 px-6 text-sm font-bold focus:outline-none transition-all duration-300 rounded-xl',
                   activeTab === tab.id
-                    ? 'text-white bg-gradient-to-r from-indigo-600 to-blue-600 shadow-xl shadow-indigo-500/30 border-2 border-indigo-700'
-                    : 'text-indigo-700 bg-gradient-to-r from-indigo-100 to-blue-100 hover:from-indigo-200 hover:to-blue-200 border-2 border-indigo-300 shadow-lg'
+                    ? 'text-white bg-gradient-to-r from-blue-600 to-indigo-600 shadow-lg'
+                    : 'text-slate-600 hover:text-blue-600 hover:bg-blue-50'
                 ]">
-                  <div class="flex items-center gap-3">
-                    <component :is="tab.icon" class="w-5 h-5" />
-                    <span class="font-black">{{ tab.label }}</span>
+                  <div class="flex items-center gap-2">
+                    <component :is="tab.icon" class="w-4 h-4" />
+                    <span>{{ tab.label }}</span>
                   </div>
                 </button>
               </nav>
@@ -141,10 +147,9 @@
           <!-- Informations générales modernisées -->
           <div v-if="activeTab === 'infos'" class="space-y-8">
             <!-- Timeline du stage modernisée -->
-            <div
-              class="bg-gradient-to-br from-purple-50 via-violet-50 to-purple-50 p-8 rounded-3xl shadow-2xl border-2 border-purple-200">
-              <h3 class="text-2xl font-black mb-6 flex items-center text-purple-900">
-                <svg class="w-7 h-7 mr-3 text-purple-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <div class="bg-gradient-to-br from-purple-50 via-violet-50 to-purple-50 p-6 rounded-2xl shadow-lg border border-purple-200">
+              <h3 class="text-lg font-bold mb-4 flex items-center text-purple-900">
+                <svg class="w-5 h-5 mr-2 text-purple-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
                     d="M13 7h8m0 0v8m0-8l-8 8-4-4-6 6" />
                 </svg>
@@ -156,23 +161,21 @@
             <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
               <!-- Informations du stagiaire modernisées -->
               <div>
-                <h3 class="text-2xl font-black mb-6 flex items-center text-blue-900">
-                  <svg class="w-7 h-7 mr-3 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <h3 class="text-lg font-bold mb-4 flex items-center text-blue-900">
+                  <svg class="w-5 h-5 mr-2 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
                       d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
                   </svg>
                   Informations du stagiaire
                 </h3>
-                <div
-                  class="bg-gradient-to-br from-blue-50 via-sky-50 to-blue-50 p-8 rounded-3xl border-2 border-blue-200 shadow-2xl">
-                  <div class="flex items-center mb-6">
-                    <div
-                      class="bg-gradient-to-br from-blue-600 to-sky-700 text-white rounded-2xl w-16 h-16 flex items-center justify-center text-2xl font-black shadow-xl shadow-blue-500/30 mr-6">
+                <div class="bg-gradient-to-br from-blue-50 via-sky-50 to-blue-50 p-6 rounded-2xl border border-blue-200 shadow-lg">
+                  <div class="flex items-center mb-4">
+                    <div class="bg-gradient-to-br from-blue-600 to-sky-700 text-white rounded-xl w-12 h-12 flex items-center justify-center text-lg font-bold shadow-lg mr-4">
                       {{ getStagiaireInitials() }}
                     </div>
                     <div>
-                      <h4 class="text-xl font-black text-slate-900">{{ getStagiaireName(stage) }}</h4>
-                      <p class="text-base text-slate-600 font-medium mt-1">
+                      <h4 class="text-lg font-bold text-slate-900">{{ getStagiaireName(stage) }}</h4>
+                      <p class="text-sm text-slate-600 font-medium mt-1">
                         <template v-if="stage.stagiaire_info?.email">
                           {{ stage.stagiaire_info.email }}
                         </template>
@@ -185,10 +188,10 @@
                       </p>
                     </div>
                   </div>
-                  <div class="space-y-4">
+                  <div class="space-y-3">
                     <div v-if="stage.stagiaire_info?.telephone || stage.demandeStage?.stagiaire?.user?.telephone"
-                      class="flex items-center space-x-3 text-base bg-blue-100 p-3 rounded-2xl border border-blue-300">
-                      <svg class="w-5 h-5 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      class="flex items-center space-x-3 text-sm bg-blue-100 p-3 rounded-xl border border-blue-300">
+                      <svg class="w-4 h-4 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
                           d="M3 5a2 2 0 012-2h3.28a1 1 0 01.948.684l1.498 4.493a1 1 0 01-.502 1.21l-2.257 1.13a11.042 11.042 0 005.516 5.516l1.13-2.257a1 1 0 011.21-.502l4.493 1.498a1 1 0 01.684.949V19a2 2 0 01-2 2h-1C9.716 21 3 14.284 3 6V5z" />
                       </svg>
@@ -197,8 +200,8 @@
                       </span>
                     </div>
                     <div v-if="stage.stagiaire_info?.adresse || stage.demandeStage?.stagiaire?.user?.adresse"
-                      class="flex items-start space-x-3 text-base bg-blue-100 p-3 rounded-2xl border border-blue-300">
-                      <svg class="w-5 h-5 text-blue-600 mt-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      class="flex items-start space-x-3 text-sm bg-blue-100 p-3 rounded-xl border border-blue-300">
+                      <svg class="w-4 h-4 text-blue-600 mt-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
                           d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z" />
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
@@ -208,9 +211,8 @@
                         {{ stage.stagiaire_info?.adresse || stage.demandeStage?.stagiaire?.user?.adresse }}
                       </span>
                     </div>
-                    <div
-                      class="flex items-center space-x-3 text-base bg-blue-100 p-3 rounded-2xl border border-blue-300">
-                      <svg class="w-5 h-5 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <div class="flex items-center space-x-3 text-sm bg-blue-100 p-3 rounded-xl border border-blue-300">
+                      <svg class="w-4 h-4 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
                           d="M16 12a4 4 0 10-8 0 4 4 0 008 0zm0 0v1.5a2.5 2.5 0 005 0V12a9 9 0 10-9 9m4.5-1.206a8.959 8.959 0 01-4.5 1.207" />
                       </svg>

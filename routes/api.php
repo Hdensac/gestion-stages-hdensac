@@ -4,6 +4,8 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\Api\EmailController;
 use App\Http\Controllers\Api\StagiaireMessageController;
+use App\Http\Controllers\Api\AvailabilityController;
+use App\Http\Controllers\Agent\NotificationController as AgentNotificationController;
 
 /*
 |--------------------------------------------------------------------------
@@ -32,6 +34,27 @@ Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
 
 // Route pour l'envoi de messages aux stagiaires (protégée par authentification)
 Route::middleware('auth')->post('stagiaire/send-message', [StagiaireMessageController::class, 'sendMessage']);
+
+// Routes pour la vérification de disponibilité (protégées par authentification)
+Route::middleware('auth')->group(function () {
+    // Vérifier la disponibilité du stagiaire connecté pour une période
+    Route::post('/availability/check-period', [AvailabilityController::class, 'checkStagiairePeriod']);
+
+    // Récupérer les membres disponibles pour une période
+    Route::post('/availability/available-members', [AvailabilityController::class, 'getAvailableMembers']);
+
+    // Vérifier la disponibilité d'un membre spécifique
+    Route::post('/availability/check-member', [AvailabilityController::class, 'checkMemberAvailability']);
+
+    // Vérifier la disponibilité de plusieurs membres
+    Route::post('/availability/check-multiple-members', [AvailabilityController::class, 'checkMultipleMembersAvailability']);
+});
+
+// Notifications pour les agents (dont MS)
+Route::middleware('auth')->group(function () {
+    Route::get('/agent/notifications', [AgentNotificationController::class, 'list']);
+    Route::post('/agent/notifications/mark-all-read', [AgentNotificationController::class, 'markAllAsRead']);
+});
 
 // Route pour le test d'envoi d'email
 Route::get('/test-email', function() {

@@ -3,22 +3,28 @@
 
   <MSLayout>
     <template #header>
-      <div class="flex items-center gap-4 mb-2">
-        <div class="bg-gradient-to-br from-blue-600 via-blue-700 to-indigo-600 text-white rounded-2xl w-18 h-18 flex items-center justify-center shadow-xl shadow-blue-500/30">
-          <svg class="w-10 h-10" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+      <div class="flex items-center gap-3 mb-2">
+        <div class="bg-gradient-to-br from-blue-600 via-blue-700 to-indigo-600 text-white rounded-xl w-12 h-12 flex items-center justify-center shadow-lg shadow-blue-500/20">
+          <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2" />
           </svg>
         </div>
-        <div>
-          <h1 class="text-3xl font-black bg-gradient-to-r from-slate-800 to-slate-600 bg-clip-text text-transparent leading-tight">
+        <div class="flex-1">
+          <h1 class="text-2xl font-black bg-gradient-to-r from-slate-800 to-slate-600 bg-clip-text text-transparent leading-tight">
             Mes Stages
           </h1>
-          <p class="text-base text-slate-600 mt-1 flex items-center gap-2 font-mono bg-slate-200 px-3 py-1 rounded-lg inline-block">
-            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
-            </svg>
+          <p class="text-sm text-slate-600 mt-1 font-medium">
             Suivez et gérez les stages sous votre supervision
           </p>
+          <div class="flex items-center gap-3 mt-2">
+            <div class="flex items-center gap-2 bg-blue-100 px-2 py-1 rounded-full">
+              <div class="w-1.5 h-1.5 bg-blue-500 rounded-full animate-pulse"></div>
+              <span class="text-xs font-bold text-blue-700">{{ filteredStages.length }} stage(s)</span>
+            </div>
+            <div class="text-xs text-slate-500 font-mono">
+              {{ new Date().toLocaleTimeString('fr-FR') }}
+            </div>
+          </div>
         </div>
       </div>
     </template>
@@ -41,26 +47,28 @@
             </div>
           </div>
 
-          <!-- Carte principale - thème bleu -->
-          <div class="backdrop-blur-lg bg-white/30 rounded-2xl shadow-lg border border-white/20 mb-6 transform transition-all duration-300 hover:shadow-xl mx-auto" style="max-width: 1400px;">
-            <div class="bg-gradient-to-r from-blue-600 to-indigo-700 py-6 px-8 rounded-t-3xl">
-              <h2 class="text-2xl font-black text-white flex items-center gap-3">
-                <svg class="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2" />
-                </svg>
+          <!-- Carte principale moderne -->
+          <div class="bg-white/80 backdrop-blur-sm rounded-3xl shadow-2xl border-2 border-slate-200/50 overflow-hidden">
+            <div class="bg-gradient-to-r from-slate-600 to-slate-700 py-6 px-8">
+              <h2 class="text-xl font-bold text-white flex items-center gap-3">
+                <div class="p-2 bg-white/20 rounded-xl">
+                  <svg class="h-6 w-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2" />
+                  </svg>
+                </div>
                 Liste de mes stages
               </h2>
             </div>
             
             <div class="p-8">
-              <!-- Filtres - thème orange -->
-              <div class="mb-8 bg-gradient-to-br from-orange-50 via-amber-50 to-orange-50 rounded-3xl p-6 border-2 border-orange-200 shadow-xl">
-                <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+              <!-- Filtres modernes -->
+              <div class="mb-8 bg-gradient-to-br from-slate-50 to-slate-100 rounded-2xl p-6 border border-slate-200">
+                <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
                   <div>
-                    <label for="search" class="block text-base font-bold text-orange-800 mb-3">Rechercher</label>
-                    <div class="relative rounded-2xl shadow-lg">
-                      <div class="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none">
-                        <svg class="h-5 w-5 text-orange-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <label for="search" class="block text-sm font-bold text-slate-700 mb-2">Rechercher</label>
+                    <div class="relative">
+                      <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                        <svg class="h-4 w-4 text-slate-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                           <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path>
                         </svg>
                       </div>
@@ -69,17 +77,17 @@
                         v-model="filters.search"
                         type="text"
                         placeholder="Rechercher un stagiaire..."
-                        class="pl-12 w-full rounded-2xl border-2 border-orange-300 shadow-lg focus:ring-2 focus:ring-orange-200 focus:border-orange-500 bg-orange-100 font-medium text-slate-800 placeholder-slate-500 py-3"
+                        class="pl-10 w-full rounded-xl border border-slate-300 focus:ring-2 focus:ring-blue-200 focus:border-blue-500 bg-white text-slate-800 placeholder-slate-400 py-2.5"
                       />
                     </div>
                   </div>
-                  
+
                   <div>
-                    <label for="statut" class="block text-base font-bold text-orange-800 mb-3">Statut</label>
+                    <label for="statut" class="block text-sm font-bold text-slate-700 mb-2">Statut</label>
                     <select
                       id="statut"
                       v-model="filters.statut"
-                      class="w-full rounded-2xl border-2 border-orange-300 shadow-lg focus:ring-2 focus:ring-orange-200 focus:border-orange-500 bg-orange-100 font-medium text-slate-800 py-3"
+                      class="w-full rounded-xl border border-slate-300 focus:ring-2 focus:ring-blue-200 focus:border-blue-500 bg-white text-slate-800 py-2.5"
                     >
                       <option value="">Tous les statuts</option>
                       <option value="En cours">En cours</option>
@@ -87,13 +95,13 @@
                       <option value="En attente">En attente</option>
                     </select>
                   </div>
-                  
+
                   <div class="flex items-end">
                     <button
                       @click="resetFilters"
-                      class="px-6 py-3 bg-gradient-to-r from-slate-200 to-slate-300 text-slate-700 rounded-2xl hover:from-slate-300 hover:to-slate-400 transition-all duration-300 shadow-lg flex items-center gap-3 font-bold transform hover:scale-105"
+                      class="px-4 py-2.5 bg-slate-200 text-slate-700 rounded-xl hover:bg-slate-300 transition-all duration-300 flex items-center gap-2 font-medium"
                     >
-                      <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" />
                       </svg>
                       Réinitialiser
@@ -113,33 +121,31 @@
                 </div>
               </div>
               
-              <!-- Tableau des stages - thème violet -->
-              <div v-else class="border border-gray-100/50 rounded-xl shadow-sm backdrop-blur-lg bg-white/30" style="max-width: 1300px; margin: 0 auto;">
-                <div class="overflow-x-auto">
-                  <table class="w-full divide-y divide-gray-200/50" style="min-width: 1000px;">
-                    <thead class="bg-gray-50/50">
-                      <tr>
-                        <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Stagiaire</th>
-                        <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Période</th>
-                        <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Statut</th>
-                        <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Actions</th>
-                      </tr>
-                    </thead>
-                    <tbody class="bg-white/50 divide-y divide-gray-200/50">
-                      <tr v-for="(stage, index) in filteredStages" :key="stage.id" 
-                          :class="{ 
-                            'bg-white/50': index % 2 === 0, 
-                            'bg-gray-50/50': index % 2 === 1, 
-                            'bg-yellow-50/50': stage.est_reaffecte 
-                          }" 
-                          class="hover:bg-gray-100/50 transition-colors duration-200">
-                        <td class="px-6 py-4 whitespace-nowrap">
-                          <div class="flex items-center">
-                            <div class="flex-shrink-0 h-10 w-10 rounded-full bg-gradient-to-br from-blue-400 to-blue-600 text-white flex items-center justify-center shadow-lg transform hover:scale-105 transition-transform duration-300">
-                              {{ getStagiaireInitials(stage) }}
+              <!-- Tableau des stages moderne -->
+              <div v-else class="overflow-hidden rounded-2xl border border-slate-200 bg-white/50 backdrop-blur-sm">
+                <table class="min-w-full">
+                  <thead class="bg-gradient-to-r from-slate-50 to-blue-50">
+                    <tr>
+                      <th class="px-8 py-4 text-left text-xs font-bold text-slate-600 uppercase tracking-wider border-b border-slate-200">Stagiaire</th>
+                      <th class="px-8 py-4 text-left text-xs font-bold text-slate-600 uppercase tracking-wider border-b border-slate-200">Période</th>
+                      <th class="px-8 py-4 text-left text-xs font-bold text-slate-600 uppercase tracking-wider border-b border-slate-200">Statut</th>
+                      <th class="px-8 py-4 text-left text-xs font-bold text-slate-600 uppercase tracking-wider border-b border-slate-200">Actions</th>
+                    </tr>
+                  </thead>
+                  <tbody class="divide-y divide-slate-100">
+                      <tr v-for="(stage, index) in filteredStages" :key="stage.id"
+                          class="group hover:bg-blue-50/50 transition-all duration-300"
+                          :style="{ animationDelay: `${index * 50}ms` }">
+                        <td class="px-8 py-6">
+                          <div class="flex items-center gap-4">
+                            <div class="relative">
+                              <div class="h-12 w-12 rounded-2xl bg-gradient-to-br from-blue-100 to-indigo-100 flex items-center justify-center group-hover:scale-110 transition-transform duration-300">
+                                <span class="text-blue-600 font-bold">{{ getStagiaireInitials(stage) }}</span>
+                              </div>
+                              <div class="absolute -bottom-1 -right-1 w-4 h-4 bg-emerald-400 rounded-full border-2 border-white"></div>
                             </div>
-                            <div class="ml-4">
-                              <div class="text-sm font-medium text-gray-900">
+                            <div>
+                              <span class="font-bold text-slate-800 group-hover:text-blue-800 transition-colors">
                                 <template v-if="stage.stagiaire_info?.nom">
                                   {{ stage.stagiaire_info.nom }} {{ stage.stagiaire_info.prenom }}
                                 </template>
@@ -147,10 +153,10 @@
                                   {{ stage.demandeStage.stagiaire.user.nom }} {{ stage.demandeStage.stagiaire.user.prenom }}
                                 </template>
                                 <template v-else>
-                                  <span class="italic text-gray-500">Nom non disponible</span>
+                                  <span class="italic text-slate-500">Nom non disponible</span>
                                 </template>
-                              </div>
-                              <div class="text-xs text-gray-500 truncate max-w-[200px]">
+                              </span>
+                              <p class="text-sm text-slate-500">
                                 <template v-if="stage.stagiaire_info?.email">
                                   {{ stage.stagiaire_info.email }}
                                 </template>
@@ -158,65 +164,49 @@
                                   {{ stage.demandeStage.stagiaire.user.email }}
                                 </template>
                                 <template v-else>
-                                  <span class="italic">Email non disponible</span>
+                                  Email non disponible
                                 </template>
-                              </div>
+                              </p>
                             </div>
                           </div>
                         </td>
-                        <td class="px-6 py-4 whitespace-nowrap">
-                          <div class="text-sm text-gray-900 flex items-center">
-                            <svg class="w-4 h-4 text-gray-400 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
-                            </svg>
-                            {{ formatDate(stage.date_debut) }} - {{ formatDate(stage.date_fin) }}
-                          </div>
-                          <div class="text-xs text-gray-500 mt-1">
-                            {{ calculateDuration(stage.date_debut, stage.date_fin) }}
+                        <td class="px-8 py-6">
+                          <div class="flex items-center gap-3">
+                            <div class="p-2 bg-slate-100 rounded-xl group-hover:bg-blue-100 transition-colors">
+                              <svg class="h-4 w-4 text-slate-500 group-hover:text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
+                              </svg>
+                            </div>
+                            <div>
+                              <div class="font-semibold text-slate-700">{{ formatDate(stage.date_debut) }} - {{ formatDate(stage.date_fin) }}</div>
+                              <div class="text-xs text-slate-500">{{ calculateDuration(stage.date_debut, stage.date_fin) }}</div>
+                            </div>
                           </div>
                         </td>
-                        <td class="px-6 py-4 whitespace-nowrap">
-                          <span class="px-2.5 py-1 inline-flex text-xs leading-5 font-semibold rounded-full"
-                            :class="{
-                              'bg-emerald-100/50 text-emerald-800 border border-emerald-200/50': stage.statut === 'Terminé',
-                              'bg-blue-100/50 text-blue-800 border border-blue-200/50': stage.statut === 'En cours',
-                              'bg-amber-100/50 text-amber-800 border border-amber-200/50': stage.statut === 'En attente',
-                            }">
-                            <span class="flex items-center">
-                              <span v-if="stage.statut === 'En cours'" class="relative flex mr-1.5">
-                                <span class="animate-ping absolute h-2 w-2 rounded-full opacity-75" 
-                                      :class="{
-                                        'bg-blue-400': stage.statut === 'En cours',
-                                      }"></span>
-                                <span class="relative rounded-full h-2 w-2" 
-                                      :class="{
-                                        'bg-blue-400': stage.statut === 'En cours',
-                                      }"></span>
-                              </span>
-                              {{ stage.statut }}
-                            </span>
+                        <td class="px-8 py-6">
+                          <span :class="getModernStatusClass(stage.statut)"
+                                class="inline-flex items-center gap-2 px-4 py-2 text-xs font-bold rounded-2xl">
+                            <div :class="getStatusDotClass(stage.statut)" class="w-2 h-2 rounded-full"></div>
+                            {{ stage.statut }}
                           </span>
                         </td>
-                        <td class="px-6 py-4 whitespace-nowrap">
-                          <div class="flex space-x-3">
+                        <td class="px-8 py-6 text-right">
+                          <div class="flex items-center justify-end gap-2">
                             <Link
                               :href="route('agent.ms.stages.show', stage.id)"
-                              class="text-blue-700 hover:text-blue-900 bg-gradient-to-r from-blue-100 to-sky-100 hover:from-blue-200 hover:to-sky-200 p-3 rounded-2xl transition-all duration-300 transform hover:scale-105 flex items-center shadow-lg border-2 border-blue-300"
+                              class="p-2 text-slate-400 hover:text-blue-600 hover:bg-blue-50 rounded-xl transition-all duration-200"
                               title="Voir les détails"
                             >
-                              <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                              <svg class="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z" />
                               </svg>
                             </Link>
-                            <!-- N'afficher les boutons d'action que si le stage est actif -->
-                           
                           </div>
                         </td>
                       </tr>
                     </tbody>
                   </table>
-                </div>
               </div>
             </div>
           </div>
@@ -291,6 +281,33 @@ const getStagiaireInitials = (stage) => {
     return (stage.demandeStage.stagiaire.user.nom.charAt(0) + (stage.demandeStage.stagiaire.user.prenom?.charAt(0) || '')).toUpperCase();
   }
   return 'ST';
+};
+
+// Fonctions pour les styles modernes
+const getModernStatusClass = (statut) => {
+  switch (statut) {
+    case 'En cours':
+      return 'bg-blue-100 text-blue-800 border border-blue-200';
+    case 'Terminé':
+      return 'bg-emerald-100 text-emerald-800 border border-emerald-200';
+    case 'En attente':
+      return 'bg-amber-100 text-amber-800 border border-amber-200';
+    default:
+      return 'bg-slate-100 text-slate-800 border border-slate-200';
+  }
+};
+
+const getStatusDotClass = (statut) => {
+  switch (statut) {
+    case 'En cours':
+      return 'bg-blue-500 animate-pulse';
+    case 'Terminé':
+      return 'bg-emerald-500';
+    case 'En attente':
+      return 'bg-amber-500';
+    default:
+      return 'bg-slate-500';
+  }
 };
 
 // Fonction pour réinitialiser les filtres

@@ -8,6 +8,7 @@ use App\Models\DemandeStage;
 use App\Models\Stagiaire;
 use App\Models\MembreGroupe;
 use App\Mail\DemandeConfirmationMarkdown;
+use App\Http\Requests\StoreDemandeStageRequest;
 use Illuminate\Http\Request;
 use Illuminate\Support\Str;
 use Illuminate\Support\Facades\Storage;
@@ -37,30 +38,30 @@ class DemandeController extends Controller
     }
 
     /**
+     * Affiche le formulaire modernisé de demande de stage
+     */
+    public function createModern()
+    {
+        // Ne récupérer que les structures principales (parent_id = null)
+        $structures = Structure::whereNull('parent_id')->get();
+
+        // Récupérer les informations du stagiaire s'il existe
+        $stagiaire = Stagiaire::where('user_id', Auth::id())->first();
+
+        return Inertia::render('Stagiaire/CreateDemande', [
+            'structures' => $structures,
+            'stagiaire' => $stagiaire,
+            'notifications' => Auth::check() && method_exists(Auth::user(), 'notifications') ? Auth::user()->notifications()->whereNull('read_at')->orderBy('created_at', 'desc')->take(10)->get() : [],
+        ]);
+    }
+
+    /**
      * Enregistre une nouvelle demande de stage
      */
-    public function store(Request $request)
+    public function store(StoreDemandeStageRequest $request)
     {
-        // Validation de la requête
-        $validated = $request->validate([
-            'nom' => 'required|string|max:255',
-            'prenom' => 'required|string|max:255',
-            'email' => 'required|email|max:255',
-            'telephone' => 'required|string|max:20',
-            'universite' => 'nullable|required_if:type,Académique|string|max:255',
-            'filiere' => 'required|string|max:255',
-            'niveau_etude' => 'required|string|max:255',
-            'date_debut' => 'required|date',
-            'date_fin' => 'required|date|after:date_debut',
-            'structure_id' => 'nullable|exists:structures,id',
-            'type' => 'required|in:Académique,Professionnelle',
-            'nature' => 'required|in:Individuel,Groupe',
-            'lettre_cv_path' => 'nullable|file|mimes:pdf,doc,docx|max:2048',
-            'diplomes_path' => 'nullable|file|mimes:pdf,doc,docx|max:2048',
-            'membres' => 'nullable|array',
-            'membres.*' => 'exists:users,id',
-            'visage_path' => 'nullable|file|image|max:2048',
-        ]);
+        // La validation (y compris les conflits de période) est automatiquement effectuée par la FormRequest
+        $validated = $request->validated();
 
         // Début de la transaction pour assurer l'intégrité des données
         DB::beginTransaction();
