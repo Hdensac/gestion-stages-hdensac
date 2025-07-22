@@ -41,10 +41,9 @@ const updatePassword = () => {
 </script>
 
 <template>
-    <section class="bg-white rounded-lg shadow-sm p-6 transition-all duration-300 hover:shadow-md">
-        <header class="text-center mb-8">
-            <h2 class="text-2xl font-bold text-gray-900 mb-2">Mise à jour du mot de passe</h2>
-            <p class="text-gray-600 max-w-lg mx-auto">
+    <section>
+        <header class="mb-6">
+            <p class="text-slate-600 text-sm">
                 Assurez-vous d'utiliser un mot de passe long et sécurisé pour garantir la sécurité de votre compte.
             </p>
         </header>

@@ -98,10 +98,9 @@ const updateProfileInformation = async () => {
 </script>
 
 <template>
-    <section class="bg-white rounded-lg shadow-sm p-6 transition-all duration-300 hover:shadow-md">
-        <header class="text-center mb-8">
-            <h2 class="text-2xl font-bold text-gray-900 mb-2">Informations du profil</h2>
-            <p class="text-gray-600 max-w-lg mx-auto">
+    <section>
+        <header class="mb-6">
+            <p class="text-slate-600 text-sm">
                 Mettez à jour les informations de votre profil et votre adresse email.
             </p>
         </header>

@@ -727,78 +727,179 @@ const handleVisageUpload = (event) => {
       <!-- Blocs personnalisés du dashboard -->
       <div class="mx-auto max-w-7xl sm:px-6 lg:px-8 grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
         <!-- 1. Accueil personnalisé -->
-        <div class="col-span-1 md:col-span-1 dashboard-block rounded-2xl shadow p-6 flex flex-col justify-between">
-          <div class="dashboard-block-header-content">
-            <h2 class="text-xl font-bold text-indigo-800 mb-2">Bienvenue, {{ auth.user.prenom }} !</h2>
-            <p class="text-gray-600 text-base">
-              <!-- À remplacer par le vrai statut -->
-              Tu es actuellement <span class="font-semibold text-indigo-600">stagiaire</span> sur la plateforme.
+        <div class="col-span-1 md:col-span-1 bg-gradient-to-br from-indigo-50 via-blue-50 to-indigo-50 rounded-3xl shadow-xl border-2 border-indigo-200/50 p-6 flex flex-col justify-between hover:shadow-2xl transition-all duration-300">
+          <div>
+            <div class="flex items-center gap-3 mb-4">
+              <div class="p-3 bg-gradient-to-br from-indigo-600 to-blue-700 rounded-2xl text-white shadow-lg">
+                <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"/>
+                </svg>
+              </div>
+              <div>
+                <h2 class="text-xl font-bold text-indigo-800">Bienvenue !</h2>
+                <p class="text-sm text-indigo-600 font-medium">{{ auth.user.prenom }}</p>
+              </div>
+            </div>
+            <p class="text-slate-600 text-sm">
+              Vous êtes connecté en tant que <span class="font-bold text-indigo-700">stagiaire</span> sur la plateforme.
             </p>
           </div>
-          <img src="/images/bienvenue.png" class="h-20 mt-4 self-end hidden md:block" alt="Bienvenue" />
+          <div class="mt-4 flex items-center gap-2 text-xs text-indigo-500">
+            <div class="w-2 h-2 bg-green-500 rounded-full animate-pulse"></div>
+            <span>En ligne</span>
+          </div>
         </div>
         <!-- 2. Mes Stages (aperçu) -->
-        <div class="col-span-1 dashboard-block rounded-2xl shadow p-6 flex flex-col">
-          <div class="dashboard-block-header-content flex items-center justify-between mb-2">
-            <h3 class="text-lg font-semibold text-indigo-800">Mes Stages</h3>
-            <Link :href="route('stagiaire.stages')" class="text-indigo-600 hover:underline text-sm text-base">Voir tout
+        <div class="col-span-1 bg-gradient-to-br from-blue-50 via-sky-50 to-blue-50 rounded-3xl shadow-xl border-2 border-blue-200/50 p-6 flex flex-col hover:shadow-2xl transition-all duration-300">
+          <div class="flex items-center justify-between mb-4">
+            <div class="flex items-center gap-3">
+              <div class="p-3 bg-gradient-to-br from-blue-600 to-indigo-700 rounded-2xl text-white shadow-lg">
+                <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2"/>
+                </svg>
+              </div>
+              <h3 class="text-lg font-bold text-blue-800">Mes Stages</h3>
+            </div>
+            <Link :href="route('stagiaire.stages')" class="inline-flex items-center gap-1 px-3 py-1.5 bg-blue-100 hover:bg-blue-200 text-blue-700 rounded-xl text-sm font-medium transition-all duration-300">
+              <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"/>
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"/>
+              </svg>
+              Voir tout
             </Link>
           </div>
-          <ul>
-            <li v-for="stage in stages" :key="stage.id" class="mb-4 flex items-center justify-between">
-              <div>
-                <div class="font-medium text-base">{{ stage.structure?.libelle }}</div>
-                <div class="text-xs text-gray-500 text-sm">{{ formatDate(stage.date_debut) }} - {{
-                  formatDate(stage.date_fin) }}</div>
-                <span class="inline-block mt-1 px-2 py-0.5 rounded-full text-xs text-sm" :class="{
-                    'bg-green-100 text-green-800': stage.statut_calculé === 'Terminé',
-                    'bg-blue-100 text-blue-800': stage.statut_calculé === 'En cours',
-                    'bg-yellow-100 text-yellow-800': stage.statut_calculé === 'À venir'
-                  }">
-                  {{ stage.statut_calculé || stage.statut }}
-                </span>
+          <div class="space-y-3">
+            <div v-for="stage in stages" :key="stage.id" class="bg-white/80 rounded-2xl p-4 border border-blue-200/50 hover:shadow-lg transition-all duration-300">
+              <div class="flex items-center justify-between">
+                <div class="flex-1">
+                  <div class="font-bold text-slate-800 mb-1">{{ stage.structure?.libelle }}</div>
+                  <div class="text-xs text-slate-500 mb-2">{{ formatDate(stage.date_debut) }} - {{ formatDate(stage.date_fin) }}</div>
+                  <span class="inline-flex items-center gap-1 px-3 py-1 rounded-full text-xs font-bold" :class="{
+                      'bg-green-100 text-green-800 border border-green-200': stage.statut_calculé === 'Terminé',
+                      'bg-blue-100 text-blue-800 border border-blue-200': stage.statut_calculé === 'En cours',
+                      'bg-amber-100 text-amber-800 border border-amber-200': stage.statut_calculé === 'À venir'
+                    }">
+                    <div class="w-1.5 h-1.5 rounded-full" :class="{
+                        'bg-green-500': stage.statut_calculé === 'Terminé',
+                        'bg-blue-500 animate-pulse': stage.statut_calculé === 'En cours',
+                        'bg-amber-500': stage.statut_calculé === 'À venir'
+                      }"></div>
+                    {{ stage.statut_calculé || stage.statut }}
+                  </span>
+                </div>
+                <Link :href="route('stagiaire.stages.show', stage.id)"
+                  class="p-2 text-blue-600 hover:text-blue-800 hover:bg-blue-100 rounded-xl transition-all duration-300">
+                  <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/>
+                  </svg>
+                </Link>
               </div>
-              <Link :href="route('stagiaire.stages.show', stage.id)"
-                class="text-indigo-600 hover:underline text-sm text-base">Voir</Link>
-            </li>
-          </ul>
-          <div v-if="!stages.length" class="text-gray-400 italic text-base">Aucun stage pour l'instant.</div>
+            </div>
+          </div>
+          <div v-if="!stages.length" class="text-center py-8">
+            <div class="text-slate-400 mb-2">
+              <svg class="w-12 h-12 mx-auto mb-3 opacity-50" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2"/>
+              </svg>
+            </div>
+            <p class="text-slate-500 text-sm font-medium">Aucun stage pour l'instant</p>
+          </div>
         </div>
         <!-- 3. Notifications (aperçu dynamique) -->
-        <div class="col-span-1 dashboard-block rounded-2xl shadow p-6 flex flex-col">
-          <div class="dashboard-block-header-content flex items-center justify-between mb-2">
-            <h3 class="text-lg font-semibold text-indigo-800">Notifications</h3>
-            <button @click="openNotifications()" class="text-indigo-600 hover:underline text-sm text-base"></button>
+        <div class="col-span-1 bg-gradient-to-br from-purple-50 via-indigo-50 to-purple-50 rounded-3xl shadow-xl border-2 border-purple-200/50 p-6 flex flex-col hover:shadow-2xl transition-all duration-300">
+          <div class="flex items-center justify-between mb-4">
+            <div class="flex items-center gap-3">
+              <div class="p-3 bg-gradient-to-br from-purple-600 to-indigo-700 rounded-2xl text-white shadow-lg">
+                <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 17h5l-5 5v-5zM4 19h6v-2H4v2zM4 15h8v-2H4v2zM4 11h10V9H4v2z"/>
+                </svg>
+              </div>
+              <h3 class="text-lg font-bold text-purple-800">Notifications</h3>
+            </div>
+            <div class="flex items-center gap-2">
+              <div v-if="props.notifications.filter(n => !n.read_at).length > 0" class="px-2 py-1 bg-red-100 text-red-800 rounded-full text-xs font-bold">
+                {{ props.notifications.filter(n => !n.read_at).length }}
+              </div>
+            </div>
           </div>
-          <ul>
-            <li v-for="notif in props.notifications.slice(0,3)" :key="notif.id" class="mb-3 flex items-center">
-              <span class="w-2 h-2 rounded-full mr-2" :class="notif.read_at ? 'bg-gray-300' : 'bg-indigo-500'"></span>
-              <span class="flex-1 text-gray-700 text-base" v-html="notif.data.message"></span>
-              <span class="text-xs text-gray-400 ml-2 text-sm">{{ new Date(notif.created_at).toLocaleDateString('fr-FR')
-                }}</span>
-            </li>
-          </ul>
-          <div v-if="props.notifications.length === 0" class="text-gray-400 italic text-base">Aucune notification
-            récente.</div>
+          <div class="space-y-3">
+            <div v-for="notif in props.notifications.slice(0,3)" :key="notif.id" class="bg-white/80 rounded-2xl p-3 border border-purple-200/50 hover:shadow-lg transition-all duration-300">
+              <div class="flex items-start gap-3">
+                <div class="flex-shrink-0 mt-1">
+                  <div class="w-2 h-2 rounded-full" :class="notif.read_at ? 'bg-slate-300' : 'bg-purple-500 animate-pulse'"></div>
+                </div>
+                <div class="flex-1 min-w-0">
+                  <div class="text-sm text-slate-700 font-medium" v-html="notif.data.message"></div>
+                  <div class="text-xs text-slate-500 mt-1">{{ new Date(notif.created_at).toLocaleDateString('fr-FR') }}</div>
+                </div>
+              </div>
+            </div>
+          </div>
+          <div v-if="props.notifications.length === 0" class="text-center py-8">
+            <div class="text-slate-400 mb-2">
+              <svg class="w-12 h-12 mx-auto mb-3 opacity-50" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 17h5l-5 5v-5zM4 19h6v-2H4v2zM4 15h8v-2H4v2zM4 11h10V9H4v2z"/>
+              </svg>
+            </div>
+            <p class="text-slate-500 text-sm font-medium">Aucune notification récente</p>
+          </div>
         </div>
       </div>
 
-      <!-- Formulaire de demande de stage -->
+      <!-- Section demande de stage moderne -->
       <div class="py-6">
         <div class="mx-auto max-w-7xl sm:px-6 lg:px-8">
-          <div
-            class="overflow-hidden bg-gradient-to-br from-indigo-100 via-blue-50 to-indigo-100 shadow-lg sm:rounded-2xl p-8 border border-indigo-100">
-            <h1 class="text-3xl font-extrabold mb-6 text-indigo-800 flex items-center gap-2">
-              
-            </h1>
-            <button @click="showModal = true"
-              class="inline-flex items-center gap-2 px-6 py-3 bg-gradient-to-r from-indigo-500 to-blue-500 text-white rounded-xl shadow hover:from-indigo-600 hover:to-blue-600 focus:outline-none focus:ring-2 focus:ring-indigo-400 focus:ring-offset-2 font-semibold text-lg transition-all duration-200">
-              <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24"
-                stroke="currentColor">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4" />
-              </svg>
-              Soumettre une demande
-            </button>
+          <div class="bg-white/80 backdrop-blur-sm rounded-3xl shadow-2xl border-2 border-slate-200/50 overflow-hidden">
+            <div class="bg-gradient-to-r from-indigo-600 to-blue-700 py-8 px-8">
+              <div class="flex items-center justify-between">
+                <div class="flex items-center gap-4">
+                  <div class="p-4 bg-white/20 rounded-2xl">
+                    <svg class="w-8 h-8 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"/>
+                    </svg>
+                  </div>
+                  <div>
+                    <h1 class="text-2xl font-bold text-white">Nouvelle demande de stage</h1>
+                    <p class="text-indigo-100 mt-1">Soumettez votre demande en quelques étapes simples</p>
+                  </div>
+                </div>
+                <button @click="showModal = true"
+                  class="inline-flex items-center gap-3 px-6 py-3 bg-white/20 hover:bg-white/30 text-white rounded-2xl font-bold text-lg transition-all duration-300 hover:scale-105 shadow-lg">
+                  <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"/>
+                  </svg>
+                  Commencer
+                </button>
+              </div>
+            </div>
+            <div class="p-6 bg-gradient-to-br from-indigo-50 to-blue-50">
+              <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+                <div class="flex items-center gap-3 text-indigo-700">
+                  <div class="p-2 bg-indigo-100 rounded-xl">
+                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/>
+                    </svg>
+                  </div>
+                  <span class="text-sm font-medium">Processus simplifié</span>
+                </div>
+                <div class="flex items-center gap-3 text-indigo-700">
+                  <div class="p-2 bg-indigo-100 rounded-xl">
+                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"/>
+                    </svg>
+                  </div>
+                  <span class="text-sm font-medium">Suivi en temps réel</span>
+                </div>
+                <div class="flex items-center gap-3 text-indigo-700">
+                  <div class="p-2 bg-indigo-100 rounded-xl">
+                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z"/>
+                    </svg>
+                  </div>
+                  <span class="text-sm font-medium">Support disponible</span>
+                </div>
+              </div>
+            </div>
           </div>
         </div>
       </div>

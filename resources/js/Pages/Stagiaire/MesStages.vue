@@ -2,21 +2,27 @@
   <Head title="Mes Stages" />
   <Stagiaire :notifications="notifications">
     <template #header>
-      <div class="flex items-center justify-between">
-        <div class="flex items-center space-x-3">
-          <div class="relative">
-            <div class="absolute inset-0 bg-indigo-400 rounded-lg blur opacity-25 animate-pulse"></div>
-            <div class="relative bg-gradient-to-br from-indigo-500 to-indigo-600 p-3 rounded-lg shadow-lg">
-              <svg class="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2-2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4" />
-              </svg>
+      <div class="flex items-center gap-3 mb-2">
+        <div class="bg-gradient-to-br from-indigo-600 via-blue-700 to-indigo-600 text-white rounded-xl w-12 h-12 flex items-center justify-center shadow-lg shadow-indigo-500/20">
+          <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2"/>
+          </svg>
+        </div>
+        <div class="flex-1">
+          <h1 class="text-2xl font-black bg-gradient-to-r from-slate-800 to-slate-600 bg-clip-text text-transparent leading-tight">
+            Mes Stages
+          </h1>
+          <p class="text-sm text-slate-600 mt-1 font-medium">
+            Suivez vos stages et progressions
+          </p>
+          <div class="flex items-center gap-3 mt-2">
+            <div class="flex items-center gap-2 bg-indigo-100 px-2 py-1 rounded-full">
+              <div class="w-1.5 h-1.5 bg-indigo-500 rounded-full animate-pulse"></div>
+              <span class="text-xs font-bold text-indigo-700">{{ stages.length }} stage(s)</span>
             </div>
-          </div>
-          <div>
-            <h2 class="text-2xl font-bold bg-gradient-to-r from-indigo-700 to-purple-700 bg-clip-text text-transparent">
-              Mes Stages
-            </h2>
-            <p class="text-base text-indigo-600/70 font-semibold">Suivez vos stages et progressions</p>
+            <div class="text-xs text-slate-500 font-mono">
+              {{ new Date().toLocaleTimeString('fr-FR') }}
+            </div>
           </div>
         </div>
       </div>

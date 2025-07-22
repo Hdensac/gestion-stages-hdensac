@@ -209,61 +209,7 @@
               </div>
             </div>
 
-            <!-- Filtres modernes -->
-            <div class="p-6 bg-gradient-to-br from-blue-50 to-indigo-50">
-              <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
-                <!-- Filtre par statut -->
-                <div class="relative">
-                  <label class="block text-xs font-bold text-blue-700 mb-2 uppercase tracking-wider">Statut</label>
-                  <div class="relative">
-                    <select
-                      v-model="filters.statut"
-                      class="w-full bg-white border border-slate-300 rounded-xl px-4 py-2.5 text-sm font-medium text-slate-800 focus:ring-2 focus:ring-blue-200 focus:border-blue-500 transition-all duration-300 appearance-none">
-                      <option value="">Tous les statuts</option>
-                      <option value="En cours">En cours</option>
-                      <option value="Terminé">Terminés</option>
-                      <option value="En attente">En attente</option>
-                    </select>
-                    <div class="absolute inset-y-0 right-0 flex items-center pr-3 pointer-events-none">
-                      <svg class="h-4 w-4 text-slate-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/>
-                      </svg>
-                    </div>
-                  </div>
-                </div>
 
-                <!-- Recherche -->
-                <div class="relative">
-                  <label class="block text-xs font-bold text-blue-700 mb-2 uppercase tracking-wider">Recherche</label>
-                  <div class="relative">
-                    <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-                      <svg class="h-4 w-4 text-slate-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"/>
-                      </svg>
-                    </div>
-                    <input
-                      v-model="filters.search"
-                      type="text"
-                      placeholder="Rechercher un stagiaire..."
-                      class="w-full bg-white border border-slate-300 rounded-xl pl-10 pr-4 py-2.5 text-sm font-medium text-slate-800 placeholder-slate-400 focus:ring-2 focus:ring-blue-200 focus:border-blue-500 transition-all duration-300"
-                    />
-                  </div>
-                </div>
-
-                <!-- Bouton réinitialiser -->
-                <div class="flex items-end">
-                  <button
-                    @click="resetFilters"
-                    class="w-full md:w-auto px-4 py-2.5 bg-blue-100 hover:bg-blue-200 text-blue-700 rounded-xl font-medium transition-all duration-300 flex items-center justify-center gap-2"
-                  >
-                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" />
-                    </svg>
-                    Réinitialiser
-                  </button>
-                </div>
-              </div>
-            </div>
           </div>
 
           <!-- Tableau des stages avec couleurs pleines -->
@@ -470,11 +416,7 @@ onMounted(() => {
   }, 100); // Petit délai pour s'assurer que le composant est monté
 });
 
-// État pour les filtres
-const filters = ref({
-  statut: '',
-  search: ''
-});
+
 
 // État pour les modals
 const showStageDetailsModal = ref(false);
@@ -523,7 +465,7 @@ const calculateDuration = (startDate, endDate) => {
   }
 };
 
-// Filtrer les stages en fonction des critères de recherche
+// Récupérer les 5 derniers stages
 const filteredStages = computed(() => {
   // S'assurer que derniersStages est un tableau
   const stages = Array.isArray(props.derniersStages) ? props.derniersStages :
@@ -531,30 +473,7 @@ const filteredStages = computed(() => {
 
   if (!stages.length) return [];
 
-  return stages.filter(stage => {
-    // Filtrer par statut si un statut est sélectionné
-    if (filters.value.statut && stage.statut !== filters.value.statut) {
-      return false;
-    }
-    
-    // Filtrer par recherche si une recherche est effectuée
-    if (filters.value.search) {
-      const searchTerm = filters.value.search.toLowerCase();
-      const stagiaireNom = stage.demandeStage?.stagiaire?.user?.nom?.toLowerCase() || '';
-      const stagiairePrenom = stage.demandeStage?.stagiaire?.user?.prenom?.toLowerCase() || '';
-      const stagiaireEmail = stage.demandeStage?.stagiaire?.user?.email?.toLowerCase() || '';
-      const natureStage = stage.demandeStage?.nature?.toLowerCase() || '';
-      const typeStage = stage.demandeStage?.type?.toLowerCase() || '';
-
-      return stagiaireNom.includes(searchTerm) ||
-             stagiairePrenom.includes(searchTerm) ||
-             stagiaireEmail.includes(searchTerm) ||
-             natureStage.includes(searchTerm) ||
-             typeStage.includes(searchTerm);
-    }
-    
-    return true;
-  });
+  return stages;
 });
 
 // Remplacer top3StagesEnCours par top5DerniersStages
@@ -565,13 +484,7 @@ const top5DerniersStages = computed(() => {
     .slice(0, 5);
 });
 
-// Réinitialiser les filtres
-const resetFilters = () => {
-  filters.value = {
-    statut: '',
-    search: ''
-  };
-};
+
 
 // Afficher les détails d'un stage
 const viewStageDetails = (stage) => {
